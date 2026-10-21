@@ -26,7 +26,7 @@ immuknow-template/
 │   ├── notice_versions.yaml      # Notice versions and who each applies to
 │   ├── vaccine_reference.json    # Vaccine agent → diseases it covers
 │   ├── disease_normalization.json
-│   └── school_reference.json     # ImmuKnow's school list, copied unchanged
+│   └── school_reference.json     # School list: ImmuKnow's, or your own
 ├── templates/
 │   ├── <version_id>.<language>.typ  # One file per notice and language
 │   ├── settings.typ              # Contact details, fonts, colours, QR code, display choices
@@ -204,8 +204,9 @@ placeholder signature. Replace them before sending real notices. The dates in
 
 School validation is off. To use it, set `school_validation.enabled: true` and
 set `target_phu` to your health unit's name as it appears in
-`config/school_reference.json`. That file is ImmuKnow's school list, copied
-unchanged; don't edit it.
+`config/school_reference.json`. That file starts as a copy of ImmuKnow's school
+list. If your health unit keeps a more up-to-date list, replace it with yours in
+the same format.
 
 ImmuKnow checks `config/` strictly. Misspelled or retired settings stop the run
 with a message saying what to change. The settings are described in ImmuKnow's
@@ -227,7 +228,9 @@ the exported project, then run `uv run python scripts/check.py --sample`.
 3. `uv run python scripts/sync_lib.py` copies the new shared library into
    `templates/lib/immuknow/`. ImmuKnow refuses to run with an outdated copy.
    Review the change with `git diff templates/lib`.
-4. Copy ImmuKnow's school list into `config/`:
+4. If you use ImmuKnow's school list rather than your own, copy the new one into
+   `config/` and review it with `git diff config/school_reference.json`. Skip
+   this step if you keep your own list; it would overwrite it.
    ```bash
    uv run python -c "import shutil; from immuknow.resources import resource_root; shutil.copy(resource_root() / 'config' / 'school_reference.json', 'config/')"
    ```
