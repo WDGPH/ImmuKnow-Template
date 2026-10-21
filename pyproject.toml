@@ -1,0 +1,31 @@
+[project]
+name = "immuknow-template"
+version = "0.1.0"
+description = "ImmuKnow project for one public health unit: config, notice templates and run scripts"
+requires-python = ">=3.10"
+dependencies = [
+    # ImmuKnow release used by this project. To upgrade, change the tag and run `uv sync`.
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+    "pytest",
+]
+
+[tool.uv]
+# This repository holds project files, not an importable package.
+package = false
+
+# To test a local ImmuKnow checkout next to this repository, uncomment these lines
+# and run `uv sync`. Comment them again before committing.
+# [tool.uv.sources]
+# ImmuKnow = { path = "../ImmuKnow", editable = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["scripts"]
+markers = [
+    "pipeline: runs the full sample through ImmuKnow; requires Typst",
+]

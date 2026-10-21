@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# uv.lock and .python-version are committed: they pin the ImmuKnow
+# version this project was checked against.
+
+# Run output contains client information and is never committed.
+output/
+
+# Client data in any folder, for runs saved outside output/ or input/.
+*.csv
+*.xls
+*.xlsx
+*.xlsm
+*.pdf
+*.parquet
+*.zip
+*.log
+run.json
+report.html
+
+# Input data may contain client information. Only the synthetic sample is tracked.
+# Keep cohort CSVs and assignments files in input/: an assignments file lists
+# client IDs and, being .json, is only ignored inside this folder.
+input/*
+!input/sample/
+input/sample/*
+!input/sample/rodent_dataset.csv
+!input/sample/assignments.json
+
+# Left behind if scripts/sync_lib.py stops partway; safe to delete.
+.sync-lib-*/
+
+# Tools
+.pytest_cache/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

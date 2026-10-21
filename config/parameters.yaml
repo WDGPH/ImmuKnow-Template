@@ -1,0 +1,19 @@
+bundling:
+  bundle_size: 100
+  group_by: null
+school_validation:
+  enabled: false
+  reference_file: school_reference.json
+  target_phu: Cedar Ridge Health Unit
+  column_prefix: school_
+date_as_of: '2026-09-30'
+date_of_delivery: '2026-10-08'
+encryption:
+  enabled: false
+  password:
+    template: '{date_of_birth_iso_compact}'
+pipeline:
+  after_run:
+    remove_artifacts: false
+typst:
+  bin: typst

@@ -1,0 +1,8 @@
+# Install once per clone: uv run pre-commit install
+repos:
+  - repo: local
+    hooks:
+      - id: client-data
+        name: Refuse client data files
+        language: python
+        entry: python scripts/check_client_data.py
