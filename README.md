@@ -26,7 +26,7 @@ immuknow-template/
 │   ├── notice_versions.yaml      # Notice versions and who each applies to
 │   ├── vaccine_reference.json    # Vaccine agent → diseases it covers
 │   ├── disease_normalization.json
-│   └── school_reference.json     # School list: ImmuKnow's, or your own
+│   └── school_reference.json     # Optional: your own school list (default: ImmuKnow's)
 ├── templates/
 │   ├── <version_id>.<language>.typ  # One file per notice and language
 │   ├── settings.typ              # Contact details, fonts, colours, QR code, display choices
@@ -102,8 +102,8 @@ file and the folder it is in. `--templates` only applies with
 Try it with the sample:
 
 ```bash
-uv run python scripts/run.py input/sample/rodent_dataset.csv \
-  --notice-assignments input/sample/assignments.json
+uv run python scripts/run.py input/sample/sample_students.csv \
+  --notice-assignments input/sample/sample_assignments.json
 ```
 
 Paths are relative to your current folder. `run.py` fills in `--config config/`,
@@ -125,7 +125,7 @@ The main points:
 - Optional columns: address fields, `overdue_disease`, `overdue_agent`,
   `board_name`, `board_id`, `school_id`, `version_id`. Other columns are ignored.
 - **Every history entry ends with a semicolon, including the last:**
-  `Aug 20, 2013 - DTaP-IPV-Hib; Oct 3, 2014 - Var;`. Use `-;` for no history.
+  `2013-08-20 - DTaP-IPV-Hib; 2014-10-03 - Var;`. Use `-;` for no history.
   A missing final semicolon rejects the whole file.
 - The overdue agents must cover every overdue disease, using
   `config/vaccine_reference.json`. A client whose agents don't cover their
@@ -179,8 +179,14 @@ uv run immuknow-rebundle output/<run-id> --accept-warning <token> --reason "Chec
 ```
 
 The sample run finishes `completed_with_warnings` on purpose. Its warnings show
-what review looks like: one client has no street address, one history runs
-onto a second page, and each notice has several links.
+what review looks like:
+
+- `content.multiple_links`: every notice links to more than one website.
+- `data.forecast_coverage`: two clients are overdue for one disease, but the
+  agent offered (MMR) also covers others.
+- `source.address_incomplete`: one client has no street address.
+- `layout.section_pages`: one client's immunization history runs onto a second
+  page.
 
 Run folders contain client information. Store and delete them according to
 your health unit's policies.
@@ -203,10 +209,11 @@ placeholder signature. Replace them before sending real notices. The dates in
 `parameters.yaml` are examples.
 
 School validation is off. To use it, set `school_validation.enabled: true` and
-set `target_phu` to your health unit's name as it appears in
-`config/school_reference.json`. That file starts as a copy of ImmuKnow's school
-list. If your health unit keeps a more up-to-date list, replace it with yours in
-the same format.
+set `target_phu` to your health unit's name as it appears in the school list.
+With `reference_file: null`, ImmuKnow uses the school list it ships with, which
+updates when you upgrade ImmuKnow. To use your own list, put it in `config/` in
+the same format and set `reference_file` to its file name. If that file is
+missing, the run stops rather than falling back to ImmuKnow's list.
 
 ImmuKnow checks `config/` strictly. Misspelled or retired settings stop the run
 with a message saying what to change. The settings are described in ImmuKnow's
@@ -228,11 +235,12 @@ the exported project, then run `uv run python scripts/check.py --sample`.
 3. `uv run python scripts/sync_lib.py` copies the new shared library into
    `templates/lib/immuknow/`. ImmuKnow refuses to run with an outdated copy.
    Review the change with `git diff templates/lib`.
-4. If you use ImmuKnow's school list rather than your own, copy the new one into
-   `config/` and review it with `git diff config/school_reference.json`. Skip
-   this step if you keep your own list; it would overwrite it.
+4. If you keep your own school list, compare it with the one in the new
+   ImmuKnow release for schools that opened, closed or were renamed. This
+   prints where ImmuKnow's list is. With `reference_file: null` there is
+   nothing to do: runs use the new list automatically.
    ```bash
-   uv run python -c "import shutil; from immuknow.resources import resource_root; shutil.copy(resource_root() / 'config' / 'school_reference.json', 'config/')"
+   uv run python -c "from immuknow.resources import resource_root; print(resource_root() / 'config' / 'school_reference.json')"
    ```
 5. Compare your `templates/` and `config/` with ImmuKnow's defaults for new or
    renamed settings. The script prints where ImmuKnow's copies are.

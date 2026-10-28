@@ -3,7 +3,9 @@ bundling:
   group_by: null
 school_validation:
   enabled: false
-  reference_file: school_reference.json
+  # null uses the school list shipped with ImmuKnow. To use your own, add the
+  # file to config/ and give its name here, e.g. school_reference.json.
+  reference_file: null
   target_phu: Cedar Ridge Health Unit
   column_prefix: school_
 date_as_of: '2026-09-30'

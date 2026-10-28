@@ -19,7 +19,7 @@ CLIENT_DATA = re.compile(
     r"\.(csv|xlsx?|pdf|zip|log)$|(^|/)(run\.json|report\.html)$|^(input|output)/",
     re.IGNORECASE,
 )
-SAMPLE = {"input/sample/rodent_dataset.csv", "input/sample/assignments.json"}
+SAMPLE = {"input/sample/sample_students.csv", "input/sample/sample_assignments.json"}
 
 
 def client_data(paths: list[str]) -> list[str]:
