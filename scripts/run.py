@@ -1,4 +1,4 @@
-"""Run the immuknow command with this project's config/, templates/ and output/.
+"""Run the immuknow command with this project's config/, templates/ and runs/.
 
 Usage
 -----

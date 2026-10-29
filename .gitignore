@@ -6,10 +6,13 @@ __pycache__/
 # uv.lock and .python-version are committed: they pin the ImmuKnow
 # version this project was checked against.
 
-# Run output contains client information and is never committed.
+# Run output contains client information and is never committed. Both names
+# match at any depth: runs/ is the default, output/ holds runs from older
+# versions of this template.
+runs/
 output/
 
-# Client data in any folder, for runs saved outside output/ or input/.
+# Client data in any folder, for runs saved outside runs/ or input/.
 *.csv
 *.xls
 *.xlsx

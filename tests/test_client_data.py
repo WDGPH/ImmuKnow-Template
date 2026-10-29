@@ -13,6 +13,8 @@ def test_client_data_files_are_found():
             "input/assignments.json",
             "input/sample/real_cohort.json",
             "output/old/notice.typ",
+            "runs/2026/notice.typ",
+            "scripts/runs/2026/notice.typ",
         ]
     ) == [
         "students.CSV",
@@ -22,6 +24,8 @@ def test_client_data_files_are_found():
         "input/assignments.json",
         "input/sample/real_cohort.json",
         "output/old/notice.typ",
+        "runs/2026/notice.typ",
+        "scripts/runs/2026/notice.typ",
     ]
 
 

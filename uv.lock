@@ -579,7 +579,7 @@ wheels = [
 [[package]]
 name = "immuknow"
 version = "2.0.0"
-source = { git = "https://github.com/WDGPH/ImmuKnow?rev=v2.0.0#ef4b7a6180bdd2e27e06400d82b1780395d67927" }
+source = { git = "https://github.com/WDGPH/ImmuKnow?rev=v2.0.0-rc1#877cef06378357da769ea2566226d50d641a855a" }
 dependencies = [
     { name = "filelock", version = "4.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "filelock", version = "4.2.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -607,7 +607,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "immuknow", git = "https://github.com/WDGPH/ImmuKnow?rev=v2.0.0" }]
+requires-dist = [{ name = "immuknow", git = "https://github.com/WDGPH/ImmuKnow?rev=v2.0.0-rc1" }]
 
 [package.metadata.requires-dev]
 dev = [

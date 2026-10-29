@@ -12,7 +12,7 @@ health unit:
 | `config/`: run dates, notice catalog, vaccine and disease reference data | Processing, checks and the CSV input schema |
 | `templates/`: your notice wording, layout, logo and translations | The shared Typst library (`templates/lib/immuknow/`, copied here) |
 | `input/`: your cohort CSVs (never committed) | |
-| `output/`: one folder per run (never committed) | |
+| `runs/`: one folder per run (never committed) | |
 
 The layout of `config/` and `templates/` matches an ImmuKnow Studio export, so
 a project exported from Studio can replace them directly.
@@ -68,7 +68,7 @@ uv run python scripts/check.py --sample
 
 `pre-commit install` adds a Git hook that refuses to commit files that may hold
 client information: spreadsheets, PDFs, run records, and anything in `input/`
-or `output/` other than the sample. Git doesn't copy hooks when you clone, so
+or `runs/` other than the sample. Git doesn't copy hooks when you clone, so
 everyone who commits runs this once in their clone. CI runs the same check.
 
 `check.py` reports the ImmuKnow version, whether `config/parameters.yaml` is
@@ -107,12 +107,13 @@ uv run python scripts/run.py input/sample/sample_students.csv \
 ```
 
 Paths are relative to your current folder. `run.py` fills in `--config config/`,
-`--templates templates/` and `--output output/`. Any other option is passed to
+`--templates templates/` and `--output runs/`. Any other option is passed to
 ImmuKnow unchanged. For example, `--input-encoding cp1252` reads a CSV saved by
 Excel on Windows. See `uv run immuknow --help` for every option.
 
 The output folder must not be inside `config/`, `templates/` or a folder you
-read input from. ImmuKnow refuses to run if it is.
+read input from. ImmuKnow refuses to run if it is. Running `uv run immuknow`
+directly without `--output` writes to `runs/` in your current folder.
 
 ### Input CSV
 
@@ -152,7 +153,7 @@ A JSON list with one entry per client. `template` is a file name in
 Each run creates its own folder and keeps earlier runs:
 
 ```
-output/<run-id>/
+runs/<run-id>/
 ├── report.html     # Open this first: every client, check and PDF
 ├── run.json        # The complete record of the run
 ├── originals/      # The notices as produced
@@ -175,7 +176,7 @@ Notices with warnings are held in `bundles/review/`. Once you've checked one,
 release it with the token shown in `report.html`:
 
 ```bash
-uv run immuknow-rebundle output/<run-id> --accept-warning <token> --reason "Checked layout"
+uv run immuknow-rebundle runs/<run-id> --accept-warning <token> --reason "Checked layout"
 ```
 
 The sample run finishes `completed_with_warnings` on purpose. Its warnings show
@@ -253,7 +254,7 @@ the exported project, then run `uv run python scripts/check.py --sample`.
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0-rc1",
 ]
 ```
 
