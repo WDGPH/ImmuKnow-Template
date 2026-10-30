@@ -70,7 +70,7 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Check the project
-        run: uv run --locked python scripts/check.py
+        run: uv run --locked --group test python scripts/check.py
 
       - name: Run tests
         run: uv run --locked --group test pytest
