@@ -5,9 +5,8 @@ Usage
     uv run python scripts/check.py           # setup checks
     uv run python scripts/check.py --sample  # also run the sample end to end
 
-Each setup check calls the same ImmuKnow function a run uses, so a result here
-matches what a run would do: the run settings, the compiler, the shared Typst
-library and the notice catalog. Missing fonts appear only when Typst compiles a
+Checks cover the run settings, compiler, shared Typst library and catalog
+notices present in the project. Missing fonts appear only when Typst compiles a
 notice, so --sample reports them as compiler.font_substitution.
 """
 
@@ -48,7 +47,10 @@ def catalog_entry_points(config_dir: Path, templates_dir: Path) -> dict[str, lis
     }
     included = {version: languages for version, languages in available.items() if languages}
     if not included:
-        raise ValueError("No catalog notice has a <version_id>.<language>.typ in templates/")
+        raise ValueError(
+            "No catalog notice has a matching <version_id>.<language>.typ file "
+            "in templates/ (see config/notice_versions.yaml)"
+        )
     return included
 
 

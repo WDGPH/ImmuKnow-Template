@@ -11,15 +11,18 @@ health unit:
 |---|---|
 | `config/`: run dates, notice catalog, vaccine and disease reference data | Processing, checks and the CSV input schema |
 | `templates/`: your notice wording, layout, logo and translations | The shared Typst library (`templates/lib/immuknow/`, copied here) |
-| `input/`: your cohort CSVs (never committed) | |
+| `input/`: your client CSVs (not committed); fictional sample files | |
 | `runs/`: one folder per run (never committed) | |
 
-Studio downloads use this repository's Python setup and helper scripts together
-with the selected notice and authored configuration. A download can be run on
-its own; it does not need a separate Template checkout. Projects may contain
-only a subset of the notices in the catalog.
+Studio downloads include this project's Python setup and helper scripts, the
+selected notice and its configuration. Extract the ZIP to run it; no separate
+Template checkout is needed. The notice catalog may list notices that are not
+in the project.
 
 ## Repository structure
+
+The full Template has the layout below. A Studio download may contain only the
+selected notice and example files.
 
 ```
 immuknow-template/
@@ -47,8 +50,8 @@ immuknow-template/
 
 ## Prerequisites
 
-- [uv](https://docs.astral.sh/uv/). It installs the Python version named in
-  `.python-version`.
+- [uv](https://docs.astral.sh/uv/). ImmuKnow requires Python 3.11 or later;
+  uv installs the version named in `.python-version`.
 - [Typst 0.15.1](https://typst.app/docs/changelog/0.15.1/), exactly. ImmuKnow
   rejects other versions. Put `typst` on `PATH`, set `TYPST_BIN`, or set
   `typst.bin` in `config/parameters.yaml`.
@@ -78,7 +81,14 @@ the project folder. Studio sets it to the selected fictional example. Without
 it, the scripts use `input/sample/sample_students.csv` and
 `input/sample/sample_assignments.json`. An imported project's existing sample
 selection is preserved. With no prepared example, provide your own inputs and
-sample selection before using `--sample`.
+sample selection before using `--sample`. For example:
+
+```json
+{
+  "csv": "input/sample/sample_students.csv",
+  "assignments": "input/sample/sample_assignments.json"
+}
+```
 
 `pre-commit install` adds a Git hook that refuses to commit files that may hold
 client information: spreadsheets, PDFs, run records, and anything in `input/`
@@ -87,10 +97,11 @@ everyone who commits runs this once in their clone. CI runs the same check.
 
 `check.py` reports the ImmuKnow version, whether `config/parameters.yaml` is
 valid, the Typst version, whether `templates/lib/immuknow` matches ImmuKnow and
-which languages each notice has. It uses the same checks as a run. `--sample`
-also runs the sample cohort into a temporary folder and lists its warnings by
-type. A font that isn't installed shows up there as `compiler.font_substitution`. The temporary folder is
-deleted afterwards. For the full report, run the sample with `scripts/run.py`
+which catalog notices and languages are present in the project. `--sample`
+also runs the sample cohort into a temporary folder and lists warnings and
+failures by type. A missing font shows up there as
+`compiler.font_substitution`. The temporary folder is deleted afterwards. For
+the full report, run the sample with `scripts/run.py`
 (see "Running notices").
 
 To run the tests, use `uv run pytest`. Add `-m "not pipeline"` to skip the
@@ -119,9 +130,10 @@ Try it with the sample:
 uv run python scripts/run.py --sample
 ```
 
-Paths are relative to your current folder. `run.py` fills in `--config config/`,
-`--templates templates/` and `--output runs/`. Any other option is passed to
-ImmuKnow unchanged. For example, `--input-encoding cp1252` reads a CSV saved by
+Paths you supply are relative to your current folder, except for a bare
+`--template` filename as described above. By default, `run.py` uses this
+project's `config/`, `templates/` and `runs/` folders. Any other option is passed
+to ImmuKnow unchanged. For example, `--input-encoding cp1252` reads a CSV saved by
 Excel on Windows. See `uv run immuknow --help` for every option.
 
 The output folder must not be inside `config/`, `templates/` or a folder you
@@ -181,7 +193,7 @@ The last line of the run prints its status:
 |---|---|---|
 | `completed` | Every notice was produced and passed its checks | 0 |
 | `completed_with_warnings` | Every notice was produced; some need review before delivery | 0 |
-| `completed_with_failures` | Some notices could not be produced | 1 |
+| `completed_with_failures` | A notice, check or output step failed | 1 |
 | `rejected_input` | The CSV has errors; no notices were made | 1 |
 | `failed_setup` | A config, template or Typst problem stopped the run | 1 |
 
@@ -192,9 +204,9 @@ release it with the token shown in `report.html`:
 uv run immuknow-rebundle runs/<run-id> --accept-warning <token> --reason "Checked layout"
 ```
 
-The full repository sample finishes `completed_with_warnings` on purpose. Studio downloads
-have a smaller selected sample, so their findings differ. The full sample warnings show
-what review looks like:
+The full Template sample finishes `completed_with_warnings` on purpose. A Studio
+download may have a different sample, so its findings differ. The full Template
+sample warnings show what review looks like:
 
 - `content.multiple_links`: every notice links to more than one website.
 - `data.forecast_coverage`: two clients are overdue for one disease, but the
@@ -218,12 +230,13 @@ your health unit's policies.
 | Which notices exist and who they apply to | `config/notice_versions.yaml` |
 | Vaccine and disease mapping | `config/vaccine_reference.json`, `config/disease_normalization.json` |
 
-The starting files are ImmuKnow's defaults. The templates use placeholder
+The full Template starts with ImmuKnow's defaults. Its templates use placeholder
 contact details (`example.org`, `1-800-555-0100`), a placeholder logo and a
 placeholder signature. Replace them before sending real notices. The dates in
-`parameters.yaml` are examples.
+`parameters.yaml` are examples. A Studio download contains the authored files
+from that project; review them before sending real notices.
 
-School validation is off. To use it, set `school_validation.enabled: true` and
+School validation is off in the full Template. To use it, set `school_validation.enabled: true` and
 set `target_phu` to your health unit's name as it appears in the school list.
 With `reference_file: null`, ImmuKnow uses the school list it ships with, which
 updates when you upgrade ImmuKnow. To use your own list, put it in `config/` in

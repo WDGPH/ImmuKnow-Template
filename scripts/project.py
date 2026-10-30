@@ -1,4 +1,4 @@
-"""Fixed locations in this project. Every script resolves paths from here."""
+"""Project directories and sample paths used by the helper scripts."""
 
 import json
 from pathlib import Path
