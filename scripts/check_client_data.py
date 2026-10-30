@@ -16,10 +16,10 @@ import sys
 from pathlib import PurePath
 
 CLIENT_DATA = re.compile(
-    r"\.(csv|xlsx?|pdf|zip|log)$|(^|/)(run\.json|report\.html)$|^(input|output)/",
+    r"\.(csv|xlsx?|pdf|zip|log)$|(^|/)(run\.json|report\.html)$|^input/|(^|/)(runs|output)/",
     re.IGNORECASE,
 )
-SAMPLE = {"input/sample/rodent_dataset.csv", "input/sample/assignments.json"}
+SAMPLE = {"input/sample/sample_students.csv", "input/sample/sample_assignments.json"}
 
 
 def client_data(paths: list[str]) -> list[str]:
@@ -38,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
         print("These files may contain client information and must not be committed:")
         for path in found:
             print(f"  {path}")
-        print("Keep cohort CSVs and assignments in input/ and runs in output/.")
+        print("Keep cohort CSVs and assignments in input/ and runs in runs/.")
         return 1
     return 0
 

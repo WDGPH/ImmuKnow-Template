@@ -28,7 +28,7 @@ def test_sample_exits_zero(sample_run):
 def test_every_sample_notice_is_produced(sample_run):
     _, record = sample_run
     assert record["status"] in {"completed", "completed_with_warnings"}
-    assert [e["original"]["status"] for e in record["entries"]] == ["completed"] * 8
+    assert [e["original"]["status"] for e in record["entries"]] == ["completed"] * 9
 
 
 def test_no_sample_check_fails(sample_run):
