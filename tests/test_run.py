@@ -133,3 +133,16 @@ def test_sample_forwards_value_taking_core_options(fake_immuknow):
     calls, _ = fake_immuknow
     assert run.main(["--sample", "--input-encoding", "cp1252"]) == 0
     assert calls[0][-2:] == ["--input-encoding", "cp1252"]
+
+
+@pytest.mark.parametrize("selection", [
+    ["--notice-assignments", "other.json"],
+    ["--notice-assignments=other.json"],
+    ["--template", "notice.en.typ"],
+    ["--template=notice.en.typ"],
+])
+def test_sample_refuses_explicit_notice_selection(fake_immuknow, selection):
+    calls, _ = fake_immuknow
+    with pytest.raises(SystemExit):
+        run.main(["--sample", *selection])
+    assert calls == []

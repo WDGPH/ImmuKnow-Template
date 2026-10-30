@@ -59,6 +59,11 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
     arguments = list(sys.argv[1:] if argv is None else argv)
     if "--sample" in arguments:
         arguments.remove("--sample")
+        if any(
+            argument.split("=", 1)[0] in {"--template", "--notice-assignments"}
+            for argument in arguments
+        ):
+            parser.error("--sample cannot be combined with explicit notice selection")
         # Supply the positional before parsing unknown Core options, so their
         # values cannot be mistaken for the optional cohort positional.
         arguments = [
