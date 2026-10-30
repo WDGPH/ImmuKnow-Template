@@ -56,13 +56,17 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
         help=f"Template directory for --notice-assignments (default: {TEMPLATES_DIR})",
     )
     parser.add_argument("--output", type=Path, dest="output_dir", default=OUTPUT_DIR)
-    args, passthrough = parser.parse_known_args(argv)
-    if args.sample:
-        if args.input_file or args.notice_template or args.notice_assignments:
-            parser.error("--sample cannot be combined with input or notice selection")
-        args.input_file = SAMPLE_INPUT
-        args.notice_assignments = SAMPLE_ASSIGNMENTS
-    elif not args.input_file or not (args.notice_template or args.notice_assignments):
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if "--sample" in arguments:
+        arguments.remove("--sample")
+        # Supply the positional before parsing unknown Core options, so their
+        # values cannot be mistaken for the optional cohort positional.
+        arguments = [
+            str(SAMPLE_INPUT), "--notice-assignments", str(SAMPLE_ASSIGNMENTS),
+            *arguments,
+        ]
+    args, passthrough = parser.parse_known_args(arguments)
+    if not args.input_file or not (args.notice_template or args.notice_assignments):
         parser.error("provide a cohort CSV and --template or --notice-assignments, or use --sample")
     if args.notice_template:
         if args.template_dir:

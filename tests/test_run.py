@@ -127,3 +127,9 @@ def test_concurrent_runs_are_not_misattributed(monkeypatch, tmp_path, capsys):
     captured = capsys.readouterr()
     assert "Run status:" not in captured.out
     assert "Several runs appeared" in captured.err
+
+
+def test_sample_forwards_value_taking_core_options(fake_immuknow):
+    calls, _ = fake_immuknow
+    assert run.main(["--sample", "--input-encoding", "cp1252"]) == 0
+    assert calls[0][-2:] == ["--input-encoding", "cp1252"]
