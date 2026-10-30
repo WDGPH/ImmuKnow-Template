@@ -37,8 +37,8 @@ def typst_bin(config: dict) -> str:
 
 
 def catalog_entry_points(config_dir: Path, templates_dir: Path) -> dict[str, list[str]]:
-    """Map each catalog version to the languages that have an entry point."""
-    return {
+    """List the catalog notices included in this project, which may be a subset."""
+    available = {
         version: [
             language.value
             for language in Language
@@ -46,6 +46,10 @@ def catalog_entry_points(config_dir: Path, templates_dir: Path) -> dict[str, lis
         ]
         for version in load_catalog(config_dir).versions
     }
+    included = {version: languages for version, languages in available.items() if languages}
+    if not included:
+        raise ValueError("No catalog notice has a <version_id>.<language>.typ in templates/")
+    return included
 
 
 def run_sample() -> tuple[int, dict | None]:
@@ -137,14 +141,13 @@ def main(argv: list[str] | None = None) -> int:
         report.line("FAIL", "config/notice_versions.yaml", str(exc))
         entry_points = {}
     for version, languages in entry_points.items():
-        if languages:
-            report.line("OK", f"notice {version}", ", ".join(languages))
-        else:
-            report.line("FAIL", f"notice {version}", f"no {version}.<language>.typ in templates/")
+        report.line("OK", f"notice {version}", ", ".join(languages))
 
     if args.sample:
         if report.failed:
             report.line("SKIP", "sample run", "fix the failures above first")
+        elif not SAMPLE_INPUT.is_file() or not SAMPLE_ASSIGNMENTS.is_file():
+            report.line("FAIL", "sample run", "sample inputs are missing; set their paths in sample.json")
         else:
             print("Running the sample...", flush=True)
             code, record = run_sample()

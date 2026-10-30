@@ -1,0 +1,23 @@
+{
+  "files": [
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    ".python-version",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    "scripts/check.py",
+    "scripts/check_client_data.py",
+    "scripts/project.py",
+    "scripts/run.py",
+    "scripts/sync_lib.py",
+    "tests/test_check.py",
+    "tests/test_client_data.py",
+    "tests/test_layout.py",
+    "tests/test_lib_sync.py",
+    "tests/test_project.py",
+    "tests/test_run.py",
+    "tests/test_sample.py",
+    "uv.lock"
+  ]
+}

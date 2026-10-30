@@ -16,7 +16,7 @@ import sys
 from pathlib import PurePath
 
 CLIENT_DATA = re.compile(
-    r"\.(csv|xlsx?|pdf|zip|log)$|(^|/)(run\.json|report\.html)$|^input/|(^|/)(runs|output)/",
+    r"\.(csv|xlsx?|xlsm|parquet|pdf|zip|log)$|(^|/)(run\.json|report\.html)$|^input/|(^|/)(runs|output)/",
     re.IGNORECASE,
 )
 SAMPLE = {"input/sample/sample_students.csv", "input/sample/sample_assignments.json"}

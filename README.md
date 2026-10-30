@@ -14,8 +14,10 @@ health unit:
 | `input/`: your cohort CSVs (never committed) | |
 | `runs/`: one folder per run (never committed) | |
 
-The layout of `config/` and `templates/` matches an ImmuKnow Studio export, so
-a project exported from Studio can replace them directly.
+Studio downloads use this repository's Python setup and helper scripts together
+with the selected notice and authored configuration. A download can be run on
+its own; it does not need a separate Template checkout. Projects may contain
+only a subset of the notices in the catalog.
 
 ## Repository structure
 
@@ -61,10 +63,22 @@ You don't need a copy of the ImmuKnow code.
 ```bash
 git clone <this repository> immuknow-template
 cd immuknow-template
-uv sync
+uv sync --locked
 uv run pre-commit install
 uv run python scripts/check.py --sample
 ```
+
+For a Studio ZIP, extract it and open a terminal in its folder, then run
+`uv sync --locked` and `uv run python scripts/check.py --sample`. Install Git
+as well: uv fetches the pinned Core release from GitHub. If you want to commit
+changes, run `git init` before `uv run pre-commit install`.
+
+`sample.json`, when present, names the sample CSV and assignments relative to
+the project folder. Studio sets it to the selected fictional example. Without
+it, the scripts use `input/sample/sample_students.csv` and
+`input/sample/sample_assignments.json`. An imported project's existing sample
+selection is preserved. With no prepared example, provide your own inputs and
+sample selection before using `--sample`.
 
 `pre-commit install` adds a Git hook that refuses to commit files that may hold
 client information: spreadsheets, PDFs, run records, and anything in `input/`
@@ -102,8 +116,7 @@ file and the folder it is in. `--templates` only applies with
 Try it with the sample:
 
 ```bash
-uv run python scripts/run.py input/sample/sample_students.csv \
-  --notice-assignments input/sample/sample_assignments.json
+uv run python scripts/run.py --sample
 ```
 
 Paths are relative to your current folder. `run.py` fills in `--config config/`,
@@ -179,7 +192,8 @@ release it with the token shown in `report.html`:
 uv run immuknow-rebundle runs/<run-id> --accept-warning <token> --reason "Checked layout"
 ```
 
-The sample run finishes `completed_with_warnings` on purpose. Its warnings show
+The full repository sample finishes `completed_with_warnings` on purpose. Studio downloads
+have a smaller selected sample, so their findings differ. The full sample warnings show
 what review looks like:
 
 - `content.multiple_links`: every notice links to more than one website.
@@ -225,8 +239,12 @@ store accented capitals in a way that fails ImmuKnow's client-details check.
 FreeSerif from Ubuntu's `fonts-freefont-ttf` package (2021 and later) is a
 known example.
 
-**Using ImmuKnow Studio:** replace `config/` and `templates/` with those from
-the exported project, then run `uv run python scripts/check.py --sample`.
+**Using ImmuKnow Studio:** its ZIP is already a runnable project. When copying
+changes into an existing project, review shared settings and assets before
+replacing files. Copy the selected sample inputs and `sample.json` as well if
+you want the same trial run. Then run `uv run python scripts/check.py --sample`.
+Studio includes fonts and licences under `templates/fonts/` for manual
+installation; native Typst uses system fonts.
 
 ## Updating ImmuKnow
 
@@ -254,7 +272,7 @@ the exported project, then run `uv run python scripts/check.py --sample`.
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0-rc1",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0-rc2",
 ]
 ```
 
@@ -287,3 +305,14 @@ outside `config/`, `templates/` and your input folder.
 
 **Accented letters doubled in the client-details check (`ÉÉcole`)**: change
 the font. See "After changing fonts" above.
+
+## Studio scaffold maintenance
+
+`studio-scaffold.json` lists the setup, documentation, scripts and tests that
+Studio bundles from a pinned commit of this repository. It excludes the default
+configuration, templates and sample inputs: Studio supplies the authored project
+and selected fictional example instead. Studio records the source commit and
+original file hashes, and verifies its local snapshot during asset preparation.
+After changing a listed file, refresh Studio's snapshot using its documented
+`python -m scripts.project_template` command. Normal builds and browser downloads
+do not need access to this private repository.

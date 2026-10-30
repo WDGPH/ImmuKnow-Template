@@ -1,5 +1,6 @@
 """The sample runs end to end through the installed ImmuKnow and Typst."""
 
+import csv
 import json
 
 import pytest
@@ -28,7 +29,10 @@ def test_sample_exits_zero(sample_run):
 def test_every_sample_notice_is_produced(sample_run):
     _, record = sample_run
     assert record["status"] in {"completed", "completed_with_warnings"}
-    assert [e["original"]["status"] for e in record["entries"]] == ["completed"] * 9
+    with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
+        expected = len(list(csv.DictReader(source)))
+    assert expected > 0
+    assert [e["original"]["status"] for e in record["entries"]] == ["completed"] * expected
 
 
 def test_no_sample_check_fails(sample_run):
