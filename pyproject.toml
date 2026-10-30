@@ -11,8 +11,8 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.2",
-    "pytest",
 ]
+test = ["pytest"]
 
 [tool.uv]
 # This repository holds project files, not an importable package.

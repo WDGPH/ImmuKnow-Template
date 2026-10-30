@@ -45,7 +45,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --locked
+        run: uv sync --locked --group test
 
       - name: Install fonts
         # The FreeFont release ImmuKnow's CI and Studio pin; newer FreeSerif doubles
@@ -70,10 +70,10 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Check the project
-        run: uv run --locked python scripts/check.py --sample
+        run: uv run --locked python scripts/check.py
 
       - name: Run tests
-        run: uv run --locked pytest
+        run: uv run --locked --group test pytest
 
       - name: Verify files were not changed
         run: test -z "$(git status --porcelain)"

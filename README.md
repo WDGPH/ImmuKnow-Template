@@ -104,8 +104,13 @@ failures by type. A missing font shows up there as
 the full report, run the sample with `scripts/run.py`
 (see "Running notices").
 
-To run the tests, use `uv run pytest`. Add `-m "not pipeline"` to skip the
-full sample run.
+Template maintainers can run `uv run --locked --group test pytest`. Add
+`-m "not pipeline"` to skip the full sample run. These tests cover the
+Template's helpers and project files, with one sample run to check integration
+with ImmuKnow and Typst. ImmuKnow Core tests native input, notice checks and
+delivery rules; see the [testing strategy across the projects](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/testing.md#testing-across-the-projects).
+Studio downloads do not include the maintainer tests; use
+`uv run --locked python scripts/check.py --sample` to check a downloaded project.
 
 ## Running notices
 
@@ -276,7 +281,8 @@ installation; native Typst uses system fonts.
    ```
 5. Compare your `templates/` and `config/` with ImmuKnow's defaults for new or
    renamed settings. The script prints where ImmuKnow's copies are.
-6. `uv run python scripts/check.py --sample` and `uv run pytest`.
+6. Run `uv run python scripts/check.py --sample`. Template maintainers can also
+   run `uv run --locked --group test pytest`.
 7. Commit `uv.lock` together with any config and template changes.
 
 ## Where ImmuKnow comes from
@@ -321,10 +327,11 @@ the font. See "After changing fonts" above.
 
 ## Studio scaffold maintenance
 
-`studio-scaffold.json` lists the setup, documentation, scripts and tests that
+`studio-scaffold.json` lists the setup, documentation and scripts that
 Studio bundles from a pinned commit of this repository. It excludes the default
 configuration, templates and sample inputs: Studio supplies the authored project
-and selected fictional example instead. Studio records the source commit and
+and selected fictional example instead. The maintainer tests remain in this
+repository and are not bundled. Studio records the source commit and
 original file hashes, and verifies its local snapshot during asset preparation.
 After changing a listed file, refresh Studio's snapshot using its documented
 `python -m scripts.project_template` command. Normal builds and browser downloads
