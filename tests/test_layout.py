@@ -26,10 +26,9 @@ def test_template_support_file_present(name):
     assert (TEMPLATES_DIR / name).is_file()
 
 
-def test_every_catalog_version_has_an_entry_point():
+def test_project_has_catalog_notice_entry_points():
     entry_points = catalog_entry_points(CONFIG_DIR, TEMPLATES_DIR)
     assert entry_points
-    assert [version for version, languages in entry_points.items() if not languages] == []
 
 
 def test_sample_assignments_name_existing_templates():

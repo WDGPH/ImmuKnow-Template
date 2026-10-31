@@ -11,13 +11,18 @@ health unit:
 |---|---|
 | `config/`: run dates, notice catalog, vaccine and disease reference data | Processing, checks and the CSV input schema |
 | `templates/`: your notice wording, layout, logo and translations | The shared Typst library (`templates/lib/immuknow/`, copied here) |
-| `input/`: your cohort CSVs (never committed) | |
+| `input/`: your client CSVs (not committed); fictional sample files | |
 | `runs/`: one folder per run (never committed) | |
 
-The layout of `config/` and `templates/` matches an ImmuKnow Studio export, so
-a project exported from Studio can replace them directly.
+Studio downloads include this project's Python setup and helper scripts, the
+selected notice and its configuration. Extract the ZIP to run it; no separate
+Template checkout is needed. The notice catalog may list notices that are not
+in the project.
 
 ## Repository structure
+
+The full Template has the layout below. A Studio download may contain only the
+selected notice and example files.
 
 ```
 immuknow-template/
@@ -45,8 +50,8 @@ immuknow-template/
 
 ## Prerequisites
 
-- [uv](https://docs.astral.sh/uv/). It installs the Python version named in
-  `.python-version`.
+- [uv](https://docs.astral.sh/uv/). ImmuKnow requires Python 3.11 or later;
+  uv installs the version named in `.python-version`.
 - [Typst 0.15.1](https://typst.app/docs/changelog/0.15.1/), exactly. ImmuKnow
   rejects other versions. Put `typst` on `PATH`, set `TYPST_BIN`, or set
   `typst.bin` in `config/parameters.yaml`.
@@ -61,9 +66,28 @@ You don't need a copy of the ImmuKnow code.
 ```bash
 git clone <this repository> immuknow-template
 cd immuknow-template
-uv sync
+uv sync --locked
 uv run pre-commit install
 uv run python scripts/check.py --sample
+```
+
+For a Studio ZIP, extract it and open a terminal in its folder, then run
+`uv sync --locked` and `uv run python scripts/check.py --sample`. Install Git
+as well: uv fetches the pinned Core release from GitHub. If you want to commit
+changes, run `git init` before `uv run pre-commit install`.
+
+`sample.json`, when present, names the sample CSV and assignments relative to
+the project folder. Studio sets it to the selected fictional example. Without
+it, the scripts use `input/sample/sample_students.csv` and
+`input/sample/sample_assignments.json`. An imported project's existing sample
+selection is preserved. With no prepared example, provide your own inputs and
+sample selection before using `--sample`. For example:
+
+```json
+{
+  "csv": "input/sample/sample_students.csv",
+  "assignments": "input/sample/sample_assignments.json"
+}
 ```
 
 `pre-commit install` adds a Git hook that refuses to commit files that may hold
@@ -73,14 +97,20 @@ everyone who commits runs this once in their clone. CI runs the same check.
 
 `check.py` reports the ImmuKnow version, whether `config/parameters.yaml` is
 valid, the Typst version, whether `templates/lib/immuknow` matches ImmuKnow and
-which languages each notice has. It uses the same checks as a run. `--sample`
-also runs the sample cohort into a temporary folder and lists its warnings by
-type. A font that isn't installed shows up there as `compiler.font_substitution`. The temporary folder is
-deleted afterwards. For the full report, run the sample with `scripts/run.py`
+which catalog notices and languages are present in the project. `--sample`
+also runs the sample cohort into a temporary folder and lists warnings and
+failures by type. A missing font shows up there as
+`compiler.font_substitution`. The temporary folder is deleted afterwards. For
+the full report, run the sample with `scripts/run.py`
 (see "Running notices").
 
-To run the tests, use `uv run pytest`. Add `-m "not pipeline"` to skip the
-full sample run.
+Template maintainers can run `uv run --locked --group test pytest`. Add
+`-m "not pipeline"` to skip the full sample run. These tests cover the
+Template's helpers and project files, with one sample run to check integration
+with ImmuKnow and Typst. ImmuKnow Core tests native input, notice checks and
+delivery rules; see the [testing strategy across the projects](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/testing.md#testing-across-the-projects).
+Studio downloads do not include the maintainer tests; use
+`uv run --locked python scripts/check.py --sample` to check a downloaded project.
 
 ## Running notices
 
@@ -102,13 +132,13 @@ file and the folder it is in. `--templates` only applies with
 Try it with the sample:
 
 ```bash
-uv run python scripts/run.py input/sample/sample_students.csv \
-  --notice-assignments input/sample/sample_assignments.json
+uv run python scripts/run.py --sample
 ```
 
-Paths are relative to your current folder. `run.py` fills in `--config config/`,
-`--templates templates/` and `--output runs/`. Any other option is passed to
-ImmuKnow unchanged. For example, `--input-encoding cp1252` reads a CSV saved by
+Paths you supply are relative to your current folder, except for a bare
+`--template` filename as described above. By default, `run.py` uses this
+project's `config/`, `templates/` and `runs/` folders. Any other option is passed
+to ImmuKnow unchanged. For example, `--input-encoding cp1252` reads a CSV saved by
 Excel on Windows. See `uv run immuknow --help` for every option.
 
 The output folder must not be inside `config/`, `templates/` or a folder you
@@ -168,7 +198,7 @@ The last line of the run prints its status:
 |---|---|---|
 | `completed` | Every notice was produced and passed its checks | 0 |
 | `completed_with_warnings` | Every notice was produced; some need review before delivery | 0 |
-| `completed_with_failures` | Some notices could not be produced | 1 |
+| `completed_with_failures` | A notice, check or output step failed | 1 |
 | `rejected_input` | The CSV has errors; no notices were made | 1 |
 | `failed_setup` | A config, template or Typst problem stopped the run | 1 |
 
@@ -179,8 +209,9 @@ release it with the token shown in `report.html`:
 uv run immuknow-rebundle runs/<run-id> --accept-warning <token> --reason "Checked layout"
 ```
 
-The sample run finishes `completed_with_warnings` on purpose. Its warnings show
-what review looks like:
+The full Template sample finishes `completed_with_warnings` on purpose. A Studio
+download may have a different sample, so its findings differ. The full Template
+sample warnings show what review looks like:
 
 - `content.multiple_links`: every notice links to more than one website.
 - `data.forecast_coverage`: two clients are overdue for one disease, but the
@@ -204,12 +235,13 @@ your health unit's policies.
 | Which notices exist and who they apply to | `config/notice_versions.yaml` |
 | Vaccine and disease mapping | `config/vaccine_reference.json`, `config/disease_normalization.json` |
 
-The starting files are ImmuKnow's defaults. The templates use placeholder
+The full Template starts with ImmuKnow's defaults. Its templates use placeholder
 contact details (`example.org`, `1-800-555-0100`), a placeholder logo and a
 placeholder signature. Replace them before sending real notices. The dates in
-`parameters.yaml` are examples.
+`parameters.yaml` are examples. A Studio download contains the authored files
+from that project; review them before sending real notices.
 
-School validation is off. To use it, set `school_validation.enabled: true` and
+School validation is off in the full Template. To use it, set `school_validation.enabled: true` and
 set `target_phu` to your health unit's name as it appears in the school list.
 With `reference_file: null`, ImmuKnow uses the school list it ships with, which
 updates when you upgrade ImmuKnow. To use your own list, put it in `config/` in
@@ -225,8 +257,12 @@ store accented capitals in a way that fails ImmuKnow's client-details check.
 FreeSerif from Ubuntu's `fonts-freefont-ttf` package (2021 and later) is a
 known example.
 
-**Using ImmuKnow Studio:** replace `config/` and `templates/` with those from
-the exported project, then run `uv run python scripts/check.py --sample`.
+**Using ImmuKnow Studio:** its ZIP is already a runnable project. When copying
+changes into an existing project, review shared settings and assets before
+replacing files. Copy the selected sample inputs and `sample.json` as well if
+you want the same trial run. Then run `uv run python scripts/check.py --sample`.
+Studio includes fonts and licences under `templates/fonts/` for manual
+installation; native Typst uses system fonts.
 
 ## Updating ImmuKnow
 
@@ -245,7 +281,8 @@ the exported project, then run `uv run python scripts/check.py --sample`.
    ```
 5. Compare your `templates/` and `config/` with ImmuKnow's defaults for new or
    renamed settings. The script prints where ImmuKnow's copies are.
-6. `uv run python scripts/check.py --sample` and `uv run pytest`.
+6. Run `uv run python scripts/check.py --sample`. Template maintainers can also
+   run `uv run --locked --group test pytest`.
 7. Commit `uv.lock` together with any config and template changes.
 
 ## Where ImmuKnow comes from
@@ -254,7 +291,7 @@ the exported project, then run `uv run python scripts/check.py --sample`.
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0-rc1",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0-rc2",
 ]
 ```
 
@@ -287,3 +324,15 @@ outside `config/`, `templates/` and your input folder.
 
 **Accented letters doubled in the client-details check (`ÉÉcole`)**: change
 the font. See "After changing fonts" above.
+
+## Studio scaffold maintenance
+
+`studio-scaffold.json` lists the setup, documentation and scripts that
+Studio bundles from a pinned commit of this repository. It excludes the default
+configuration, templates and sample inputs: Studio supplies the authored project
+and selected fictional example instead. The maintainer tests remain in this
+repository and are not bundled. Studio records the source commit and
+original file hashes, and verifies its local snapshot during asset preparation.
+After changing a listed file, refresh Studio's snapshot using its documented
+`python -m scripts.project_template` command. Normal builds and browser downloads
+do not need access to this private repository.

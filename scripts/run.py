@@ -24,7 +24,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from project import CONFIG_DIR, OUTPUT_DIR, TEMPLATES_DIR
+from project import CONFIG_DIR, OUTPUT_DIR, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT, TEMPLATES_DIR
 
 
 def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
@@ -33,8 +33,9 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
         epilog="Other options are passed to immuknow; see `uv run immuknow --help`.",
         allow_abbrev=False,
     )
-    parser.add_argument("input_file", type=Path, help="Cohort CSV")
-    selection = parser.add_mutually_exclusive_group(required=True)
+    parser.add_argument("input_file", type=Path, nargs="?", help="Cohort CSV")
+    parser.add_argument("--sample", action="store_true", help="run this project's fictional sample")
+    selection = parser.add_mutually_exclusive_group()
     selection.add_argument(
         "--notice-assignments",
         type=Path,
@@ -55,7 +56,23 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
         help=f"Template directory for --notice-assignments (default: {TEMPLATES_DIR})",
     )
     parser.add_argument("--output", type=Path, dest="output_dir", default=OUTPUT_DIR)
-    args, passthrough = parser.parse_known_args(argv)
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if "--sample" in arguments:
+        arguments.remove("--sample")
+        if any(
+            argument.split("=", 1)[0] in {"--template", "--notice-assignments"}
+            for argument in arguments
+        ):
+            parser.error("--sample cannot be combined with explicit notice selection")
+        # Supply the positional before parsing unknown Core options, so their
+        # values cannot be mistaken for the optional cohort positional.
+        arguments = [
+            str(SAMPLE_INPUT), "--notice-assignments", str(SAMPLE_ASSIGNMENTS),
+            *arguments,
+        ]
+    args, passthrough = parser.parse_known_args(arguments)
+    if not args.input_file or not (args.notice_template or args.notice_assignments):
+        parser.error("provide a cohort CSV and --template or --notice-assignments, or use --sample")
     if args.notice_template:
         if args.template_dir:
             parser.error("--templates cannot be used with --template; use the template's folder")
@@ -129,8 +146,14 @@ def main(argv: list[str] | None = None, *, quiet: bool = False) -> int:
         if not new_runs:
             print(result.stdout + result.stderr, end="", file=sys.stderr)
         return result.returncode
-    if new_runs:
-        print_outcome(args.output_dir / new_runs[-1])
+    if len(new_runs) == 1:
+        print_outcome(args.output_dir / new_runs[0])
+    elif new_runs:
+        print(
+            f"Several runs appeared in {args.output_dir}; check their reports "
+            "to identify this invocation's result.",
+            file=sys.stderr,
+        )
     return result.returncode
 
 

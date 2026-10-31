@@ -103,3 +103,46 @@ def test_quiet_run_hides_immuknow_output_and_review_hint(fake_immuknow, tmp_path
         quiet=True,
     )
     assert capsys.readouterr().out == ""
+
+
+def test_sample_uses_project_selection(fake_immuknow):
+    from project import SAMPLE_ASSIGNMENTS, SAMPLE_INPUT
+
+    calls, _ = fake_immuknow
+    assert run.main(["--sample"]) == 0
+    assert calls[0][1:4] == [str(SAMPLE_INPUT), "--notice-assignments", str(SAMPLE_ASSIGNMENTS)]
+
+
+def test_concurrent_runs_are_not_misattributed(monkeypatch, tmp_path, capsys):
+    def concurrent_run(command, **kwargs):
+        for name, status in [("own", "completed"), ("other", "failed_setup")]:
+            directory = tmp_path / name
+            directory.mkdir()
+            (directory / "run.json").write_text(json.dumps({"status": status}))
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(run, "immuknow_command", lambda: "immuknow")
+    monkeypatch.setattr(run.subprocess, "run", concurrent_run)
+    assert run.main(["cohort.csv", "--template", "notice.en.typ", "--output", str(tmp_path)]) == 0
+    captured = capsys.readouterr()
+    assert "Run status:" not in captured.out
+    assert "Several runs appeared" in captured.err
+
+
+def test_sample_forwards_value_taking_core_options(fake_immuknow):
+    calls, _ = fake_immuknow
+    assert run.main(["--sample", "--input-encoding", "cp1252"]) == 0
+    assert calls[0][-2:] == ["--input-encoding", "cp1252"]
+
+
+@pytest.mark.parametrize("selection", [
+    ["--notice-assignments", "other.json"],
+    ["--notice-assignments=other.json"],
+    ["--template", "notice.en.typ"],
+    ["--template=notice.en.typ"],
+])
+def test_sample_refuses_explicit_notice_selection(fake_immuknow, selection):
+    calls, _ = fake_immuknow
+    with pytest.raises(SystemExit):
+        run.main(["--sample", *selection])
+    assert calls == []

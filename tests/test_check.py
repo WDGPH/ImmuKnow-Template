@@ -41,3 +41,27 @@ def test_run_level_failure_shows_its_message():
 
 def test_clean_run_has_no_summary():
     assert finding_summary({"entries": [entry(("layout.fits", "pass"))], "checks": []}) == []
+
+
+def test_selected_notice_project_accepts_catalog_superset(tmp_path):
+    from check import catalog_entry_points
+    config = tmp_path / "config"
+    config.mkdir()
+    (config / "notice_versions.yaml").write_text(
+        "schema_version: 1\nversions:\n"
+        "  overdue_diseases_v1: {kind: overdue}\n"
+        "  other_v1: {kind: informational}\n"
+    )
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    (templates / "overdue_diseases_v1.fr.typ").write_text("Selected notice")
+    assert catalog_entry_points(config, templates) == {"overdue_diseases_v1": ["fr"]}
+
+
+def test_no_included_notice_is_a_setup_error(tmp_path):
+    import pytest
+    from check import catalog_entry_points
+    from project import CONFIG_DIR
+
+    with pytest.raises(ValueError, match="No catalog notice"):
+        catalog_entry_points(CONFIG_DIR, tmp_path)
