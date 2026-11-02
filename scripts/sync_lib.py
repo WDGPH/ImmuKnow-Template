@@ -47,7 +47,9 @@ def main() -> int:
                 previous.rename(target)
             raise
 
-    print(f"Updated templates/{LIBRARY.as_posix()}. Review it with `git diff templates/lib`.")
+    print(
+        f"Updated templates/{LIBRARY.as_posix()}. Review it with `git diff templates/lib`."
+    )
     print(
         "Also compare settings.typ and the entry points with ImmuKnow's defaults in "
         f"{resource_root() / 'templates'}; those are yours to update."

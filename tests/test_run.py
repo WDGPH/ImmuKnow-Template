@@ -35,11 +35,16 @@ def test_assignments_use_project_directories(fake_immuknow):
     assert run.main(["cohort.csv", "--notice-assignments", "a.json"]) == 0
     assert calls == [
         [
-            "immuknow", "cohort.csv",
-            "--notice-assignments", "a.json",
-            "--templates", str(TEMPLATES_DIR),
-            "--config", str(CONFIG_DIR),
-            "--output", str(OUTPUT_DIR),
+            "immuknow",
+            "cohort.csv",
+            "--notice-assignments",
+            "a.json",
+            "--templates",
+            str(TEMPLATES_DIR),
+            "--config",
+            str(CONFIG_DIR),
+            "--output",
+            str(OUTPUT_DIR),
         ]
     ]
 
@@ -54,7 +59,9 @@ def test_single_template_omits_templates_directory(fake_immuknow):
 
 def test_other_options_pass_through(fake_immuknow):
     calls, _ = fake_immuknow
-    run.main(["cohort.csv", "--notice-assignments", "a.json", "--input-encoding", "cp1252"])
+    run.main(
+        ["cohort.csv", "--notice-assignments", "a.json", "--input-encoding", "cp1252"]
+    )
     assert calls[0][-2:] == ["--input-encoding", "cp1252"]
 
 
@@ -67,14 +74,25 @@ def test_exit_code_comes_from_immuknow(fake_immuknow):
 def test_warnings_print_review_instructions(fake_immuknow, tmp_path, capsys):
     _, result = fake_immuknow
     result["status"] = "completed_with_warnings"
-    run.main(["cohort.csv", "--notice-assignments", "a.json", "--output", str(tmp_path / "out")])
+    run.main(
+        [
+            "cohort.csv",
+            "--notice-assignments",
+            "a.json",
+            "--output",
+            str(tmp_path / "out"),
+        ]
+    )
     assert "immuknow-rebundle" in capsys.readouterr().out
 
 
 def test_bare_template_name_is_in_templates(fake_immuknow):
     calls, _ = fake_immuknow
     run.main(["cohort.csv", "--template", "overdue_diseases_v1.en.typ"])
-    assert calls[0][2:4] == ["--template", str(TEMPLATES_DIR / "overdue_diseases_v1.en.typ")]
+    assert calls[0][2:4] == [
+        "--template",
+        str(TEMPLATES_DIR / "overdue_diseases_v1.en.typ"),
+    ]
 
 
 def test_templates_with_template_is_an_error(fake_immuknow, capsys):
@@ -88,18 +106,34 @@ def test_templates_with_template_is_an_error(fake_immuknow, capsys):
 def test_unreadable_run_record_is_explained(fake_immuknow, tmp_path, capsys):
     _, result = fake_immuknow
     result["status"] = "completed"
-    run.main(["cohort.csv", "--notice-assignments", "a.json", "--output", str(tmp_path / "out")])
+    run.main(
+        [
+            "cohort.csv",
+            "--notice-assignments",
+            "a.json",
+            "--output",
+            str(tmp_path / "out"),
+        ]
+    )
     (record,) = (tmp_path / "out").glob("*/run.json")
     record.write_text("{", encoding="utf-8")
     run.print_outcome(record.parent)
     assert "Could not read the run record" in capsys.readouterr().err
 
 
-def test_quiet_run_hides_immuknow_output_and_review_hint(fake_immuknow, tmp_path, capsys):
+def test_quiet_run_hides_immuknow_output_and_review_hint(
+    fake_immuknow, tmp_path, capsys
+):
     _, result = fake_immuknow
     result["status"] = "completed_with_warnings"
     run.main(
-        ["cohort.csv", "--notice-assignments", "a.json", "--output", str(tmp_path / "out")],
+        [
+            "cohort.csv",
+            "--notice-assignments",
+            "a.json",
+            "--output",
+            str(tmp_path / "out"),
+        ],
         quiet=True,
     )
     assert capsys.readouterr().out == ""
@@ -110,7 +144,11 @@ def test_sample_uses_project_selection(fake_immuknow):
 
     calls, _ = fake_immuknow
     assert run.main(["--sample"]) == 0
-    assert calls[0][1:4] == [str(SAMPLE_INPUT), "--notice-assignments", str(SAMPLE_ASSIGNMENTS)]
+    assert calls[0][1:4] == [
+        str(SAMPLE_INPUT),
+        "--notice-assignments",
+        str(SAMPLE_ASSIGNMENTS),
+    ]
 
 
 def test_concurrent_runs_are_not_misattributed(monkeypatch, tmp_path, capsys):
@@ -123,7 +161,12 @@ def test_concurrent_runs_are_not_misattributed(monkeypatch, tmp_path, capsys):
 
     monkeypatch.setattr(run, "immuknow_command", lambda: "immuknow")
     monkeypatch.setattr(run.subprocess, "run", concurrent_run)
-    assert run.main(["cohort.csv", "--template", "notice.en.typ", "--output", str(tmp_path)]) == 0
+    assert (
+        run.main(
+            ["cohort.csv", "--template", "notice.en.typ", "--output", str(tmp_path)]
+        )
+        == 0
+    )
     captured = capsys.readouterr()
     assert "Run status:" not in captured.out
     assert "Several runs appeared" in captured.err
@@ -135,12 +178,15 @@ def test_sample_forwards_value_taking_core_options(fake_immuknow):
     assert calls[0][-2:] == ["--input-encoding", "cp1252"]
 
 
-@pytest.mark.parametrize("selection", [
-    ["--notice-assignments", "other.json"],
-    ["--notice-assignments=other.json"],
-    ["--template", "notice.en.typ"],
-    ["--template=notice.en.typ"],
-])
+@pytest.mark.parametrize(
+    "selection",
+    [
+        ["--notice-assignments", "other.json"],
+        ["--notice-assignments=other.json"],
+        ["--template", "notice.en.typ"],
+        ["--template=notice.en.typ"],
+    ],
+)
 def test_sample_refuses_explicit_notice_selection(fake_immuknow, selection):
     calls, _ = fake_immuknow
     with pytest.raises(SystemExit):

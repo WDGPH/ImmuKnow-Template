@@ -1,4 +1,4 @@
-# Install once per clone: uv run pre-commit install
+# Install once per clone: uv run --locked prek install
 repos:
   - repo: local
     hooks:
@@ -6,3 +6,10 @@ repos:
         name: Refuse client data files
         language: python
         entry: python scripts/check_client_data.py
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.2
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+        types_or: [python, pyi, jupyter]

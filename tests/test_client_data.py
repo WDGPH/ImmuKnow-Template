@@ -34,12 +34,15 @@ def test_client_data_files_are_found():
 
 
 def test_project_files_and_sample_are_allowed():
-    assert client_data(
-        [
-            "input/sample/sample_students.csv",
-            "input/sample/sample_assignments.json",
-            "config/vaccine_reference.json",
-            "templates/assets/logo.png",
-            "README.md",
-        ]
-    ) == []
+    assert (
+        client_data(
+            [
+                "input/sample/sample_students.csv",
+                "input/sample/sample_assignments.json",
+                "config/vaccine_reference.json",
+                "templates/assets/logo.png",
+                "README.md",
+            ]
+        )
+        == []
+    )
