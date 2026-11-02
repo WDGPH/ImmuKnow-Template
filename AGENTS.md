@@ -23,3 +23,6 @@ result for users. Omit agent attribution and detailed verification logs.
 Studio copies an allowlisted scaffold from a pinned Template commit. Make setup
 and helper changes here, then refresh Studio's snapshot and provenance through
 its documented command. Do not hand-edit the copied scaffold in Studio.
+
+Prefer clear, direct authoring and abstractions that earn their complexity. Follow
+Core's [authoring principles](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/documentation.md#template-authoring-principles).

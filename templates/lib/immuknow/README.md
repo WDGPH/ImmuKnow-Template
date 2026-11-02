@@ -4,6 +4,9 @@ Import `lib.typ` from the authored project. Importing the package does not read
 client data, inspect compiler inputs, or render components. Python supplies the
 prepared facts described by `immuknow/schemas/rendering-v1.json`.
 
+Text links and URL helpers live in `src/links.typ`; QR rendering lives in
+`src/qr.typ`. Use the public helpers exported by `lib.typ` in your templates.
+
 Wrap the whole document with `#show: immuknow.notice-style.with(notice: notice)`.
 The wrapper requires the prepared notice and emits one `<immuknow-report>`
 metadata element. `notice-page` applies page styling; `notice-section(title)[body]`
@@ -11,7 +14,8 @@ starts a named section and checks whether it continues onto another page.
 Set `allow-overflow: true` for intentional continuation. Overflows produce
 warnings while preserving visible content.
 
-Configure helper options in the project's Settings file. There is no Python
+Put notice-specific helper options directly in the Template. Keep shared page,
+Theme and contact values in Settings. There is no Python
 display-default adapter or separate layout-settings file.
 
 - `check-notice(notice, version: ..., language: ...)` checks the authored filename
@@ -51,6 +55,12 @@ display-default adapter or separate layout-settings file.
 
 `notice-link(destination)[label]` records an external link's destination and
 starting page for PDF checks. The label is optional, as with Typst's `link`.
+Link text stays together by default and moves to the next line when needed. If it
+is wider than a whole line in its enclosing paragraph, column or box, it wraps
+normally and reports `layout.link_width` as a warning. Text is not shrunk or
+clipped by the helper. Explicit line breaks in an authored label remain. Use
+`notice-link(destination, keep-together: false)[label]` to allow normal wrapping
+without this width warning.
 
 For client-specific links, encode raw query values once:
 
@@ -97,3 +107,24 @@ typst eval --in notice.typ 'query(<immuknow-report>).map(it => it.value)' \
 Bundled QR drawing code is derived from Codetastic; its licence and upstream
 provenance are in `vendor/codetastic/`. Local changes support styled drawing and
 UTF-8 text with an explicit encoding declaration and matching size calculation.
+
+Bullet lists use `indent: 0.8cm` by default. Set `indent` on the overdue helper
+to change that list without changing later lists in the template.
+
+Show the signature image path and size directly in the block:
+
+```typst
+#immuknow.signature-block(
+  signature: image("assets/signature.png", width: 4.5cm),
+  name: "Dr. Annie Body",
+  title: "Medical Officer of Health",
+)
+```
+
+To make it smaller, use `width: 3cm`. Omitting height preserves the original
+aspect ratio. No signature filename is assumed by the helper.
+
+Keep the printed name directly in the signature call. It may include credentials,
+for example `name: "Dr. Annie Body, MD"`. The suspension order defines a separate
+`order-signatory-name` in its Template for the legal wording, without requiring
+the printed signature to use exactly the same text.

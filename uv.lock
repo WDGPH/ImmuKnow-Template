@@ -480,7 +480,7 @@ wheels = [
 [[package]]
 name = "immuknow"
 version = "2.0.0"
-source = { git = "https://github.com/WDGPH/ImmuKnow?rev=v2.0.0-rc2#e58e889c28c2efe29ee95564fd66277884856854" }
+source = { git = "https://github.com/WDGPH/ImmuKnow?rev=7254f86c9b4dccf56cb7bea805f30bd5419bb806#7254f86c9b4dccf56cb7bea805f30bd5419bb806" }
 dependencies = [
     { name = "filelock" },
     { name = "frictionless" },
@@ -508,7 +508,7 @@ test = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "immuknow", git = "https://github.com/WDGPH/ImmuKnow?rev=v2.0.0-rc2" }]
+requires-dist = [{ name = "immuknow", git = "https://github.com/WDGPH/ImmuKnow?rev=7254f86c9b4dccf56cb7bea805f30bd5419bb806" }]
 
 [package.metadata.requires-dev]
 dev = [

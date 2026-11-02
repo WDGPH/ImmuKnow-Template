@@ -4,8 +4,8 @@ version = "0.1.0"
 description = "ImmuKnow project for one public health unit: config, notice templates and run scripts"
 requires-python = ">=3.11"
 dependencies = [
-    # ImmuKnow release used by this project. To upgrade, change the tag and run `uv sync`.
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0-rc2",
+    # Reviewed ImmuKnow commit. To upgrade, change the revision and run `uv sync`.
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@7254f86c9b4dccf56cb7bea805f30bd5419bb806",
 ]
 
 [dependency-groups]
