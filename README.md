@@ -287,15 +287,16 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to a release tag on GitHub:
+`pyproject.toml` pins ImmuKnow to reviewed commit `65368e0` on
+GitHub. This follows `v2.0.0-rc2` on `main`; it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@v2.0.0-rc2",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@65368e0fbd5eb469ee100d3fc6eeb9ff6dd1d325",
 ]
 ```
 
-`uv.lock` records the exact commit behind the tag. Commit it so everyone runs
+`uv.lock` records the same exact commit. Commit it so everyone runs
 the same ImmuKnow.
 
 To test changes in a local ImmuKnow checkout next to this repository,
