@@ -1,12 +1,11 @@
 // @immuknow-settings: settings.typ
-#import "settings.typ": *
-#show: notice-style // Apply the layout and theme from Settings
+#import "setup.typ": *
+#show: immuknow.letter // Apply the letter layout
 
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
 // over_16 is true for clients aged 16 or older.
-#notice-page("Demande de dossier d'immunisation")[
+#immuknow.notice-page("Demande de dossier d'immunisation")[
 #immuknow.client-block(
-  notice,
   window: envelope-window,
   font-size: client-font-size,
   details: client-details,
@@ -15,7 +14,7 @@
 
 En date du *#date_as_of*, nos dossiers indiquent que #if notice.client_data.over_16 == true [vous n'avez] else if notice.client_data.over_16 == false [votre enfant n'a] else [la personne nommée n'a] pas reçu les immunisations suivantes :
 
-#strong(immuknow.overdue-agents(notice, columns: 1))
+#strong(immuknow.overdue-agents(columns: 1))
 
 Veuillez examiner le dossier d'immunisation à la page 2 et mettre à jour #if notice.client_data.over_16 == true [votre dossier] else if notice.client_data.over_16 == false [le dossier de votre enfant] else [le dossier de la personne nommée] en utilisant l'une des options suivantes :
 
@@ -30,7 +29,7 @@ Veuillez informer la Santé publique#if notice.client_data.over_16 == false [ et
   columns: (1fr, auto),
   gutter: 10pt,
   [*Si vous choisissez de ne pas #if notice.client_data.over_16 == true [vous faire vacciner] else if notice.client_data.over_16 == false [immuniser votre enfant] else [immuniser la personne nommée]*, une exemption médicale valide ou une déclaration de conscience ou de croyance religieuse doit être remplie et soumise à la Santé publique. Les liens vers ces formulaires se trouvent à #immuknow.link("https://example.org/exemptions"). Veuillez noter que cette exemption est uniquement pour la garde d'enfants et qu'une nouvelle exemption sera requise lors de l'inscription à l'école primaire.],
-  [#immuknow.qr-code(notice, ..qr)]
+  [#immuknow.qr-code(..qr)]
 )
 
 En cas d'éclosion, les enfants qui ne sont pas adéquatement immunisés peuvent être exclus du centre de garde d'enfants.
@@ -47,10 +46,10 @@ Si vous avez des questions sur #if notice.client_data.over_16 == true [vos vacci
 
 ]
 
-#notice-page("Dossier d’immunisation")[
+#immuknow.notice-page("Dossier d’immunisation")[
   Pour votre référence, les immunisations enregistrées auprès de la Santé publique sont les suivantes :
 
-  #immunization-history()
+  #immuknow.immunization-history()
   #align(center)[Fin du dossier d'immunisation]
 ]
 

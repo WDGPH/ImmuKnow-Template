@@ -1,12 +1,11 @@
 // @immuknow-settings: settings.typ
-#import "settings.typ": *
-#show: notice-style // Apply the layout and theme from Settings
+#import "setup.typ": *
+#show: immuknow.letter // Apply the letter layout
 
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
 // over_16 is true for clients aged 16 or older.
-#notice-page("Request for Immunization Record")[
+#immuknow.notice-page("Request for Immunization Record")[
 #immuknow.client-block(
-  notice,
   window: envelope-window,
   font-size: client-font-size,
   details: client-details,
@@ -17,11 +16,9 @@ As of *#date_as_of* our files show that #if notice.client_data.over_16 == true [
 
 #strong(
   immuknow.overdue-diseases(
-    notice,
     style: "bullets",
     columns: 1,
     include-dose: false,
-    labels: presentation.selected-labels(),
   )
 )
 
@@ -38,7 +35,7 @@ Please update Public Health#if notice.client_data.over_16 == false [ and your ch
   columns: (1fr, auto),
   gutter: 10pt,
   [*If you are choosing not to #if notice.client_data.over_16 == true [be immunized] else if notice.client_data.over_16 == false [immunize your child] else [immunize the client]*, a valid medical exemption or statement of conscience or religious belief must be submitted. Links to these forms can be located at #immuknow.link("https://example.org/exemptions"). Please note this exemption is for childcare only and a new exemption will be required upon enrollment in elementary school.],
-  [#immuknow.qr-code(notice, ..qr)]
+  [#immuknow.qr-code(..qr)]
 )
 
 If there is an outbreak, children who are not adequately immunized may be excluded.
@@ -55,10 +52,10 @@ If you have any questions, please call #immuknow.link("tel:1-800-555-0100").
 
 ]
 
-#notice-page("Immunization Record")[
+#immuknow.notice-page("Immunization Record")[
   For your reference, the immunization(s) on file with Public Health are as follows:
 
-  #immunization-history()
+  #immuknow.immunization-history()
   #align(center)[End of immunization record]
 ]
 

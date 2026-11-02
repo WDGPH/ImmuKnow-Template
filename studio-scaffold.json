@@ -25,6 +25,7 @@
     "templates/overdue_diseases_v1.fr.typ",
     "templates/presentation.typ",
     "templates/settings.typ",
+    "templates/setup.typ",
     "templates/suspension_order_v1.en.typ",
     "templates/translations/en_diseases_chart.json",
     "templates/translations/en_diseases_overdue.json",

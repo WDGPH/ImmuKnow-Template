@@ -21,7 +21,7 @@ def test_config_file_present(name):
     assert (CONFIG_DIR / name).is_file()
 
 
-@pytest.mark.parametrize("name", ["settings.typ", "presentation.typ"])
+@pytest.mark.parametrize("name", ["settings.typ", "setup.typ", "presentation.typ"])
 def test_template_support_file_present(name):
     assert (TEMPLATES_DIR / name).is_file()
 

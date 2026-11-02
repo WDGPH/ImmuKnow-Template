@@ -1,12 +1,11 @@
 // @immuknow-settings: settings.typ
-#import "settings.typ": *
-#show: notice-style // Apply the layout and theme from Settings
+#import "setup.typ": *
+#show: immuknow.letter // Apply the letter layout
 
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
 // over_16 is true for clients aged 16 or older.
-#notice-page("Request for Immunization Record")[
+#immuknow.notice-page("Request for Immunization Record")[
 #immuknow.client-block(
-  notice,
   window: envelope-window,
   font-size: client-font-size,
   details: client-details,
@@ -28,7 +27,7 @@ If you have any questions, please call #immuknow.link("tel:1-800-555-0100").
 
 Thank you for helping to keep our children safe.
 
-#immuknow.qr-code(notice, ..qr, enabled: false) // Set true to show the QR code
+#immuknow.qr-code(..qr, enabled: false) // Set true to show the QR code
 
   Sincerely,
 
@@ -40,10 +39,10 @@ Thank you for helping to keep our children safe.
 
 ]
 
-#notice-page("Immunization Record")[
+#immuknow.notice-page("Immunization Record")[
   For your reference, the immunization(s) on file with Public Health are as follows:
 
-  #immunization-history()
+  #immuknow.immunization-history()
   #align(center)[End of immunization record]
 ]
 

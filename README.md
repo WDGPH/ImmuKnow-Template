@@ -39,7 +39,8 @@ immuknow-template/
 │   └── school_reference.json     # Optional: your own school list (default: ImmuKnow's)
 ├── templates/
 │   ├── <version_id>.<language>.typ  # One file per notice and language
-│   ├── settings.typ              # Contact details, fonts, colours, QR code, display choices
+│   ├── setup.typ                 # Connect the letter to Settings and client helpers
+│   ├── settings.typ              # Fonts, colours, QR code, shared display choices
 │   ├── presentation.typ
 │   ├── translations/             # Disease names shown on notices
 │   ├── assets/                   # logo.png, signature.png
@@ -234,6 +235,22 @@ your health unit's policies.
 
 ## Customizing
 
+Each letter starts with:
+
+```typst
+#import "setup.typ": *
+#show: immuknow.letter // Apply the letter layout
+```
+
+Shared setup supplies the selected client's information, dates and configured
+`immuknow` helpers. Call `#immuknow.client-block()`,
+`#immuknow.overdue-diseases()` or `#immuknow.immunization-history()` where you
+want them to appear. You do not need to pass `notice` to those helpers.
+`notice` remains available when wording depends on the client's age or facts.
+Settings connects client data to Core's helpers and supplies shared defaults;
+`setup.typ` exposes those helpers under the `immuknow.` prefix. Keep both files
+with the letter. General helpers such as `immuknow.link` use the same prefix.
+
 | To change | Edit |
 |---|---|
 | Delivery and "as of" dates (every cycle) | `date_of_delivery`, `date_as_of` in `config/parameters.yaml` |
@@ -249,14 +266,14 @@ Settings holds the shared defaults. To change one history table, pass named
 options at its call in the letter:
 
 ```typst
-#immunization-history(show-age: true, font-size: 12pt, min-rows: 8)
+#immuknow.immunization-history(show-age: true, font-size: 12pt, min-rows: 8)
 ```
 
 Page options work the same way:
 
 ```typst
-#notice-page("Immunization Record", title-size: 18pt, allow-overflow: true)[
-  #immunization-history()
+#immuknow.notice-page("Immunization Record", title-size: 18pt, allow-overflow: true)[
+  #immuknow.immunization-history()
 ]
 ```
 
@@ -318,14 +335,14 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `104c2cc` on
+`pyproject.toml` pins ImmuKnow to reviewed commit `30be3d7` on
 GitHub. This includes the merged template and dependency updates in
 [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
 [Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@104c2ccf7a8c354d4e98d166ab05588d9025e784",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@30be3d72b2cfe199072c5f540f809a55bbd59447",
 ]
 ```
 

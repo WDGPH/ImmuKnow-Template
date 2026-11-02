@@ -1,16 +1,15 @@
 // @immuknow-settings: settings.typ
-#import "settings.typ": *
-#show: notice-style // Apply the layout and theme from Settings
+#import "setup.typ": *
+#show: immuknow.letter // Apply the letter layout
 
 // Name used in the legal wording; the printed signature may include credentials.
 #let order-signatory-name = "Dr. Annie Body"
 
 // The explicit assignment comes from the upstream assessment.
 // The supplied overdue diseases must already reflect exemptions and the MOH's assessment.
-#notice-page("Order for Suspension from Attendance at School")[
+#immuknow.notice-page("Order for Suspension from Attendance at School")[
 #align(center)[_Pursuant to s. 6 of the Immunization of School Pupils Act_]
 #immuknow.client-block(
-  notice,
   window: if envelope-window == none { none } else { (..envelope-window, y: 135pt) }, // Room for the order title
   font-size: client-font-size,
   details: client-details,
@@ -46,10 +45,8 @@ The reasons for this order are:
       [A statement that the student has completed the prescribed program of immunization in relation to:
         #block(above: 10pt, below: 10pt)[
           #strong(immuknow.overdue-diseases(
-            notice,
             style: "comma-separated",
             include-dose: false,
-            labels: presentation.selected-labels(),
           ))
         ]
       ],

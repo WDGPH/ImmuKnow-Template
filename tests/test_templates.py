@@ -175,11 +175,11 @@ def test_maintained_entry_points_keep_their_content_and_component_choices(
 def test_local_history_and_page_options_preserve_project_defaults(tmp_path):
     job, _ = prepare_case(tmp_path, "overdue_diseases_v1", "en")
     job.template.write_text(
-        '#import "settings.typ": *\n#show: notice-style\n'
-        '#notice-page("Default before")[#immunization-history()]\n'
-        '#notice-page("Local choices", title-size: 16pt)[\n'
-        "#immunization-history(show-age: true, font-size: 12pt, min-rows: 8)\n]\n"
-        '#notice-page("Default after")[#immunization-history()]\n'
+        '#import "setup.typ": *\n#show: immuknow.letter\n'
+        '#immuknow.notice-page("Default before")[#immuknow.immunization-history()]\n'
+        '#immuknow.notice-page("Local choices", title-size: 16pt)[\n'
+        "#immuknow.immunization-history(show-age: true, font-size: 12pt, min-rows: 8)\n]\n"
+        '#immuknow.notice-page("Default after")[#immuknow.immunization-history()]\n'
     )
     report, reader = compile_case(job)
     assert len(reader.pages) == 3
@@ -201,3 +201,35 @@ def test_local_history_and_page_options_preserve_project_defaults(tmp_path):
     assert ("Local choices", 16) in spans[1]
     assert ("Default before", 20) in spans[0]
     assert ("Default after", 20) in spans[2]
+
+
+def test_setup_namespace_supplies_client_data_and_keeps_general_helpers(tmp_path):
+    job, _ = prepare_case(tmp_path, "overdue_diseases_v1", "en")
+    job.template.write_text(
+        '#import "setup.typ": immuknow\n'
+        "#show: immuknow.letter\n"
+        '#immuknow.check-notice(version: "overdue_diseases_v1", language: "en")\n'
+        "#immuknow.notice-dates().date_as_of\n"
+        "#immuknow.address-block()\n"
+        "#immuknow.overdue-agents(columns: 1)\n"
+        '#immuknow.link("mailto:records@example.org")\n'
+        '#immuknow.qr-code(url: n => immuknow.query-url("https://example.org", (id: n.client_id)))\n'
+        '#immuknow.qr-code(enabled: false, url: n => panic("Unused QR destination"))\n'
+    )
+    report, reader = compile_case(job)
+    text = " ".join(page.extract_text() for page in reader.pages)
+    assert "Alice Zephyr" in text
+    assert "MMR" in text and "DTaP" in text
+    assert report["qr_urls"] == ["https://example.org?id=0000000001"]
+    for component in ("address", "overdue_agents", "qr"):
+        assert report["components"][component]
+        assert all(item["source_matches"] for item in report["measurements"][component])
+    assert not report["components"]["history"]
+
+
+def test_unused_history_defaults_are_not_evaluated(tmp_path):
+    job, _ = prepare_case(tmp_path, "suspension_order_v1", "en")
+    settings = job.template.parent / "settings.typ"
+    settings.write_text(settings.read_text().replace("min-rows: 5", "min-rows: -1"))
+    report, _ = compile_case(job)
+    assert not report["components"]["history"]

@@ -1,5 +1,6 @@
-#import "lib/immuknow/lib.typ" as immuknow
+#import "lib/immuknow/lib.typ" as core
 #import "presentation.typ" as presentation
+#import "lib/immuknow/lib.typ": notice-header, notice-section, signature-block, privacy-notice, envelope-preset, long-date, localization, url-encode, query-url, link
 
 // Page and envelope
 // Paper: keep one choice uncommented
@@ -33,7 +34,7 @@
 // QR destination is resolved in Typst and shared by the code and its clickable link
 #let qr = (
   enabled: true,
-  url: notice => immuknow.query-url("https://example.org/update", (
+  url: notice => core.query-url("https://example.org/update", (
     client_id: notice.client_id,
     dob: notice.client_data.date_of_birth_iso,
     lang: notice.language,
@@ -51,19 +52,18 @@
 #let notice = json(sys.inputs.at("data"))
 #let template-filename = sys.inputs.at("notice-template")
 #assert(template-filename == notice.template, message: "Selected template identity differs from the facts")
-#immuknow.check-notice(
+#core.check-notice(
   notice,
   version: sys.inputs.at("notice-version"),
   language: sys.inputs.at("notice-language"),
 )
 #let logo = image("assets/logo.png", width: logo-width)
-#let dates = immuknow.notice-dates(notice)
+#let dates = core.notice-dates(notice)
 #let date_of_delivery = dates.date_of_delivery
 #let date_as_of = dates.date_as_of
 #let date_of_birth = dates.date_of_birth
 
-#let notice-style(body) = immuknow.notice-style(
-  body,
+#let letter = core.letter.with(
   notice: notice,
   language: notice.language,
   paper: paper-size,
@@ -74,19 +74,17 @@
 )
 
 // Shared page defaults; named options in the Template change only that page
-#let notice-page(title, body, ..options) = immuknow.notice-section(
-  title, body,
+#let notice-page = core.notice-section.with(
   logo: logo,
   logo-width: logo-width,
   title-size: title-size,
   fill: heading-color,
   heading-above: 0.2cm,
   heading-below: 0.5cm,
-  ..options,
 )
 
-// Shared history defaults; e.g. #immunization-history(show-age: true) changes one table
-#let immunization-history(..options) = immuknow.immunization-history(
+// Shared history defaults; e.g. #immuknow.immunization-history(show-age: true) changes one table
+#let immunization-history = core.immunization-history.with(
   notice,
   diseases: ("Diphtheria", "Tetanus", "Pertussis", "Polio", "Hib", "Pneumococcal",
     "Rotavirus", "Measles", "Mumps", "Rubella", "Meningococcal", "Varicella"),
@@ -102,5 +100,13 @@
   indicator-size: auto, // Same size as chart text
   indicator-offset: (x: 0pt, y: 0pt), // Optical adjustment for your typeface
   labels: presentation.selected-labels(),
-  ..options,
 )
+
+// These helpers always use this letter’s client data.
+#let client-block = core.client-block.with(notice)
+#let address-block = core.address-block.with(notice)
+#let overdue-diseases = core.overdue-diseases.with(notice, labels: presentation.selected-labels())
+#let overdue-agents = core.overdue-agents.with(notice)
+#let qr-code = core.qr-code.with(notice)
+#let notice-dates = core.notice-dates.with(notice)
+#let check-notice = core.check-notice.with(notice)
