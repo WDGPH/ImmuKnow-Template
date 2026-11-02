@@ -96,9 +96,8 @@ client information: spreadsheets, PDFs, run records, and anything in `input/`
 or `runs/` other than the sample. Git doesn't copy hooks when you clone, so
 everyone who commits runs this once in their clone. CI runs the same check.
 
-Run all hooks manually with `uv run --locked prek run --all-files`. Ruff's
-version is pinned in both `pyproject.toml` and `.pre-commit-config.yaml`; update
-them together.
+Run all hooks manually with `uv run --locked prek run --all-files`. The hooks run
+the Ruff version locked by the project.
 
 `check.py` reports the ImmuKnow version, whether `config/parameters.yaml` is
 valid, the Typst version, whether `templates/lib/immuknow` matches ImmuKnow and
@@ -292,13 +291,14 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `6df6993` on
-GitHub. This includes the starter changes in [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230),
-based on `main` after `v2.0.0-rc2`; it is not a new release candidate:
+`pyproject.toml` pins ImmuKnow to reviewed commit `dcc8ceb` on
+GitHub. This includes the merged template and dependency updates in
+[Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
+[Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@6df6993b33fb884a4c76155b4174d45d21846edd",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@dcc8ceb83d27ecf50da7948516a26956583ef410",
 ]
 ```
 
