@@ -246,16 +246,23 @@ Shared setup supplies the selected client's information, dates and configured
 `immuknow` helpers. Call `#immuknow.client-block()`,
 `#immuknow.overdue-diseases()` or `#immuknow.immunization-history()` where you
 want them to appear. You do not need to pass `notice` to those helpers.
-Use `over_16` for age-dependent wording. It is true for clients aged 16
-or older, false for younger clients, and unknown when age is unavailable:
+Use `to_student` and `to_guardian` directly in ordinary `if`/`else` wording:
 
 ```typst
-#if over_16 == true [you have]
-else if over_16 == false [your child has]
-else [the named client has]
+#if to_student [you have] else if to_guardian [your child has] else [the named client has]
 ```
 
-`notice` remains available for other client facts. The opening import, Settings
+The optional CSV `reader` column accepts `student` or `guardian`. An explicit
+choice takes priority over age, including in the suspension order. Otherwise,
+the default is student wording at age 16 or older and guardian wording under 16.
+Unknown age without a reader choice makes both flags false, selecting neutral
+wording. The flags are always booleans and cannot both be true. The address
+block uses the same reader; provide the intended mailing destination in the
+source address columns. Choosing a reader leaves age and birth date unchanged.
+See [Core's intended-reader guide](https://github.com/WDGPH/ImmuKnow/blob/main/docs/user_guide/getting_started.md#intended-reader)
+for input validation and saved source facts.
+
+`notice` remains available for client facts. The opening import, Settings
 marker and `#show: immuknow.letter` line are essential setup; keep them in place.
 Omit components a letter does not use, including QR calls. Add
 `#immuknow.qr-code(..qr)` where a QR code should appear. The client block needs
@@ -349,14 +356,14 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `30be3d7` on
+`pyproject.toml` pins ImmuKnow to reviewed commit `3304385` on
 GitHub. This includes the merged template and dependency updates in
 [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
 [Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@30be3d72b2cfe199072c5f540f809a55bbd59447",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@3304385919048f10f1149b9117a877a06081f5c6",
 ]
 ```
 

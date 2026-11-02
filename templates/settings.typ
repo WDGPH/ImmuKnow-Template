@@ -54,7 +54,9 @@
   version: sys.inputs.at("notice-version"),
   language: sys.inputs.at("notice-language"),
 )
-#let over_16 = notice.client_data.over_16
+#let reader = core.reader.with(notice)
+#let to_student = reader() == "student"
+#let to_guardian = reader() == "guardian"
 #let logo = image("assets/logo.png", width: logo-width)
 #let dates = core.notice-dates(notice)
 #let date_of_delivery = dates.date_of_delivery

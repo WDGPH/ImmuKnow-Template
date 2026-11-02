@@ -12,14 +12,12 @@
 #align(center)[_Pursuant to s. 6 of the Immunization of School Pupils Act_]
 #immuknow.client-block(
   window: if envelope-window == none { none } else { (..envelope-window, y: 135pt) }, // Room for the order title
-  addressee: "Student:",
-  school-label: "School",
 )
 #set par(spacing: 11pt) // Separate the order, reasons, and hearing information
 #v(0.1cm)
 #block[
   _To: Principal of_ *#notice.client_data.school*#linebreak()
-  _Serve: Parent/Guardian#if over_16 == true [ and student]._
+  _Serve: #if to_student [Parent/Guardian and student] else if to_guardian [Parent/Guardian] else [Client or representative]._
 ]
 
 #v(10pt) // Separate service instructions from the order
@@ -58,7 +56,7 @@ The reasons for this order are:
 )
 
 #v(10pt) // Separate the reasons from the reader information
-*#if over_16 == true [Student] else if over_16 == false [Parent/Guardian] else [Client or representative]:*
+*#if to_student [Student] else if to_guardian [Parent/Guardian] else [Client or representative]:*
 
 Questions about this Order can be directed to Cedar Ridge Health Unit — Toll-free: #immuknow.link("tel:1-800-555-0100").
 
