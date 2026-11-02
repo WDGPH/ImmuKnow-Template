@@ -24,7 +24,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-from project import CONFIG_DIR, OUTPUT_DIR, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT, TEMPLATES_DIR
+from project import (
+    CONFIG_DIR,
+    OUTPUT_DIR,
+    SAMPLE_ASSIGNMENTS,
+    SAMPLE_INPUT,
+    TEMPLATES_DIR,
+)
 
 
 def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
@@ -34,7 +40,9 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
         allow_abbrev=False,
     )
     parser.add_argument("input_file", type=Path, nargs="?", help="Cohort CSV")
-    parser.add_argument("--sample", action="store_true", help="run this project's fictional sample")
+    parser.add_argument(
+        "--sample", action="store_true", help="run this project's fictional sample"
+    )
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument(
         "--notice-assignments",
@@ -67,15 +75,21 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
         # Supply the positional before parsing unknown Core options, so their
         # values cannot be mistaken for the optional cohort positional.
         arguments = [
-            str(SAMPLE_INPUT), "--notice-assignments", str(SAMPLE_ASSIGNMENTS),
+            str(SAMPLE_INPUT),
+            "--notice-assignments",
+            str(SAMPLE_ASSIGNMENTS),
             *arguments,
         ]
     args, passthrough = parser.parse_known_args(arguments)
     if not args.input_file or not (args.notice_template or args.notice_assignments):
-        parser.error("provide a cohort CSV and --template or --notice-assignments, or use --sample")
+        parser.error(
+            "provide a cohort CSV and --template or --notice-assignments, or use --sample"
+        )
     if args.notice_template:
         if args.template_dir:
-            parser.error("--templates cannot be used with --template; use the template's folder")
+            parser.error(
+                "--templates cannot be used with --template; use the template's folder"
+            )
         if len(args.notice_template.parts) == 1:
             args.notice_template = TEMPLATES_DIR / args.notice_template
     elif args.template_dir is None:
@@ -101,7 +115,9 @@ def run_ids(output_dir: Path) -> set[str]:
 def print_outcome(run_dir: Path) -> None:
     """Say where the run's report is and what to do next."""
     try:
-        status = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))["status"]
+        status = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))[
+            "status"
+        ]
     except (OSError, ValueError, KeyError) as exc:
         print(
             f"Could not read the run record {run_dir / 'run.json'} ({exc}). "
@@ -133,8 +149,10 @@ def main(argv: list[str] | None = None, *, quiet: bool = False) -> int:
         command += ["--template", str(args.notice_template)]
     else:
         command += [
-            "--notice-assignments", str(args.notice_assignments),
-            "--templates", str(args.template_dir),
+            "--notice-assignments",
+            str(args.notice_assignments),
+            "--templates",
+            str(args.template_dir),
         ]
     command += ["--config", str(args.config_dir), "--output", str(args.output_dir)]
     command += passthrough
