@@ -12,7 +12,9 @@ def test_findings_are_grouped_by_code_with_failures_first():
         "entries": [
             entry(("content.multiple_links", "warn"), ("layout.fits", "pass")),
             entry(("content.multiple_links", "warn"), ("output.identity", "fail")),
-            entry(("source.address_incomplete", "warn"), ("qr.absent", "not_applicable")),
+            entry(
+                ("source.address_incomplete", "warn"), ("qr.absent", "not_applicable")
+            ),
         ],
         "checks": [],
     }
@@ -34,17 +36,23 @@ def test_repeated_code_on_one_notice_counts_once():
 def test_run_level_failure_shows_its_message():
     record = {
         "entries": [],
-        "checks": [{"code": "run.failed", "status": "fail", "message": "Typst not found"}],
+        "checks": [
+            {"code": "run.failed", "status": "fail", "message": "Typst not found"}
+        ],
     }
     assert finding_summary(record) == ["fail  run.failed: Typst not found"]
 
 
 def test_clean_run_has_no_summary():
-    assert finding_summary({"entries": [entry(("layout.fits", "pass"))], "checks": []}) == []
+    assert (
+        finding_summary({"entries": [entry(("layout.fits", "pass"))], "checks": []})
+        == []
+    )
 
 
 def test_selected_notice_project_accepts_catalog_superset(tmp_path):
     from check import catalog_entry_points
+
     config = tmp_path / "config"
     config.mkdir()
     (config / "notice_versions.yaml").write_text(

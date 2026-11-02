@@ -1,4 +1,4 @@
-# Install once per clone: uv run pre-commit install
+# Install once per clone: uv run --locked prek install
 repos:
   - repo: local
     hooks:
@@ -6,3 +6,15 @@ repos:
         name: Refuse client data files
         language: python
         entry: python scripts/check_client_data.py
+      - id: ruff-check
+        name: Ruff lint
+        language: system
+        entry: uv run --locked ruff check --fix --force-exclude
+        types_or: [python, pyi, jupyter]
+        require_serial: true
+      - id: ruff-format
+        name: Ruff format
+        language: system
+        entry: uv run --locked ruff format --force-exclude
+        types_or: [python, pyi, jupyter]
+        require_serial: true

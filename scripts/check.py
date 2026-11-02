@@ -45,7 +45,9 @@ def catalog_entry_points(config_dir: Path, templates_dir: Path) -> dict[str, lis
         ]
         for version in load_catalog(config_dir).versions
     }
-    included = {version: languages for version, languages in available.items() if languages}
+    included = {
+        version: languages for version, languages in available.items() if languages
+    }
     if not included:
         raise ValueError(
             "No catalog notice has a matching <version_id>.<language>.typ file "
@@ -60,8 +62,10 @@ def run_sample() -> tuple[int, dict | None]:
         code = run.main(
             [
                 str(SAMPLE_INPUT),
-                "--notice-assignments", str(SAMPLE_ASSIGNMENTS),
-                "--output", output,
+                "--notice-assignments",
+                str(SAMPLE_ASSIGNMENTS),
+                "--output",
+                output,
             ],
             quiet=True,
         )
@@ -83,7 +87,8 @@ def finding_summary(record: dict) -> list[str]:
     lines = [
         f"{status:<4}  {code}: {count} notice{'s' if count != 1 else ''}"
         for (status, code), count in sorted(
-            notices.items(), key=lambda item: (item[0][0] != "fail", -item[1], item[0][1])
+            notices.items(),
+            key=lambda item: (item[0][0] != "fail", -item[1], item[0][1]),
         )
     ]
     lines += [
@@ -105,14 +110,18 @@ class Report:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Check this ImmuKnow project.")
-    parser.add_argument("--sample", action="store_true", help="also run the sample end to end")
+    parser.add_argument(
+        "--sample", action="store_true", help="also run the sample end to end"
+    )
     args = parser.parse_args(argv)
     report = Report()
 
     build = rendering_build_info()
     revision = (build["core_source_revision"] or "unknown")[:7]
     modified = " (with local changes)" if build["core_source_modified"] else ""
-    report.line("OK", "ImmuKnow", f"{build['application_version']} at {revision}{modified}")
+    report.line(
+        "OK", "ImmuKnow", f"{build['application_version']} at {revision}{modified}"
+    )
 
     config: dict = {}
     try:
@@ -129,7 +138,9 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         verify_components(TEMPLATES_DIR)
-        report.line("OK", f"templates/{LIBRARY.as_posix()}", "matches installed ImmuKnow")
+        report.line(
+            "OK", f"templates/{LIBRARY.as_posix()}", "matches installed ImmuKnow"
+        )
     except ValueError as exc:
         report.line(
             "FAIL",
@@ -149,15 +160,22 @@ def main(argv: list[str] | None = None) -> int:
         if report.failed:
             report.line("SKIP", "sample run", "fix the failures above first")
         elif not SAMPLE_INPUT.is_file() or not SAMPLE_ASSIGNMENTS.is_file():
-            report.line("FAIL", "sample run", "sample inputs are missing; set their paths in sample.json")
+            report.line(
+                "FAIL",
+                "sample run",
+                "sample inputs are missing; set their paths in sample.json",
+            )
         else:
             print("Running the sample...", flush=True)
             code, record = run_sample()
             if record is None:
-                report.line("FAIL", "sample run", "immuknow stopped before recording the run")
+                report.line(
+                    "FAIL", "sample run", "immuknow stopped before recording the run"
+                )
             else:
                 produced = sum(
-                    entry["original"]["status"] == "completed" for entry in record["entries"]
+                    entry["original"]["status"] == "completed"
+                    for entry in record["entries"]
                 )
                 report.line(
                     "OK" if code == 0 else "FAIL",

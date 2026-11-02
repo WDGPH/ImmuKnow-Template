@@ -67,14 +67,14 @@ You don't need a copy of the ImmuKnow code.
 git clone <this repository> immuknow-template
 cd immuknow-template
 uv sync --locked
-uv run pre-commit install
+uv run --locked prek install
 uv run python scripts/check.py --sample
 ```
 
 For a Studio ZIP, extract it and open a terminal in its folder, then run
 `uv sync --locked` and `uv run python scripts/check.py --sample`. Install Git
 as well: uv fetches the pinned Core release from GitHub. If you want to commit
-changes, run `git init` before `uv run pre-commit install`.
+changes, run `git init` before `uv run --locked prek install`.
 
 `sample.json`, when present, names the sample CSV and assignments relative to
 the project folder. Studio sets it to the selected fictional example. Without
@@ -90,10 +90,14 @@ sample selection before using `--sample`. For example:
 }
 ```
 
-`pre-commit install` adds a Git hook that refuses to commit files that may hold
+`prek install` adds Git hooks that lint and format Python with Ruff and refuse
+to commit files that may hold
 client information: spreadsheets, PDFs, run records, and anything in `input/`
 or `runs/` other than the sample. Git doesn't copy hooks when you clone, so
 everyone who commits runs this once in their clone. CI runs the same check.
+
+Run all hooks manually with `uv run --locked prek run --all-files`. The hooks run
+the Ruff version locked by the project.
 
 `check.py` reports the ImmuKnow version, whether `config/parameters.yaml` is
 valid, the Typst version, whether `templates/lib/immuknow` matches ImmuKnow and
