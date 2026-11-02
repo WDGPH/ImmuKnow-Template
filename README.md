@@ -20,8 +20,10 @@ health unit:
 | `runs/`: one folder per run (never committed) | |
 
 Studio downloads include this project's Python setup and helper scripts, the
-selected notice and its configuration. Extract the ZIP to run it; no separate
-Template checkout is needed. The notice catalog may list notices that are not
+selected notice and its configuration. The **Include fictional client data**
+checkbox controls whether the selected fictional inputs and sample setup are
+included; custom imported sample data is preserved. Extract the ZIP to run it;
+no separate Template checkout is needed. The notice catalog may list notices that are not
 in the project.
 
 ## Repository structure
@@ -78,16 +80,18 @@ uv run python scripts/check.py --sample
 ```
 
 For a Studio ZIP, extract it and open a terminal in its folder, then run
-`uv sync --locked` and `uv run python scripts/check.py --sample`. Install Git
+`uv sync --locked`. With fictional data included, run
+`uv run python scripts/check.py --sample`. Without a sample, provide your own
+CSV and assignments before running notices. Install Git
 as well: uv fetches the pinned Core release from GitHub. If you want to commit
 changes, run `git init` before `uv run --locked prek install`.
 
 `sample.json`, when present, names the sample CSV and assignments relative to
-the project folder. Studio sets it to the selected fictional example. Without
-it, the scripts use `input/sample/sample_students.csv` and
+the project folder. When fictional client data is included, Studio sets it to
+the selected fictional example. Without it, the scripts use `input/sample/sample_students.csv` and
 `input/sample/sample_assignments.json`. An imported project's existing sample
-selection is preserved. With no prepared example, provide your own inputs and
-sample selection before using `--sample`. For example:
+selection is preserved. Without fictional data or a prepared example, provide
+your own inputs and sample selection before using `--sample`. For example:
 
 ```json
 {
@@ -403,7 +407,8 @@ the font. See "After changing fonts" above.
 configuration, setup files and helper scripts that Studio bundles from a pinned
 commit of this repository. It excludes `templates/lib/immuknow/`: Studio obtains
 the shared library from installed Core. Studio supplies the selected fictional
-client inputs. Maintainer tests stay here and are not bundled.
+client inputs when requested in the download dialog. Maintainer tests stay here
+and are not bundled.
 
 Studio records the source commit and original file hashes and verifies the local
 snapshot during asset preparation. After changing a listed file, refresh Studio's
