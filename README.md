@@ -287,13 +287,13 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `304ceea` on
+`pyproject.toml` pins ImmuKnow to reviewed commit `6df6993` on
 GitHub. This includes the starter changes in [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230),
 based on `main` after `v2.0.0-rc2`; it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@304ceeaed23154d1f5e8c2418f11773a626b5a06",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@6df6993b33fb884a4c76155b4174d45d21846edd",
 ]
 ```
 

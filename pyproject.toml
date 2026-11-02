@@ -5,7 +5,7 @@ description = "ImmuKnow project for one public health unit: config, notice templ
 requires-python = ">=3.11"
 dependencies = [
     # Reviewed ImmuKnow commit. To upgrade, change the revision and run `uv sync`.
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@304ceeaed23154d1f5e8c2418f11773a626b5a06",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@6df6993b33fb884a4c76155b4174d45d21846edd",
 ]
 
 [dependency-groups]
