@@ -246,7 +246,21 @@ Shared setup supplies the selected client's information, dates and configured
 `immuknow` helpers. Call `#immuknow.client-block()`,
 `#immuknow.overdue-diseases()` or `#immuknow.immunization-history()` where you
 want them to appear. You do not need to pass `notice` to those helpers.
-`notice` remains available when wording depends on the client's age or facts.
+Use `over_16` for age-dependent wording. It is true for clients aged 16
+or older, false for younger clients, and unknown when age is unavailable:
+
+```typst
+#if over_16 == true [you have]
+else if over_16 == false [your child has]
+else [the named client has]
+```
+
+`notice` remains available for other client facts. The opening import, Settings
+marker and `#show: immuknow.letter` line are essential setup; keep them in place.
+Omit components a letter does not use, including QR calls. Add
+`#immuknow.qr-code(..qr)` where a QR code should appear. The client block needs
+only `window: envelope-window`; use `font-size: 11pt` or `details: "below"`
+directly on that block when you want to change its defaults.
 Settings connects client data to Core's helpers and supplies shared defaults;
 `setup.typ` exposes those helpers under the `immuknow.` prefix. Keep both files
 with the letter. General helpers such as `immuknow.link` use the same prefix.

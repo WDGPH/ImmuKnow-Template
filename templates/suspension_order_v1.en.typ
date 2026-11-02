@@ -1,3 +1,4 @@
+// Essential setup: keep these opening lines.
 // @immuknow-settings: settings.typ
 #import "setup.typ": *
 #show: immuknow.letter // Apply the letter layout
@@ -11,8 +12,6 @@
 #align(center)[_Pursuant to s. 6 of the Immunization of School Pupils Act_]
 #immuknow.client-block(
   window: if envelope-window == none { none } else { (..envelope-window, y: 135pt) }, // Room for the order title
-  font-size: client-font-size,
-  details: client-details,
   addressee: "Student:",
   school-label: "School",
 )
@@ -20,7 +19,7 @@
 #v(0.1cm)
 #block[
   _To: Principal of_ *#notice.client_data.school*#linebreak()
-  _Serve: Parent/Guardian#if notice.client_data.over_16 == true [ and student]._
+  _Serve: Parent/Guardian#if over_16 == true [ and student]._
 ]
 
 #v(10pt) // Separate service instructions from the order
@@ -59,7 +58,7 @@ The reasons for this order are:
 )
 
 #v(10pt) // Separate the reasons from the reader information
-*#if notice.client_data.over_16 == true [Student] else if notice.client_data.over_16 == false [Parent/Guardian] else [Client or representative]:*
+*#if over_16 == true [Student] else if over_16 == false [Parent/Guardian] else [Client or representative]:*
 
 Questions about this Order can be directed to Cedar Ridge Health Unit — Toll-free: #immuknow.link("tel:1-800-555-0100").
 

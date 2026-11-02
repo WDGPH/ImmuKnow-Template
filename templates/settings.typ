@@ -17,8 +17,6 @@
 // #let envelope-window = (x: 1.75cm, y: 165.1pt, width: 100mm, height: 45mm, padding: 11pt) // DL
 // #let envelope-window = (x: 1.75cm, y: 165.1pt, width: 90mm, height: 45mm, padding: 11pt) // C5
 
-#let client-details = "right" // Client details beside the address; "below" places them underneath
-
 #let logo-width = 7cm // Logo width
 
 // Theme
@@ -29,7 +27,6 @@
 #let link-color = rgb("#0000ee") // Colour of website and email links
 #let accent-color = rgb("#005568") // Default colour of the QR code
 #let title-size = 20pt // Size of the letter and history headings
-#let client-font-size = 10pt // Size of the address and client details
 
 // QR destination is resolved in Typst and shared by the code and its clickable link
 #let qr = (
@@ -57,6 +54,7 @@
   version: sys.inputs.at("notice-version"),
   language: sys.inputs.at("notice-language"),
 )
+#let over_16 = notice.client_data.over_16
 #let logo = image("assets/logo.png", width: logo-width)
 #let dates = core.notice-dates(notice)
 #let date_of_delivery = dates.date_of_delivery

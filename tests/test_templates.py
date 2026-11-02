@@ -143,6 +143,9 @@ def test_maintained_entry_points_keep_their_content_and_component_choices(
         for page in reader.pages
     )
     suspension = version == "suspension_order_v1"
+    assert report["components"]["qr"] is (
+        not suspension and version != "affirmative_schedule_v1"
+    )
     assert report["components"]["history"] is (not suspension)
     assert report["components"]["privacy"] is (not suspension)
     privacy_text = (
@@ -206,13 +209,14 @@ def test_local_history_and_page_options_preserve_project_defaults(tmp_path):
 def test_setup_namespace_supplies_client_data_and_keeps_general_helpers(tmp_path):
     job, _ = prepare_case(tmp_path, "overdue_diseases_v1", "en")
     job.template.write_text(
-        '#import "setup.typ": immuknow\n'
+        '#import "setup.typ": *\n'
         "#show: immuknow.letter\n"
         '#immuknow.check-notice(version: "overdue_diseases_v1", language: "en")\n'
         "#immuknow.notice-dates().date_as_of\n"
         "#immuknow.address-block()\n"
         "#immuknow.overdue-agents(columns: 1)\n"
         '#immuknow.link("mailto:records@example.org")\n'
+        "#link(<details>)[Details]\n= Details <details>\n"
         '#immuknow.qr-code(url: n => immuknow.query-url("https://example.org", (id: n.client_id)))\n'
         '#immuknow.qr-code(enabled: false, url: n => panic("Unused QR destination"))\n'
     )
@@ -233,3 +237,19 @@ def test_unused_history_defaults_are_not_evaluated(tmp_path):
     settings.write_text(settings.read_text().replace("min-rows: 5", "min-rows: -1"))
     report, _ = compile_case(job)
     assert not report["components"]["history"]
+
+
+@pytest.mark.parametrize(
+    "age,over_16,wording",
+    [(16, True, "you have"), (None, None, "the named client has")],
+)
+def test_direct_age_flag_preserves_client_and_unknown_wording(
+    tmp_path, age, over_16, wording
+):
+    job, payload = prepare_case(tmp_path, "overdue_diseases_v1", "en")
+    payload["client_data"].update(age=age, over_16=over_16)
+    job.data.write_text(json.dumps(payload))
+    _, reader = compile_case(job)
+    text = " ".join(reader.pages[0].extract_text().split())
+    assert wording in text
+    assert "your child has" not in text
