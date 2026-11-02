@@ -2,15 +2,17 @@
 
 Follow the [shared language and project responsibilities](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/documentation.md#shared-language-and-project-responsibilities).
 
-This Template owns local project setup, helper commands, readiness checks and
-project tests. Keep their instructions in the [README](README.md). Link to
+Template owns authored starter letters, Settings, display translations, example
+branding, project configuration, local setup, helper commands, readiness checks
+and starter presentation tests. Core ships the shared library and no starters.
+Studio consumes a pinned allowlisted snapshot and owns fictional preview clients. Keep their instructions in the [README](README.md). Link to
 [ImmuKnow Core](https://github.com/WDGPH/ImmuKnow) for native contracts and
 [ImmuKnow Studio](https://github.com/WDGPH/ImmuKnow-Studio) for the browser
 workflow.
 
 Follow the [shared testing strategy](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/testing.md#testing-across-the-projects).
 Test helper commands, paths, readiness checks and the handoff to Core. Keep one
-shared native sample journey; do not duplicate Core's validation suite. Studio
+shared native sample journey plus starter wording/page-count checks; do not duplicate Core's validation suite. Studio
 downloads include the user-facing setup and sample check, not maintainer tests.
 
 Use plausible fictional sample records for notice development. Keep deliberately

@@ -17,7 +17,7 @@ import tempfile
 from pathlib import Path
 
 from immuknow.component_resources import verify_components
-from immuknow.resources import resource_root
+from immuknow.resources import typst_library_root
 
 from project import LIBRARY, ROOT, TEMPLATES_DIR
 
@@ -34,7 +34,7 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(dir=ROOT, prefix=".sync-lib-") as staging:
         staged = Path(staging) / LIBRARY
-        shutil.copytree(resource_root() / "templates" / LIBRARY, staged)
+        shutil.copytree(typst_library_root(), staged)
         verify_components(Path(staging))
         previous = Path(staging) / "previous"
         if target.exists():
@@ -49,10 +49,6 @@ def main() -> int:
 
     print(
         f"Updated templates/{LIBRARY.as_posix()}. Review it with `git diff templates/lib`."
-    )
-    print(
-        "Also compare settings.typ and the entry points with ImmuKnow's defaults in "
-        f"{resource_root() / 'templates'}; those are yours to update."
     )
     return 0
 

@@ -4,6 +4,11 @@ A starting point for running [ImmuKnow](https://github.com/WDGPH/ImmuKnow)
 immunization notices for one public health unit, without working inside the
 ImmuKnow codebase.
 
+This repository maintains the starter letters, Settings, display translations,
+example branding and project configuration used by Studio and native projects.
+ImmuKnow Core ships the processing engine and shared Typst library, with no
+starter letters. Studio owns its fictional client scenarios.
+
 ImmuKnow does all the processing. This repository holds what belongs to your
 health unit:
 
@@ -15,8 +20,10 @@ health unit:
 | `runs/`: one folder per run (never committed) | |
 
 Studio downloads include this project's Python setup and helper scripts, the
-selected notice and its configuration. Extract the ZIP to run it; no separate
-Template checkout is needed. The notice catalog may list notices that are not
+selected notice and its configuration. The **Include fictional client data**
+checkbox controls whether the selected fictional inputs and sample setup are
+included; custom imported sample data is preserved. Extract the ZIP to run it;
+no separate Template checkout is needed. The notice catalog may list notices that are not
 in the project.
 
 ## Repository structure
@@ -34,7 +41,8 @@ immuknow-template/
 │   └── school_reference.json     # Optional: your own school list (default: ImmuKnow's)
 ├── templates/
 │   ├── <version_id>.<language>.typ  # One file per notice and language
-│   ├── settings.typ              # Contact details, fonts, colours, QR code, display choices
+│   ├── setup.typ                 # Connect the letter to Settings and client helpers
+│   ├── settings.typ              # Fonts, colours, QR code, shared display choices
 │   ├── presentation.typ
 │   ├── translations/             # Disease names shown on notices
 │   ├── assets/                   # logo.png, signature.png
@@ -72,16 +80,18 @@ uv run python scripts/check.py --sample
 ```
 
 For a Studio ZIP, extract it and open a terminal in its folder, then run
-`uv sync --locked` and `uv run python scripts/check.py --sample`. Install Git
+`uv sync --locked`. With fictional data included, run
+`uv run python scripts/check.py --sample`. Without a sample, provide your own
+CSV and assignments before running notices. Install Git
 as well: uv fetches the pinned Core release from GitHub. If you want to commit
 changes, run `git init` before `uv run --locked prek install`.
 
 `sample.json`, when present, names the sample CSV and assignments relative to
-the project folder. Studio sets it to the selected fictional example. Without
-it, the scripts use `input/sample/sample_students.csv` and
+the project folder. When fictional client data is included, Studio sets it to
+the selected fictional example. Without it, the scripts use `input/sample/sample_students.csv` and
 `input/sample/sample_assignments.json`. An imported project's existing sample
-selection is preserved. With no prepared example, provide your own inputs and
-sample selection before using `--sample`. For example:
+selection is preserved. Without fictional data or a prepared example, provide
+your own inputs and sample selection before using `--sample`. For example:
 
 ```json
 {
@@ -229,17 +239,75 @@ your health unit's policies.
 
 ## Customizing
 
+Each letter starts with:
+
+```typst
+#import "setup.typ": *
+#show: immuknow.letter // Apply the letter layout
+```
+
+Shared setup supplies the selected client's information, dates and configured
+`immuknow` helpers. Call `#immuknow.client-block()`,
+`#immuknow.overdue-diseases()` or `#immuknow.immunization-history()` where you
+want them to appear. You do not need to pass `notice` to those helpers.
+Use `to_student` and `to_guardian` directly in ordinary `if`/`else` wording:
+
+```typst
+#if to_student [you have] else if to_guardian [your child has] else [the named client has]
+```
+
+The optional CSV `reader` column accepts `student` or `guardian`. An explicit
+choice takes priority over age, including in the suspension order. Otherwise,
+the default is student wording at age 16 or older and guardian wording under 16.
+Unknown age without a reader choice makes both flags false, selecting neutral
+wording. The flags are always booleans and cannot both be true. The address
+block uses the same reader; provide the intended mailing destination in the
+source address columns. Choosing a reader leaves age and birth date unchanged.
+See [Core's intended-reader guide](https://github.com/WDGPH/ImmuKnow/blob/main/docs/user_guide/getting_started.md#intended-reader)
+for input validation and saved source facts.
+
+`notice` remains available for client facts. The opening import, Settings
+marker and `#show: immuknow.letter` line are essential setup; keep them in place.
+Omit components a letter does not use, including QR calls. Add
+`#immuknow.qr-code(..qr)` where a QR code should appear. The client block needs
+only `window: envelope-window`; use `font-size: 11pt` or `details: "below"`
+directly on that block when you want to change its defaults.
+Settings connects client data to Core's helpers and supplies shared defaults;
+`setup.typ` exposes those helpers under the `immuknow.` prefix. Keep both files
+with the letter. General helpers such as `immuknow.link` use the same prefix.
+
 | To change | Edit |
 |---|---|
 | Delivery and "as of" dates (every cycle) | `date_of_delivery`, `date_as_of` in `config/parameters.yaml` |
 | Bundle size and grouping, encryption | `config/parameters.yaml` |
-| Contact details, logo, signature, fonts, colours, QR code | `templates/settings.typ`, `templates/assets/` |
+| Contact details, privacy wording and suspension dates | The `<version_id>.<language>.typ` files |
+| Logo, signature, fonts, colours, QR appearance | `templates/settings.typ`, `templates/assets/` and signature calls in the letter |
 | Letter wording | The `<version_id>.<language>.typ` files |
 | Disease names on notices | `templates/translations/` (not `templates/lib/immuknow/locales/`, the library's defaults) |
 | Which notices exist and who they apply to | `config/notice_versions.yaml` |
 | Vaccine and disease mapping | `config/vaccine_reference.json`, `config/disease_normalization.json` |
 
-The full Template starts with ImmuKnow's defaults. Its templates use placeholder
+Settings holds the shared defaults. To change one history table, pass named
+options at its call in the letter:
+
+```typst
+#immuknow.immunization-history(show-age: true, font-size: 12pt, min-rows: 8)
+```
+
+Page options work the same way:
+
+```typst
+#immuknow.notice-page("Immunization Record", title-size: 18pt, allow-overflow: true)[
+  #immuknow.immunization-history()
+]
+```
+
+These choices affect only that call. Other pages and tables keep the defaults
+from Settings. Use Settings when a choice should apply throughout the project.
+`presentation.typ` loads the editable translation files; shared date and label
+formatting functions come from `immuknow`.
+
+The full Template maintains the starter project. Its templates use placeholder
 contact details (`example.org`, `1-800-555-0100`), a placeholder logo and a
 placeholder signature. Replace them before sending real notices. The dates in
 `parameters.yaml` are examples. A Studio download contains the authored files
@@ -283,22 +351,23 @@ installation; native Typst uses system fonts.
    ```bash
    uv run python -c "from immuknow.resources import resource_root; print(resource_root() / 'config' / 'school_reference.json')"
    ```
-5. Compare your `templates/` and `config/` with ImmuKnow's defaults for new or
-   renamed settings. The script prints where ImmuKnow's copies are.
+5. Compare your authored project with this repository for starter changes.
+   `sync_lib.py` updates only the Core library; it preserves your letters,
+   Settings, assets, translations and configuration.
 6. Run `uv run python scripts/check.py --sample`. Template maintainers can also
    run `uv run --locked --group test pytest`.
 7. Commit `uv.lock` together with any config and template changes.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `7254f86` on
+`pyproject.toml` pins ImmuKnow to reviewed commit `3304385` on
 GitHub. This includes the merged template and dependency updates in
 [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
 [Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@7254f86c9b4dccf56cb7bea805f30bd5419bb806",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@3304385919048f10f1149b9117a877a06081f5c6",
 ]
 ```
 
@@ -332,14 +401,17 @@ outside `config/`, `templates/` and your input folder.
 **Accented letters doubled in the client-details check (`ÉÉcole`)**: change
 the font. See "After changing fonts" above.
 
-## Studio scaffold maintenance
+## Studio starter snapshot
 
-`studio-scaffold.json` lists the setup, documentation and scripts that
-Studio bundles from a pinned commit of this repository. It excludes the default
-configuration, templates and sample inputs: Studio supplies the authored project
-and selected fictional example instead. The maintainer tests remain in this
-repository and are not bundled. Studio records the source commit and
-original file hashes, and verifies its local snapshot during asset preparation.
-After changing a listed file, refresh Studio's snapshot using its documented
-`python -m scripts.project_template` command. Normal builds and browser downloads
-do not need access to this private repository.
+`studio-scaffold.json` lists the starter letters, Settings, assets, translations,
+configuration, setup files and helper scripts that Studio bundles from a pinned
+commit of this repository. It excludes `templates/lib/immuknow/`: Studio obtains
+the shared library from installed Core. Studio supplies the selected fictional
+client inputs when requested in the download dialog. Maintainer tests stay here
+and are not bundled.
+
+Studio records the source commit and original file hashes and verifies the local
+snapshot during asset preparation. After changing a listed file, refresh Studio's
+snapshot with its documented `python -m scripts.project_template` command.
+A starter wording change requires a new Template snapshot; it does not require
+a Core release. Normal Studio builds and downloads need no private repository access.
