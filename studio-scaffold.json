@@ -11,6 +11,24 @@
     "scripts/project.py",
     "scripts/run.py",
     "scripts/sync_lib.py",
-    "uv.lock"
+    "uv.lock",
+    "config/disease_normalization.json",
+    "config/notice_versions.yaml",
+    "config/parameters.yaml",
+    "config/vaccine_reference.json",
+    "templates/affirmative_schedule_v1.en.typ",
+    "templates/assets/logo.png",
+    "templates/assets/signature.png",
+    "templates/overdue_agents_v1.en.typ",
+    "templates/overdue_agents_v1.fr.typ",
+    "templates/overdue_diseases_v1.en.typ",
+    "templates/overdue_diseases_v1.fr.typ",
+    "templates/presentation.typ",
+    "templates/settings.typ",
+    "templates/suspension_order_v1.en.typ",
+    "templates/translations/en_diseases_chart.json",
+    "templates/translations/en_diseases_overdue.json",
+    "templates/translations/fr_diseases_chart.json",
+    "templates/translations/fr_diseases_overdue.json"
   ]
 }

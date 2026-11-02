@@ -4,6 +4,11 @@ A starting point for running [ImmuKnow](https://github.com/WDGPH/ImmuKnow)
 immunization notices for one public health unit, without working inside the
 ImmuKnow codebase.
 
+This repository maintains the starter letters, Settings, display translations,
+example branding and project configuration used by Studio and native projects.
+ImmuKnow Core ships the processing engine and shared Typst library, with no
+starter letters. Studio owns its fictional client scenarios.
+
 ImmuKnow does all the processing. This repository holds what belongs to your
 health unit:
 
@@ -233,13 +238,14 @@ your health unit's policies.
 |---|---|
 | Delivery and "as of" dates (every cycle) | `date_of_delivery`, `date_as_of` in `config/parameters.yaml` |
 | Bundle size and grouping, encryption | `config/parameters.yaml` |
-| Contact details, logo, signature, fonts, colours, QR code | `templates/settings.typ`, `templates/assets/` |
+| Contact details, privacy wording and suspension dates | The `<version_id>.<language>.typ` files |
+| Logo, signature, fonts, colours, QR appearance | `templates/settings.typ`, `templates/assets/` and signature calls in the letter |
 | Letter wording | The `<version_id>.<language>.typ` files |
 | Disease names on notices | `templates/translations/` (not `templates/lib/immuknow/locales/`, the library's defaults) |
 | Which notices exist and who they apply to | `config/notice_versions.yaml` |
 | Vaccine and disease mapping | `config/vaccine_reference.json`, `config/disease_normalization.json` |
 
-The full Template starts with ImmuKnow's defaults. Its templates use placeholder
+The full Template maintains the starter project. Its templates use placeholder
 contact details (`example.org`, `1-800-555-0100`), a placeholder logo and a
 placeholder signature. Replace them before sending real notices. The dates in
 `parameters.yaml` are examples. A Studio download contains the authored files
@@ -283,22 +289,23 @@ installation; native Typst uses system fonts.
    ```bash
    uv run python -c "from immuknow.resources import resource_root; print(resource_root() / 'config' / 'school_reference.json')"
    ```
-5. Compare your `templates/` and `config/` with ImmuKnow's defaults for new or
-   renamed settings. The script prints where ImmuKnow's copies are.
+5. Compare your authored project with this repository for starter changes.
+   `sync_lib.py` updates only the Core library; it preserves your letters,
+   Settings, assets, translations and configuration.
 6. Run `uv run python scripts/check.py --sample`. Template maintainers can also
    run `uv run --locked --group test pytest`.
 7. Commit `uv.lock` together with any config and template changes.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `57ee717` on
+`pyproject.toml` pins ImmuKnow to reviewed commit `e87d8bc` on
 GitHub. This includes the merged template and dependency updates in
 [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
 [Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@57ee717b29bcb5a316be850f08356fe3cdc1ddac",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@e87d8bc486f7635977bf5248dd88201a0b012811",
 ]
 ```
 
@@ -332,14 +339,16 @@ outside `config/`, `templates/` and your input folder.
 **Accented letters doubled in the client-details check (`ÉÉcole`)**: change
 the font. See "After changing fonts" above.
 
-## Studio scaffold maintenance
+## Studio starter snapshot
 
-`studio-scaffold.json` lists the setup, documentation and scripts that
-Studio bundles from a pinned commit of this repository. It excludes the default
-configuration, templates and sample inputs: Studio supplies the authored project
-and selected fictional example instead. The maintainer tests remain in this
-repository and are not bundled. Studio records the source commit and
-original file hashes, and verifies its local snapshot during asset preparation.
-After changing a listed file, refresh Studio's snapshot using its documented
-`python -m scripts.project_template` command. Normal builds and browser downloads
-do not need access to this private repository.
+`studio-scaffold.json` lists the starter letters, Settings, assets, translations,
+configuration, setup files and helper scripts that Studio bundles from a pinned
+commit of this repository. It excludes `templates/lib/immuknow/`: Studio obtains
+the shared library from installed Core. Studio supplies the selected fictional
+client inputs. Maintainer tests stay here and are not bundled.
+
+Studio records the source commit and original file hashes and verifies the local
+snapshot during asset preparation. After changing a listed file, refresh Studio's
+snapshot with its documented `python -m scripts.project_template` command.
+A starter wording change requires a new Template snapshot; it does not require
+a Core release. Normal Studio builds and downloads need no private repository access.
