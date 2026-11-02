@@ -170,3 +170,34 @@ def test_maintained_entry_points_keep_their_content_and_component_choices(
         assert ("• Measles" if language == "en" else "• Rougeole") not in first
     elif version == "overdue_diseases_v1":
         assert ("Measles" if language == "en" else "Rougeole") in first
+
+
+def test_local_history_and_page_options_preserve_project_defaults(tmp_path):
+    job, _ = prepare_case(tmp_path, "overdue_diseases_v1", "en")
+    job.template.write_text(
+        '#import "settings.typ": *\n#show: notice-style\n'
+        '#notice-page("Default before")[#immunization-history()]\n'
+        '#notice-page("Local choices", title-size: 16pt)[\n'
+        "#immunization-history(show-age: true, font-size: 12pt, min-rows: 8)\n]\n"
+        '#notice-page("Default after")[#immunization-history()]\n'
+    )
+    report, reader = compile_case(job)
+    assert len(reader.pages) == 3
+    assert len(report["measurements"]["history"]) == 3
+    spans = []
+    for page in reader.pages:
+        values = []
+        page.extract_text(
+            visitor_text=lambda text, _cm, _tm, _font, size: values.append(
+                (text.strip(), size)
+            )
+        )
+        spans.append(values)
+    for index in (0, 2):
+        assert not any(" yr " in text for text, _ in spans[index])
+        assert any("2020-05-01" in text and size == 11 for text, size in spans[index])
+    assert any(" yr " in text for text, _ in spans[1])
+    assert any("2020-05-01" in text and size == 12 for text, size in spans[1])
+    assert ("Local choices", 16) in spans[1]
+    assert ("Default before", 20) in spans[0]
+    assert ("Default after", 20) in spans[2]

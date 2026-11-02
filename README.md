@@ -245,6 +245,26 @@ your health unit's policies.
 | Which notices exist and who they apply to | `config/notice_versions.yaml` |
 | Vaccine and disease mapping | `config/vaccine_reference.json`, `config/disease_normalization.json` |
 
+Settings holds the shared defaults. To change one history table, pass named
+options at its call in the letter:
+
+```typst
+#immunization-history(show-age: true, font-size: 12pt, min-rows: 8)
+```
+
+Page options work the same way:
+
+```typst
+#notice-page("Immunization Record", title-size: 18pt, allow-overflow: true)[
+  #immunization-history()
+]
+```
+
+These choices affect only that call. Other pages and tables keep the defaults
+from Settings. Use Settings when a choice should apply throughout the project.
+`presentation.typ` loads the editable translation files; shared date and label
+formatting functions come from `immuknow`.
+
 The full Template maintains the starter project. Its templates use placeholder
 contact details (`example.org`, `1-800-555-0100`), a placeholder logo and a
 placeholder signature. Replace them before sending real notices. The dates in
@@ -298,14 +318,14 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `e87d8bc` on
+`pyproject.toml` pins ImmuKnow to reviewed commit `104c2cc` on
 GitHub. This includes the merged template and dependency updates in
 [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
 [Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@e87d8bc486f7635977bf5248dd88201a0b012811",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@104c2ccf7a8c354d4e98d166ab05588d9025e784",
 ]
 ```
 

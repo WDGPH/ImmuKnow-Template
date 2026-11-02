@@ -73,8 +73,8 @@
   link-color: link-color,
 )
 
-// Each section starts a fresh page; unexpected continuation produces a finding
-#let notice-page(title, body, allow-overflow: false) = immuknow.notice-section(
+// Shared page defaults; named options in the Template change only that page
+#let notice-page(title, body, ..options) = immuknow.notice-section(
   title, body,
   logo: logo,
   logo-width: logo-width,
@@ -82,11 +82,11 @@
   fill: heading-color,
   heading-above: 0.2cm,
   heading-below: 0.5cm,
-  allow-overflow: allow-overflow,
+  ..options,
 )
 
-// History options are evaluated only when the letter inserts this component
-#let immunization-history() = immuknow.immunization-history(
+// Shared history defaults; e.g. #immunization-history(show-age: true) changes one table
+#let immunization-history(..options) = immuknow.immunization-history(
   notice,
   diseases: ("Diphtheria", "Tetanus", "Pertussis", "Polio", "Hib", "Pneumococcal",
     "Rotavirus", "Measles", "Mumps", "Rubella", "Meningococcal", "Varicella"),
@@ -102,4 +102,5 @@
   indicator-size: auto, // Same size as chart text
   indicator-offset: (x: 0pt, y: 0pt), // Optical adjustment for your typeface
   labels: presentation.selected-labels(),
+  ..options,
 )
