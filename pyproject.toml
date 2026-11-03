@@ -1,5 +1,9 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
 [project]
-name = "immuknow-template"
+name = "immuknow-template-resources"
 version = "0.1.0"
 description = "ImmuKnow project for one public health unit: config, notice templates and run scripts"
 requires-python = ">=3.11"
@@ -16,7 +20,7 @@ dev = [
 test = ["pytest"]
 
 [tool.uv]
-# This repository holds project files, not an importable package.
+# Native setup installs Core only; build resource distributions explicitly.
 package = false
 
 # To test a local ImmuKnow checkout next to this repository, uncomment these lines
@@ -33,3 +37,41 @@ markers = [
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F"]
+
+# Include new authored files automatically; omit generated library and caches.
+[tool.hatch.build]
+only-include = [
+    "src/immuknow_template",
+    "templates",
+    "config",
+    "scripts",
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    ".python-version",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    "uv.lock",
+]
+exclude = ["/templates/lib", "**/__pycache__", "*.py[cod]"]
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src/immuknow_template", "templates", "config", "scripts"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
+"templates" = "immuknow_template/data/templates"
+"config" = "immuknow_template/data/config"
+"scripts" = "immuknow_template/data/scripts"
+
+[tool.hatch.build.targets.wheel.force-include]
+".gitignore" = "immuknow_template/data/.gitignore"
+".pre-commit-config.yaml" = "immuknow_template/data/.pre-commit-config.yaml"
+".python-version" = "immuknow_template/data/.python-version"
+"LICENSE" = "immuknow_template/data/LICENSE"
+"README.md" = "immuknow_template/data/README.md"
+"pyproject.toml" = "immuknow_template/data/pyproject.toml"
+"uv.lock" = "immuknow_template/data/uv.lock"
+
+[tool.hatch.metadata]
+allow-direct-references = true

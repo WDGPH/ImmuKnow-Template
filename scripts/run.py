@@ -24,6 +24,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from sync_lib import ensure_library
+
 from project import (
     CONFIG_DIR,
     OUTPUT_DIR,
@@ -141,8 +143,13 @@ def main(argv: list[str] | None = None, *, quiet: bool = False) -> int:
     """Run immuknow; quiet captures its output unless no run record explains the result."""
     args, passthrough = parse_args(argv)
     try:
+        selected = (
+            args.notice_template.parent if args.notice_template else args.template_dir
+        )
+        if selected.resolve() == TEMPLATES_DIR.resolve():
+            ensure_library(TEMPLATES_DIR)
         command = [immuknow_command(), str(args.input_file)]
-    except RuntimeError as exc:
+    except (RuntimeError, ValueError, OSError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
     if args.notice_template:
