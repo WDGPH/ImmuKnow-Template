@@ -64,6 +64,7 @@ def test_wheel_and_sdist_install_without_a_checkout_and_verify_their_files(tmp_p
             str(python),
             "--offline",
             "--no-deps",
+            "--compile-bytecode",
             str(wheel),
         ],
         tmp_path,

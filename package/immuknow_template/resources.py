@@ -51,7 +51,15 @@ def project_files(root: Path | None = None) -> dict[str, bytes]:
         raise ValueError("Invalid Template source identity")
     hashes = manifest["files"]
     names = {safe_path(name) for name in hashes}
-    actual = {path.relative_to(root).as_posix() for path in paths if path.is_file()}
+    # Installers may compile the packaged helper sources; caches are not resources.
+    actual = {
+        path.relative_to(root).as_posix()
+        for path in paths
+        if path.is_file()
+        and not (
+            "__pycache__" in path.relative_to(root).parts and path.suffix == ".pyc"
+        )
+    }
     if actual != names | {PROVENANCE}:
         raise ValueError("Template resource files differ from the source manifest")
     result = {}
