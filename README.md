@@ -256,6 +256,41 @@ Use `to_student` and `to_guardian` directly in ordinary `if`/`else` wording:
 #if to_student [you have] else if to_guardian [your child has] else [the named client has]
 ```
 
+`no_records` and `up_to_date` are also booleans for ordinary `#if` wording.
+`no_records` reflects the source history before exclusions; `up_to_date` means
+there are no overdue diseases, independently of overdue immunizing agents.
+The overdue starters use neutral bilingual no-records wording instead of claiming
+that someone received no vaccines. To omit an entire section, wrap it in
+`#if not no_records [ ... ]`. Change `no-records` on an overdue helper to `none`
+to retain its list, `auto` for the bilingual message, or your own text/content.
+
+The affirmative starter asserts `up_to_date`. The suspension starter explicitly
+gets `ispa_up_to_date` from `immuknow.notice-flags(include-ispa: true)`, requires
+an overdue ISPA disease and lists only ISPA diseases for the client's birth
+cohort. In particular, varicella is included for births from January 1, 2010.
+ISPA flags/filtering can require a usable birth date and assessment date.
+Ordinary overdue notices still accept mixed ISPA and non-ISPA disease lists;
+`ispa-only: true` is optional for disease lists and unsupported for agent lists.
+These checks use upstream overdue facts; they do not assess exemptions or
+legal grounds for suspension. Explicit notice assignments and A/B testing stay
+available. A dynamic notice can use `requires: any` in its catalog entry and
+branch on these flags within its wording.
+
+History Settings explicitly enable dose validity. Fully unflagged histories still
+render recorded-dose marks; partially flagged histories must be corrected or
+explicitly displayed with `show-validity: false`. Only applicable legends appear.
+Customize `legend-labels` with `valid`, `invalid`, and `unspecified` entries;
+English and Canadian French defaults are supplied by Core.
+
+The optional CSV `oiid` column carries the Ontario Immunization ID as text.
+Settings expose `show-client-id` and `show-oiid`, allowing either, both, or
+neither. Client ID remains the assignment identifier even when hidden.
+With OIID display enabled, `missing-oiid: none` omits missing rows' lines,
+`""` leaves the value blank, `auto` shows “Not available” / “Non disponible”,
+and a string supplies custom text. Some clients may have an OIID while others
+do not; an all-absent input cohort errors when OIID display is enabled.
+Customize `id-label` and `oiid-label` without altering source facts.
+
 The optional CSV `reader` column accepts `student` or `guardian`. An explicit
 choice takes priority over age, including in the suspension order. Otherwise,
 the default is student wording at age 16 or older and guardian wording under 16.
@@ -360,14 +395,14 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `3304385` on
+`pyproject.toml` pins ImmuKnow to reviewed commit `499dd2a` on
 GitHub. This includes the merged template and dependency updates in
 [Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
 [Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@3304385919048f10f1149b9117a877a06081f5c6",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@499dd2a2a04e6d621e3720a4f0fe618727cf1bd5",
 ]
 ```
 

@@ -9,7 +9,7 @@
 #immuknow.client-block(window: envelope-window) // Mailing address and client details
 #v(0.3cm) // Space before the message
 
-En date du *#date_as_of*, nos dossiers indiquent que #if to_student [vous n'avez] else if to_guardian [votre enfant n'a] else [la personne nommée n'a] pas reçu les immunisations suivantes :
+#if not no_records [En date du *#date_as_of*, nos dossiers indiquent que #if to_student [vous n'avez] else if to_guardian [votre enfant n'a] else [la personne nommée n'a] pas reçu les immunisations suivantes :]
 
 #strong(
   immuknow.overdue-diseases(

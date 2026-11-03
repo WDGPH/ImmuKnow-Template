@@ -55,8 +55,11 @@
   language: sys.inputs.at("notice-language"),
 )
 #let reader = core.reader.with(notice)
-#let to_student = reader() == "student"
-#let to_guardian = reader() == "guardian"
+#let flags = core.notice-flags(notice)
+#let to_student = flags.to_student
+#let to_guardian = flags.to_guardian
+#let no_records = flags.no_records
+#let up_to_date = flags.up_to_date
 #let logo = image("assets/logo.png", width: logo-width)
 #let dates = core.notice-dates(notice)
 #let date_of_delivery = dates.date_of_delivery
@@ -90,7 +93,8 @@
     "Rotavirus", "Measles", "Mumps", "Rubella", "Meningococcal", "Varicella"),
   ignore-agents: ("RSVAb", "VarIg", "HBIg", "RabIg", "Ig"), // Vaccines left out of the table
   include-other: true, // Include a column for other vaccines
-  show-validity: false, // Show which doses count toward requirements
+  show-validity: true, // Show which doses count toward requirements
+  legend-labels: (:), // Override valid, invalid, or unspecified text for this language
   omit-invalid: false, // Exclude invalid doses from the history
   show-age: false, // Add age in years and months after the vaccination date
   min-rows: 5, // Minimum number of vaccination rows
@@ -103,10 +107,17 @@
 )
 
 // These helpers always use this letter’s client data.
-#let client-block = core.client-block.with(notice)
+#let client-block = core.client-block.with(
+  notice,
+  show-client-id: true, // Set false to hide the assignment identifier
+  show-oiid: false, // Optional Ontario Immunization ID from the CSV
+  missing-oiid: none, // none: omit; "": blank value; auto: bilingual unavailable text; or custom text
+  id-label: auto, oiid-label: auto, // Bilingual defaults or your own plain-text labels
+)
 #let address-block = core.address-block.with(notice)
-#let overdue-diseases = core.overdue-diseases.with(notice, labels: presentation.selected-labels())
-#let overdue-agents = core.overdue-agents.with(notice)
+#let overdue-diseases = core.overdue-diseases.with(notice, labels: presentation.selected-labels(), no-records: auto, ispa-only: false)
+#let overdue-agents = core.overdue-agents.with(notice, no-records: auto)
+#let notice-flags = core.notice-flags.with(notice)
 #let qr-code = core.qr-code.with(notice)
 #let notice-dates = core.notice-dates.with(notice)
 #let check-notice = core.check-notice.with(notice)
