@@ -1,4 +1,4 @@
-"""Installed resource wheels and source archives preserve the authored allowlist."""
+"""Distributions include authored additions and support native project setup."""
 
 import os
 import shutil
@@ -24,27 +24,55 @@ def payload(wheel):
         }
 
 
-def test_wheel_and_sdist_install_without_a_checkout_and_verify_their_files(tmp_path):
+def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_path):
     checkout = tmp_path / "checkout"
     checkout.mkdir()
-    names = tomllib.loads((ROOT / "pyproject.toml").read_text())["tool"]["hatch"][
+    included = tomllib.loads((ROOT / "pyproject.toml").read_text())["tool"]["hatch"][
         "build"
-    ]["targets"]["wheel"]["force-include"]
-    # Build outside Git, without maintainer tests or generated Core resources.
-    for name in names:
+    ]["only-include"]
+    # Build outside Git, with generated files present to exercise exclusions.
+    for name in included:
         target = checkout / name
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(ROOT / name, target)
-    shutil.copytree(ROOT / "src", checkout / "src")
+        if (ROOT / name).is_dir():
+            shutil.copytree(ROOT / name, target)
+        else:
+            shutil.copy2(ROOT / name, target)
+    additions = {
+        "templates/new_notice.typ": b"New starter",
+        "templates/translations/new.json": b"{}",
+        "config/new.json": b"{}",
+        "scripts/new_helper.py": b"# New helper\n",
+    }
+    excluded = {
+        "templates/lib/immuknow/generated.typ": b"Generated Core",
+        "templates/__pycache__/cached.pyc": b"Cache",
+        "scripts/__pycache__/cached.pyc": b"Cache",
+        "scripts/cached.pyc": b"Cache",
+        "tests/not_distributed.py": b"Maintainer test",
+        "input/not_distributed.csv": b"Synthetic input",
+        "unrelated.txt": b"Unrelated root file",
+    }
+    for name, data in (additions | excluded).items():
+        path = checkout / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
     first = tmp_path / "first"
     run(["uv", "build", "--out-dir", str(first)], checkout)
     original = payload(next(first.glob("*.whl")))
-    assert set(original) == set(names)
+    assert additions.items() <= original.items()
+    assert not set(excluded).intersection(original)
+    assert {
+        "templates/setup.typ",
+        "scripts/run.py",
+        "pyproject.toml",
+        "uv.lock",
+    } <= set(original)
     assert not any(
         name.startswith(("templates/lib/", "tests/", "input/")) for name in original
     )
-    for name in names:
-        assert original[name] == (checkout / name).read_bytes()
+    for name, data in original.items():
+        assert data == (checkout / name).read_bytes()
     assert not (checkout / "src/immuknow_template/data").exists()
     stale = checkout / "build/lib/immuknow_template/stale.py"
     stale.parent.mkdir(parents=True, exist_ok=True)
@@ -57,6 +85,9 @@ def test_wheel_and_sdist_install_without_a_checkout_and_verify_their_files(tmp_p
         assert "immuknow_template/stale.py" not in archive.namelist()
     unpacked = tmp_path / "source"
     with tarfile.open(next(first.glob("*.tar.gz"))) as archive:
+        archived = {name.split("/", 1)[1] for name in archive.getnames() if "/" in name}
+        assert set(additions) <= archived
+        assert not set(excluded).intersection(archived)
         archive.extractall(unpacked, filter="data")
     (source,) = unpacked.iterdir()
     rebuilt = tmp_path / "rebuilt"
@@ -81,9 +112,9 @@ def test_wheel_and_sdist_install_without_a_checkout_and_verify_their_files(tmp_p
         tmp_path,
     )
     code = """
-import json, shutil, tomllib
+import json, tomllib
 from pathlib import Path
-from immuknow_template.resources import project_files, resource_root
+from immuknow_template.resources import project_files
 files = project_files()
 assert "templates/setup.typ" in files
 assert "scripts/sync_lib.py" in files
@@ -96,38 +127,15 @@ for name, data in files.items():
     path = Path("downloaded") / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
-root = Path("copied-resources")
-shutil.copytree(resource_root(), root)
-changed = root / "templates/setup.typ"
-changed.write_bytes(changed.read_bytes() + b"changed")
-try:
-    project_files(root)
-except ValueError as error:
-    assert "hash differs" in str(error)
-else:
-    raise AssertionError("Changed resource accepted")
-changed.write_bytes(files["templates/setup.typ"])
-(root / "extra").write_text("extra")
-try:
-    project_files(root)
-except ValueError as error:
-    assert "files differ" in str(error)
-else:
-    raise AssertionError("Extra resource accepted")
-(root / "extra").unlink()
-changed.unlink()
-changed.symlink_to(resource_root() / "templates/setup.typ")
-try:
-    project_files(root)
-except ValueError as error:
-    assert "linked" in str(error)
-else:
-    raise AssertionError("Linked resource accepted")
+assert "templates/new_notice.typ" in files
+assert "config/new.json" in files
+assert "scripts/new_helper.py" in files
+assert not any("__pycache__" in name or name.endswith(".pyc") for name in files)
 assert json.loads(files["template-source.json"])["revision"] is None
-print("Verified installed wheel")
+print("Read installed wheel")
 """
     result = run([str(python), "-I", "-c", code], tmp_path)
-    assert result.stdout.strip() == "Verified installed wheel"
+    assert result.stdout.strip() == "Read installed wheel"
     downloaded = tmp_path / "downloaded"
     run(["uv", "sync", "--locked", "--no-default-groups"], downloaded)
     run(

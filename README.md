@@ -442,15 +442,16 @@ the font. See "After changing fonts" above.
 
 ## Packaged starter resources
 
-The root `pyproject.toml` declares the exact authored files included in the
-resource wheel and source archive. Hatch packages the existing files directly;
+The root `pyproject.toml` includes the authored `templates/`, `config/` and
+`scripts/` directories plus the root project files in the resource wheel and
+source archive. New authored files ship automatically; generated library files
+and Python caches are excluded. Hatch packages the existing files directly;
 there are no custom build scripts or committed copies. Core's library,
 maintainer tests and client inputs are excluded.
 
 Studio pins `immuknow-template-resources` to an exact Git revision and reads
-`immuknow_template.resources.project_files()`. The helper verifies resources
-against the wheel's standard hash records and reports Git installation metadata
-in the exported provenance. A standalone wheel has no Git revision to report.
+`immuknow_template.resources.project_files()`. The helper reads the installed files and reports Git installation metadata
+and file hashes in the exported provenance. A standalone wheel has no Git revision to report.
 To adopt starter changes, update Studio's Template dependency and lockfile.
 A Core update also requires a compatible Template project lock. Installed
 resources are read-only; browser builds and downloaded ZIPs still contain the
@@ -465,6 +466,6 @@ uv build --out-dir dist
 uv run --locked --group test pytest
 ```
 
-Installing this dependency from the private Git repository requires read access.
+The Git repository is public; installing the dependency requires no read token.
 After installation, resource reads do not contact GitHub. No PyPI publication is
 required.

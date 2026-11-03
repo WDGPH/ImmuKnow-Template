@@ -5,7 +5,7 @@ Follow the [shared language and project responsibilities](https://github.com/WDG
 Template owns authored starter letters, Settings, display translations, example
 branding, project configuration, local setup, helper commands, readiness checks
 and starter presentation tests. Core ships the shared library and no starters.
-Studio consumes a pinned allowlisted resource package and owns fictional preview clients. Keep their instructions in the [README](README.md). Link to
+Studio consumes a pinned resource package and owns fictional preview clients. Keep their instructions in the [README](README.md). Link to
 [ImmuKnow Core](https://github.com/WDGPH/ImmuKnow) for native contracts and
 [ImmuKnow Studio](https://github.com/WDGPH/ImmuKnow-Studio) for the browser
 workflow.
@@ -22,7 +22,7 @@ Documentation describes current behavior; Git history records how it changed.
 Keep pull request descriptions short and plain, focused on rationale and the
 result for users. Omit agent attribution and detailed verification logs.
 
-Studio installs the allowlisted resource package from a pinned Template commit.
+Studio installs the resource package from a pinned Template commit.
 Make setup and helper changes here, then update Studio's dependency and lock.
 Never edit installed resources. Build copies belong in generated output only.
 
