@@ -20,7 +20,7 @@ dev = [
 test = ["pytest"]
 
 [tool.uv]
-# This repository holds project files, not an importable package.
+# Native setup installs Core only; build resource distributions explicitly.
 package = false
 
 # To test a local ImmuKnow checkout next to this repository, uncomment these lines
