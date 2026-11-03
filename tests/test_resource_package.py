@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -24,22 +25,46 @@ def payload(wheel):
 
 
 def test_wheel_and_sdist_install_without_a_checkout_and_verify_their_files(tmp_path):
+    checkout = tmp_path / "checkout"
+    checkout.mkdir()
+    # Snapshot the current sources in a clean repository, including local edits.
+    for name in run(["git", "ls-files", "-z"], ROOT).stdout.split("\0"):
+        if name:
+            target = checkout / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(ROOT / name, target)
+    run(["git", "init"], checkout)
+    run(["git", "add", "."], checkout)
+    run(
+        [
+            "git",
+            "-c",
+            "user.name=Package test",
+            "-c",
+            "user.email=package-test@example.invalid",
+            "commit",
+            "-m",
+            "Snapshot package sources",
+        ],
+        checkout,
+    )
     first = tmp_path / "first"
-    run(["uv", "build", "package", "--out-dir", str(first)], ROOT)
+    run(["uv", "build", "package", "--out-dir", str(first)], checkout)
     original = payload(next(first.glob("*.whl")))
-    names = json.loads((ROOT / "studio-scaffold.json").read_bytes())["files"]
+    assert json.loads(original["template-source.json"])["source_modified"] is False
+    names = json.loads((checkout / "studio-scaffold.json").read_bytes())["files"]
     assert set(original) == set(names) | {"template-source.json"}
     assert not any(
         name.startswith(("templates/lib/", "tests/", "input/")) for name in original
     )
     for name in names:
-        assert original[name] == (ROOT / name).read_bytes()
-    assert not (ROOT / "package/immuknow_template/data").exists()
-    stale = ROOT / "package/build/lib/immuknow_template/stale.py"
+        assert original[name] == (checkout / name).read_bytes()
+    assert not (checkout / "package/immuknow_template/data").exists()
+    stale = checkout / "package/build/lib/immuknow_template/stale.py"
     stale.parent.mkdir(parents=True, exist_ok=True)
     stale.write_text("Old build output must not ship")
     direct = tmp_path / "direct"
-    run(["uv", "build", "package", "--wheel", "--out-dir", str(direct)], ROOT)
+    run(["uv", "build", "package", "--wheel", "--out-dir", str(direct)], checkout)
     direct_wheel = next(direct.glob("*.whl"))
     assert payload(direct_wheel) == original
     with zipfile.ZipFile(direct_wheel) as archive:
@@ -112,4 +137,4 @@ print(json.loads(files["template-source.json"])["revision"])
         result.stdout.strip()
         == json.loads(original["template-source.json"])["revision"]
     )
-    assert not (ROOT / "package/immuknow_template/data").exists()
+    assert not (checkout / "package/immuknow_template/data").exists()

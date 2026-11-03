@@ -72,10 +72,11 @@ def scaffold() -> dict[str, bytes]:
     }
 
 
-def stage(target: Path) -> None:
+def stage(target: Path, resources: dict[str, bytes] | None = None) -> None:
     if target.resolve().is_relative_to(ROOT / "immuknow_template"):
         raise ValueError("Build output must be separate from package source")
-    resources = scaffold()
+    if resources is None:
+        resources = scaffold()
     if target.exists():
         shutil.rmtree(target)
     for name, data in resources.items():
@@ -98,8 +99,10 @@ class ResourceWheel(build_py):
 
 class ResourceSource(sdist):
     def make_release_tree(self, base_dir, files) -> None:
+        # Capture provenance before setuptools creates an untracked release tree.
+        resources = scaffold()
         super().make_release_tree(base_dir, files)
-        stage(Path(base_dir).resolve() / "immuknow_template/data")
+        stage(Path(base_dir).resolve() / "immuknow_template/data", resources)
 
 
 setup(cmdclass={"build_py": ResourceWheel, "sdist": ResourceSource})
