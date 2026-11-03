@@ -3,6 +3,7 @@
 import json
 import os
 import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -289,3 +290,116 @@ def test_suspension_uses_the_selected_reader_throughout(
     assert heading in text
     label = "To Parent/Guardian of:" if reader == "guardian" else "To:"
     assert report["measurements"]["address"][0]["text"].startswith(label)
+
+
+@pytest.mark.parametrize("kind", ["diseases", "agents"])
+@pytest.mark.parametrize("language", ["en", "fr"])
+def test_no_record_starters_request_records_without_claiming_no_vaccines(
+    tmp_path, kind, language
+):
+    job, payload = prepare_case(tmp_path, f"overdue_{kind}_v1", language)
+    payload.update(
+        history=[],
+        has_immunization_records=False,
+        history_validity_coverage="all_absent",
+    )
+    job.data.write_text(json.dumps(payload))
+    report, pdf = compile_case(job)
+    first = " ".join(pdf.pages[0].extract_text().split())
+    assert (
+        "We have no immunization records on file"
+        if language == "en"
+        else "Aucune vaccination n’est consignée au dossier"
+    ) in first
+    assert (
+        "not received the following"
+        if language == "en"
+        else "pas reçu les immunisations suivantes"
+    ) not in first
+    assert len(pdf.pages) == 2
+    assert report["components"][f"overdue_{kind}"]
+
+
+def test_affirmative_starter_rejects_overdue_diseases(tmp_path):
+    job, payload = prepare_case(tmp_path, "affirmative_schedule_v1", "en")
+    payload["overdue_diseases"] = [{"disease": "Measles", "dose": 2}]
+    job.data.write_text(json.dumps(payload))
+    with pytest.raises(subprocess.CalledProcessError) as failure:
+        compile_case(job)
+    assert "affirmative notice requires no overdue diseases" in failure.value.stderr
+
+
+@pytest.mark.parametrize(
+    "birth,diseases,allowed",
+    [
+        ("2010-01-01", ["Varicella", "Hib"], True),
+        ("2009-12-31", ["Varicella", "Hib"], False),
+        ("2009-12-31", ["Measles", "Hib"], True),
+    ],
+)
+def test_suspension_starter_requires_and_names_only_cohort_ispa_diseases(
+    tmp_path, birth, diseases, allowed
+):
+    job, payload = prepare_case(tmp_path, "suspension_order_v1", "en")
+    payload["client_data"]["date_of_birth_iso"] = birth
+    payload["overdue_diseases"] = [
+        {"disease": disease, "dose": 1} for disease in diseases
+    ]
+    job.data.write_text(json.dumps(payload))
+    if not allowed:
+        with pytest.raises(subprocess.CalledProcessError) as failure:
+            compile_case(job)
+        assert (
+            "suspension notice requires an overdue ISPA disease" in failure.value.stderr
+        )
+        return
+    _, pdf = compile_case(job)
+    first = " ".join(pdf.pages[0].extract_text().split())
+    assert diseases[0] in first
+    assert "Haemophilus" not in first and "Hib" not in first
+    assert len(pdf.pages) == 1
+
+
+@pytest.mark.parametrize("language", ["en", "fr"])
+def test_settings_bind_identifier_options_and_bilingual_missing_text(
+    tmp_path, language
+):
+    job, payload = prepare_case(tmp_path, "overdue_diseases_v1", language)
+    payload.update(oiid="", oiid_coverage="mixed")
+    job.data.write_text(json.dumps(payload))
+    settings = job.template.parent / "settings.typ"
+    settings.write_text(
+        settings.read_text()
+        .replace("show-client-id: true", "show-client-id: false")
+        .replace("show-oiid: false", "show-oiid: true")
+        .replace("missing-oiid: none", "missing-oiid: auto")
+    )
+    report, pdf = compile_case(job)
+    first = " ".join(pdf.pages[0].extract_text().split())
+    assert ("Not available" if language == "en" else "Non disponible") in first
+    assert payload["client_id"] not in first
+    assert report["identity"]["client_id"] == payload["client_id"]
+
+
+@pytest.mark.parametrize("language", ["en", "fr"])
+def test_history_starter_defaults_show_validity_and_allow_legend_wording(
+    tmp_path, language
+):
+    job, payload = prepare_case(tmp_path, "overdue_diseases_v1", language)
+    payload["history"][0]["validity"] = "invalid"
+    payload.update(
+        validity_coverage="all_present", history_validity_coverage="all_present"
+    )
+    job.data.write_text(json.dumps(payload))
+    settings = job.template.parent / "settings.typ"
+    settings.write_text(
+        settings.read_text().replace(
+            "legend-labels: (:)", 'legend-labels: (invalid: "Custom dose explanation")'
+        )
+    )
+    _, pdf = compile_case(job)
+    last = " ".join(pdf.pages[-1].extract_text().split())
+    assert "Custom dose explanation" in last
+    assert (
+        "Unspecified vaccine" if language == "en" else "Vaccin non précisé"
+    ) not in last

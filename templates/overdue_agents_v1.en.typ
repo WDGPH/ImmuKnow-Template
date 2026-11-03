@@ -9,7 +9,7 @@
 #immuknow.client-block(window: envelope-window) // Mailing address and client details
 #v(0.3cm) // Space before the message
 
-As of *#date_as_of* our files show that #if to_student [you have] else if to_guardian [your child has] else [the named client has] not received the following immunization(s):
+#if not no_records [As of *#date_as_of* our files show that #if to_student [you have] else if to_guardian [your child has] else [the named client has] not received the following immunization(s):]
 
 #strong(immuknow.overdue-agents(columns: 1))
 

@@ -2,6 +2,8 @@
 // @immuknow-settings: settings.typ
 #import "setup.typ": *
 #show: immuknow.letter // Apply the letter layout
+#let ispa_up_to_date = immuknow.notice-flags(include-ispa: true).ispa_up_to_date
+#assert(not ispa_up_to_date, message: "This suspension notice requires an overdue ISPA disease for the birth cohort.")
 
 // Name used in the legal wording; the printed signature may include credentials.
 #let order-signatory-name = "Dr. Annie Body"
@@ -44,6 +46,8 @@ The reasons for this order are:
           #strong(immuknow.overdue-diseases(
             style: "comma-separated",
             include-dose: false,
+            ispa-only: true,
+            no-records: none, // An order names the assessed ISPA diseases even when no records are on file
           ))
         ]
       ],
