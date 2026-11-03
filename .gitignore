@@ -42,3 +42,10 @@ input/sample/*
 Thumbs.db
 .vscode/
 .idea/
+
+# Generated from the locked Core package, never edited or committed.
+/templates/lib/immuknow/
+# Resource package build output.
+**/build/
+**/*.egg-info/
+/dist/

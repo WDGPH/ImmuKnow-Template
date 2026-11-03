@@ -27,6 +27,7 @@ from immuknow.resources import rendering_build_info
 from immuknow.version_notices import Language, load_catalog
 
 import run
+from sync_lib import ensure_library
 from project import CONFIG_DIR, LIBRARY, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT, TEMPLATES_DIR
 
 
@@ -137,6 +138,7 @@ def main(argv: list[str] | None = None) -> int:
         report.line("FAIL", "Typst", str(exc))
 
     try:
+        ensure_library(TEMPLATES_DIR)
         verify_components(TEMPLATES_DIR)
         report.line(
             "OK", f"templates/{LIBRARY.as_posix()}", "matches installed ImmuKnow"

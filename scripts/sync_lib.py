@@ -1,14 +1,4 @@
-"""Replace templates/lib/immuknow with the copy from the installed ImmuKnow.
-
-Run after upgrading ImmuKnow. ImmuKnow refuses to render with a library that
-differs from its own, so this directory is never edited by hand. Review the
-change with `git diff templates/lib` before committing.
-
-    uv run python scripts/sync_lib.py
-
-The new copy is made and checked beside the project, then swapped in, so a
-failed copy leaves the existing library in place.
-"""
+"""Generate the shared library from installed Core; explicitly refresh it on upgrade."""
 
 from __future__ import annotations
 
@@ -19,20 +9,27 @@ from pathlib import Path
 from immuknow.component_resources import verify_components
 from immuknow.resources import typst_library_root
 
-from project import LIBRARY, ROOT, TEMPLATES_DIR
+from project import LIBRARY, TEMPLATES_DIR
 
 
-def main() -> int:
-    target = TEMPLATES_DIR / LIBRARY
-    try:
-        verify_components(TEMPLATES_DIR)
-    except ValueError:
-        pass
-    else:
-        print(f"templates/{LIBRARY.as_posix()} already matches installed ImmuKnow.")
-        return 0
-
-    with tempfile.TemporaryDirectory(dir=ROOT, prefix=".sync-lib-") as staging:
+def ensure_library(templates: Path, *, replace: bool = False) -> None:
+    """Generate a missing library, retaining an existing mismatched tree for review."""
+    target = templates / LIBRARY
+    if not templates.is_dir():
+        raise ValueError(f"Template directory does not exist: {templates}")
+    if (templates / "lib").is_symlink() or target.is_symlink():
+        raise ValueError("The supplied ImmuKnow library must not use linked paths.")
+    if target.exists():
+        try:
+            verify_components(templates)
+        except ValueError:
+            if not replace:
+                raise
+        else:
+            return
+    with tempfile.TemporaryDirectory(
+        dir=templates.parent, prefix=".sync-lib-"
+    ) as staging:
         staged = Path(staging) / LIBRARY
         shutil.copytree(typst_library_root(), staged)
         verify_components(Path(staging))
@@ -47,9 +44,10 @@ def main() -> int:
                 previous.rename(target)
             raise
 
-    print(
-        f"Updated templates/{LIBRARY.as_posix()}. Review it with `git diff templates/lib`."
-    )
+
+def main() -> int:
+    ensure_library(TEMPLATES_DIR, replace=True)
+    print(f"templates/{LIBRARY.as_posix()} matches installed ImmuKnow.")
     return 0
 
 

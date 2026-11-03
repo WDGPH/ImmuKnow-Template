@@ -15,7 +15,7 @@ health unit:
 | This repository | ImmuKnow |
 |---|---|
 | `config/`: run dates, notice catalog, vaccine and disease reference data | Processing, checks and the CSV input schema |
-| `templates/`: your notice wording, layout, logo and translations | The shared Typst library (`templates/lib/immuknow/`, copied here) |
+| `templates/`: your notice wording, layout, logo and translations | The shared Typst library (`templates/lib/immuknow/`, generated locally) |
 | `input/`: your client CSVs (not committed); fictional sample files | |
 | `runs/`: one folder per run (never committed) | |
 
@@ -46,7 +46,7 @@ immuknow-template/
 │   ├── presentation.typ
 │   ├── translations/             # Disease names shown on notices
 │   ├── assets/                   # logo.png, signature.png
-│   └── lib/immuknow/             # Shared library: do not edit (see "Updating ImmuKnow")
+│   └── lib/immuknow/             # Generated from installed Core; ignored by Git
 ├── input/sample/                 # Synthetic sample cohort and assignments
 ├── scripts/
 │   ├── run.py                    # Run ImmuKnow with this project's folders
@@ -69,6 +69,9 @@ immuknow-template/
 ## Installation
 
 `uv sync` installs the ImmuKnow release named in `pyproject.toml` from GitHub.
+`scripts/check.py` and `scripts/run.py` generate a missing shared library from
+that installed package. An existing modified or incompatible library is retained
+and rejected; use `scripts/sync_lib.py` explicitly when upgrading.
 You don't need a copy of the ImmuKnow code.
 
 ```bash
@@ -391,7 +394,8 @@ installation; native Typst uses system fonts.
    Settings, assets, translations and configuration.
 6. Run `uv run python scripts/check.py --sample`. Template maintainers can also
    run `uv run --locked --group test pytest`.
-7. Commit `uv.lock` together with any config and template changes.
+7. Commit `uv.lock` together with any config and template changes. The generated
+   `templates/lib/immuknow/` tree stays out of Git.
 
 ## Where ImmuKnow comes from
 
