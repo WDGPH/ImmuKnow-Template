@@ -19,6 +19,8 @@ def ensure_library(templates: Path, *, replace: bool = False) -> None:
         raise ValueError(f"Template directory does not exist: {templates}")
     if (templates / "lib").is_symlink() or target.is_symlink():
         raise ValueError("The supplied ImmuKnow library must not use linked paths.")
+    if (templates / "lib").exists() and not (templates / "lib").is_dir():
+        raise ValueError("The template lib path must be a directory")
     if target.exists():
         try:
             verify_components(templates)

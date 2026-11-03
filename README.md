@@ -381,7 +381,7 @@ installation; native Typst uses system fonts.
 2. `uv sync`
 3. `uv run python scripts/sync_lib.py` copies the new shared library into
    `templates/lib/immuknow/`. ImmuKnow refuses to run with an outdated copy.
-   Review the change with `git diff templates/lib`.
+   The generated directory is ignored by Git; verify it with `scripts/check.py`.
 4. If you keep your own school list, compare it with the one in the new
    ImmuKnow release for schools that opened, closed or were renamed. This
    prints where ImmuKnow's list is. With `reference_file: null` there is
@@ -440,17 +440,29 @@ outside `config/`, `templates/` and your input folder.
 **Accented letters doubled in the client-details check (`ÉÉcole`)**: change
 the font. See "After changing fonts" above.
 
-## Studio starter snapshot
+## Packaged starter resources
 
-`studio-scaffold.json` lists the starter letters, Settings, assets, translations,
-configuration, setup files and helper scripts that Studio bundles from a pinned
-commit of this repository. It excludes `templates/lib/immuknow/`: Studio obtains
-the shared library from installed Core. Studio supplies the selected fictional
-client inputs when requested in the download dialog. Maintainer tests stay here
-and are not bundled.
+`studio-scaffold.json` lists the authored starter files distributed to Studio.
+The small resource package under `package/` reads that allowlist during a build;
+it does not keep another copy in this checkout. Its wheel and source archive
+include those files, their SHA-256 hashes and the Template source revision.
+They exclude Core's library, maintainer tests and client inputs.
 
-Studio records the source commit and original file hashes and verifies the local
-snapshot during asset preparation. After changing a listed file, refresh Studio's
-snapshot with its documented `python -m scripts.project_template` command.
-A starter wording change requires a new Template snapshot; it does not require
-a Core release. Normal Studio builds and downloads need no private repository access.
+Studio pins `immuknow-template-resources` to an exact Git revision using the
+`package` subdirectory and reads `immuknow_template.resources.project_files()`.
+To adopt starter changes, update Studio's Template dependency and lockfile.
+A Core update also requires a compatible Template project lock. Installed
+resources are read-only; browser builds and downloaded ZIPs still contain the
+complete project and its exact Core library. Downloaded projects use the root
+project's Core-only Python setup and do not install the resource package.
+
+Build and test the distribution with:
+
+```bash
+uv build package --out-dir dist
+uv run --locked --group test pytest
+```
+
+Installing this dependency from the private Git repository requires read access.
+After installation, resource reads do not contact GitHub. No PyPI publication is
+required.
