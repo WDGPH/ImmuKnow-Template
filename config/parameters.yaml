@@ -1,5 +1,7 @@
 bundling:
   bundle_size: 100
+  # Use school, board, language, or page_count; combine them in a list.
+  # Example: [board, language, page_count]
   group_by: null
 school_validation:
   enabled: false

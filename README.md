@@ -237,6 +237,13 @@ sample warnings show what review looks like:
 - `layout.section_pages`: one client's immunization history runs onto a second
   page.
 
+Configure delivery in `config/parameters.yaml`. The starter groups up to 100
+notices per bundle without splitting them by field, and encryption is disabled.
+See [Core's configuration guide](https://github.com/WDGPH/ImmuKnow/blob/main/immuknow/config/README.md)
+for grouping and password options, including initials. QR destinations are set
+in `templates/settings.typ`; see [Core's template guide](https://github.com/WDGPH/ImmuKnow/blob/main/docs/user_guide/phu_templates.md)
+for the notice fields available to them.
+
 Run folders contain client information. Store and delete them according to
 your health unit's policies.
 
@@ -294,7 +301,7 @@ and a string supplies custom text. Some clients may have an OIID while others
 do not; an all-absent input cohort errors when OIID display is enabled.
 Customize `id-label` and `oiid-label` without altering source facts.
 
-The optional CSV `reader` column accepts `student` or `guardian`. An explicit
+The optional CSV `intended_reader` column accepts `student` or `guardian`. An explicit
 choice takes priority over age, including in the suspension order. Otherwise,
 the default is student wording at age 16 or older and guardian wording under 16.
 Unknown age without a reader choice makes both flags false, selecting neutral
@@ -399,14 +406,11 @@ installation; native Typst uses system fonts.
 
 ## Where ImmuKnow comes from
 
-`pyproject.toml` pins ImmuKnow to reviewed commit `499dd2a` on
-GitHub. This includes the merged template and dependency updates in
-[Core PR #230](https://github.com/WDGPH/ImmuKnow/pull/230) and
-[Core PR #229](https://github.com/WDGPH/ImmuKnow/pull/229); it is not a new release candidate:
+`pyproject.toml` pins ImmuKnow to a reviewed Core commit:
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@499dd2a2a04e6d621e3720a4f0fe618727cf1bd5",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@7a7e3f9bf3f896e9302a3009957d57c0341dffcd",
 ]
 ```
 
