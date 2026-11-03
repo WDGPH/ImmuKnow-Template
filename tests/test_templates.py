@@ -50,6 +50,7 @@ def prepare_case(workspace, version, language):
                 "agent": "DTaP",
                 "display_name": "DTaP",
                 "validity": "unknown",
+                "mapping_known": True,
             }
         ],
         metadata={},
