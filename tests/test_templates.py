@@ -30,7 +30,6 @@ def prepare_case(workspace, version, language):
             "last_name": "Zephyr",
             "date_of_birth_iso": "2015-01-02",
             "age": 9,
-            "over_16": False,
         },
         contact={
             "street": "123 Main St",
@@ -240,20 +239,22 @@ def test_unused_history_defaults_are_not_evaluated(tmp_path):
     assert not report["components"]["history"]
 
 
-@pytest.mark.parametrize("over_16", [True, False, None])
-@pytest.mark.parametrize("reader", [None, "student", "guardian"])
-def test_reader_flags_select_wording_and_the_same_addressee(tmp_path, over_16, reader):
+@pytest.mark.parametrize("age", [15, 16, None])
+@pytest.mark.parametrize("intended_reader", [None, "student", "guardian"])
+def test_reader_flags_select_wording_and_the_same_addressee(
+    tmp_path, age, intended_reader
+):
     job, payload = prepare_case(tmp_path, "overdue_diseases_v1", "en")
-    payload["client_data"]["over_16"] = over_16
-    payload["reader"] = reader
+    payload["client_data"]["age"] = age
+    payload["intended_reader"] = intended_reader
     job.data.write_text(json.dumps(payload))
     job.template.write_text(
         job.template.read_text()
         + "\n#assert(type(to_student) == bool and type(to_guardian) == bool)\n"
         "#assert(not (to_student and to_guardian))\n"
     )
-    selected = reader or (
-        None if over_16 is None else "student" if over_16 else "guardian"
+    selected = intended_reader or (
+        None if age is None else "student" if age >= 16 else "guardian"
     )
     report, pdf = compile_case(job)
     text = " ".join(pdf.pages[0].extract_text().split())
@@ -265,30 +266,30 @@ def test_reader_flags_select_wording_and_the_same_addressee(tmp_path, over_16, r
     assert wording in text
     label = "To Parent/Guardian of:" if selected == "guardian" else "To:"
     assert report["measurements"]["address"][0]["text"].startswith(label)
-    assert report["notice"]["client_data"]["over_16"] is over_16
+    assert report["notice"]["client_data"]["age"] == age
 
 
 @pytest.mark.parametrize(
-    "over_16,reader,service,heading",
+    "age,intended_reader,service,heading",
     [
-        (True, "guardian", "Serve: Parent/Guardian.", "Parent/Guardian:"),
-        (False, "student", "Serve: Parent/Guardian and student.", "Student:"),
+        (16, "guardian", "Serve: Parent/Guardian.", "Parent/Guardian:"),
+        (15, "student", "Serve: Parent/Guardian and student.", "Student:"),
         (None, None, "Serve: Client or representative.", "Client or representative:"),
     ],
 )
 def test_suspension_uses_the_selected_reader_throughout(
-    tmp_path, over_16, reader, service, heading
+    tmp_path, age, intended_reader, service, heading
 ):
     job, payload = prepare_case(tmp_path, "suspension_order_v1", "en")
-    payload["client_data"]["over_16"] = over_16
-    payload["reader"] = reader
+    payload["client_data"]["age"] = age
+    payload["intended_reader"] = intended_reader
     job.data.write_text(json.dumps(payload))
     report, pdf = compile_case(job)
     text = " ".join(pdf.pages[0].extract_text().split())
     assert len(pdf.pages) == 1
     assert service in text
     assert heading in text
-    label = "To Parent/Guardian of:" if reader == "guardian" else "To:"
+    label = "To Parent/Guardian of:" if intended_reader == "guardian" else "To:"
     assert report["measurements"]["address"][0]["text"].startswith(label)
 
 

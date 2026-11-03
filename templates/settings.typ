@@ -1,4 +1,4 @@
-#import "lib/immuknow/lib.typ" as core
+#import "lib/immuknow/lib.typ" as immuknow
 #import "presentation.typ" as presentation
 #import "lib/immuknow/lib.typ": notice-header, notice-section, signature-block, privacy-notice, envelope-preset, long-date, localization, url-encode, query-url, link
 
@@ -31,7 +31,7 @@
 // QR destination is resolved in Typst and shared by the code and its clickable link
 #let qr = (
   enabled: true,
-  url: notice => core.query-url("https://example.org/update", (
+  url: notice => immuknow.query-url("https://example.org/update", (
     client_id: notice.client_id,
     dob: notice.client_data.date_of_birth_iso,
     lang: notice.language,
@@ -49,24 +49,23 @@
 #let notice = json(sys.inputs.at("data"))
 #let template-filename = sys.inputs.at("notice-template")
 #assert(template-filename == notice.template, message: "Selected template identity differs from the facts")
-#core.check-notice(
+#immuknow.check-notice(
   notice,
   version: sys.inputs.at("notice-version"),
   language: sys.inputs.at("notice-language"),
 )
-#let reader = core.reader.with(notice)
-#let flags = core.notice-flags(notice)
+#let flags = immuknow.notice-flags(notice)
 #let to_student = flags.to_student
 #let to_guardian = flags.to_guardian
 #let no_records = flags.no_records
 #let up_to_date = flags.up_to_date
 #let logo = image("assets/logo.png", width: logo-width)
-#let dates = core.notice-dates(notice)
+#let dates = immuknow.notice-dates(notice)
 #let date_of_delivery = dates.date_of_delivery
 #let date_as_of = dates.date_as_of
 #let date_of_birth = dates.date_of_birth
 
-#let letter = core.letter.with(
+#let letter = immuknow.letter.with(
   notice: notice,
   language: notice.language,
   paper: paper-size,
@@ -77,7 +76,7 @@
 )
 
 // Shared page defaults; named options in the Template change only that page
-#let notice-page = core.notice-section.with(
+#let notice-page = immuknow.notice-section.with(
   logo: logo,
   logo-width: logo-width,
   title-size: title-size,
@@ -87,7 +86,7 @@
 )
 
 // Shared history defaults; e.g. #immuknow.immunization-history(show-age: true) changes one table
-#let immunization-history = core.immunization-history.with(
+#let immunization-history = immuknow.immunization-history.with(
   notice,
   diseases: ("Diphtheria", "Tetanus", "Pertussis", "Polio", "Hib", "Pneumococcal",
     "Rotavirus", "Measles", "Mumps", "Rubella", "Meningococcal", "Varicella"),
@@ -107,17 +106,17 @@
 )
 
 // These helpers always use this letter’s client data.
-#let client-block = core.client-block.with(
+#let client-block = immuknow.client-block.with(
   notice,
   show-client-id: true, // Set false to hide the assignment identifier
   show-oiid: false, // Optional Ontario Immunization ID from the CSV
   missing-oiid: none, // none: omit; "": blank value; auto: bilingual unavailable text; or custom text
   id-label: auto, oiid-label: auto, // Bilingual defaults or your own plain-text labels
 )
-#let address-block = core.address-block.with(notice)
-#let overdue-diseases = core.overdue-diseases.with(notice, labels: presentation.selected-labels(), no-records: auto, ispa-only: false)
-#let overdue-agents = core.overdue-agents.with(notice, no-records: auto)
-#let notice-flags = core.notice-flags.with(notice)
-#let qr-code = core.qr-code.with(notice)
-#let notice-dates = core.notice-dates.with(notice)
-#let check-notice = core.check-notice.with(notice)
+#let address-block = immuknow.address-block.with(notice)
+#let overdue-diseases = immuknow.overdue-diseases.with(notice, labels: presentation.selected-labels(), no-records: auto, ispa-only: false)
+#let overdue-agents = immuknow.overdue-agents.with(notice, no-records: auto)
+#let notice-flags = immuknow.notice-flags.with(notice)
+#let qr-code = immuknow.qr-code.with(notice)
+#let notice-dates = immuknow.notice-dates.with(notice)
+#let check-notice = immuknow.check-notice.with(notice)
