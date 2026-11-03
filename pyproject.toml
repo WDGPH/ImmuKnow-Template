@@ -1,5 +1,9 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
 [project]
-name = "immuknow-template"
+name = "immuknow-template-resources"
 version = "0.1.0"
 description = "ImmuKnow project for one public health unit: config, notice templates and run scripts"
 requires-python = ">=3.11"
@@ -33,3 +37,79 @@ markers = [
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F"]
+
+# The same authored files serve the native project and the installed resource package.
+[tool.hatch.build.targets.wheel]
+packages = ["src/immuknow_template"]
+
+[tool.hatch.build.targets.wheel.force-include]
+".gitignore" = "immuknow_template/data/.gitignore"
+".pre-commit-config.yaml" = "immuknow_template/data/.pre-commit-config.yaml"
+".python-version" = "immuknow_template/data/.python-version"
+"LICENSE" = "immuknow_template/data/LICENSE"
+"README.md" = "immuknow_template/data/README.md"
+"pyproject.toml" = "immuknow_template/data/pyproject.toml"
+"scripts/check.py" = "immuknow_template/data/scripts/check.py"
+"scripts/check_client_data.py" = "immuknow_template/data/scripts/check_client_data.py"
+"scripts/project.py" = "immuknow_template/data/scripts/project.py"
+"scripts/run.py" = "immuknow_template/data/scripts/run.py"
+"scripts/sync_lib.py" = "immuknow_template/data/scripts/sync_lib.py"
+"uv.lock" = "immuknow_template/data/uv.lock"
+"config/disease_normalization.json" = "immuknow_template/data/config/disease_normalization.json"
+"config/notice_versions.yaml" = "immuknow_template/data/config/notice_versions.yaml"
+"config/parameters.yaml" = "immuknow_template/data/config/parameters.yaml"
+"config/vaccine_reference.json" = "immuknow_template/data/config/vaccine_reference.json"
+"templates/affirmative_schedule_v1.en.typ" = "immuknow_template/data/templates/affirmative_schedule_v1.en.typ"
+"templates/assets/logo.png" = "immuknow_template/data/templates/assets/logo.png"
+"templates/assets/signature.png" = "immuknow_template/data/templates/assets/signature.png"
+"templates/overdue_agents_v1.en.typ" = "immuknow_template/data/templates/overdue_agents_v1.en.typ"
+"templates/overdue_agents_v1.fr.typ" = "immuknow_template/data/templates/overdue_agents_v1.fr.typ"
+"templates/overdue_diseases_v1.en.typ" = "immuknow_template/data/templates/overdue_diseases_v1.en.typ"
+"templates/overdue_diseases_v1.fr.typ" = "immuknow_template/data/templates/overdue_diseases_v1.fr.typ"
+"templates/presentation.typ" = "immuknow_template/data/templates/presentation.typ"
+"templates/settings.typ" = "immuknow_template/data/templates/settings.typ"
+"templates/setup.typ" = "immuknow_template/data/templates/setup.typ"
+"templates/suspension_order_v1.en.typ" = "immuknow_template/data/templates/suspension_order_v1.en.typ"
+"templates/translations/en_diseases_chart.json" = "immuknow_template/data/templates/translations/en_diseases_chart.json"
+"templates/translations/en_diseases_overdue.json" = "immuknow_template/data/templates/translations/en_diseases_overdue.json"
+"templates/translations/fr_diseases_chart.json" = "immuknow_template/data/templates/translations/fr_diseases_chart.json"
+"templates/translations/fr_diseases_overdue.json" = "immuknow_template/data/templates/translations/fr_diseases_overdue.json"
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "src/immuknow_template",
+    ".gitignore",
+    ".pre-commit-config.yaml",
+    ".python-version",
+    "LICENSE",
+    "README.md",
+    "pyproject.toml",
+    "scripts/check.py",
+    "scripts/check_client_data.py",
+    "scripts/project.py",
+    "scripts/run.py",
+    "scripts/sync_lib.py",
+    "uv.lock",
+    "config/disease_normalization.json",
+    "config/notice_versions.yaml",
+    "config/parameters.yaml",
+    "config/vaccine_reference.json",
+    "templates/affirmative_schedule_v1.en.typ",
+    "templates/assets/logo.png",
+    "templates/assets/signature.png",
+    "templates/overdue_agents_v1.en.typ",
+    "templates/overdue_agents_v1.fr.typ",
+    "templates/overdue_diseases_v1.en.typ",
+    "templates/overdue_diseases_v1.fr.typ",
+    "templates/presentation.typ",
+    "templates/settings.typ",
+    "templates/setup.typ",
+    "templates/suspension_order_v1.en.typ",
+    "templates/translations/en_diseases_chart.json",
+    "templates/translations/en_diseases_overdue.json",
+    "templates/translations/fr_diseases_chart.json",
+    "templates/translations/fr_diseases_overdue.json",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true

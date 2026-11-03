@@ -442,24 +442,26 @@ the font. See "After changing fonts" above.
 
 ## Packaged starter resources
 
-`studio-scaffold.json` lists the authored starter files distributed to Studio.
-The small resource package under `package/` reads that allowlist during a build;
-it does not keep another copy in this checkout. Its wheel and source archive
-include those files, their SHA-256 hashes and the Template source revision.
-They exclude Core's library, maintainer tests and client inputs.
+The root `pyproject.toml` declares the exact authored files included in the
+resource wheel and source archive. Hatch packages the existing files directly;
+there are no custom build scripts or committed copies. Core's library,
+maintainer tests and client inputs are excluded.
 
-Studio pins `immuknow-template-resources` to an exact Git revision using the
-`package` subdirectory and reads `immuknow_template.resources.project_files()`.
+Studio pins `immuknow-template-resources` to an exact Git revision and reads
+`immuknow_template.resources.project_files()`. The helper verifies resources
+against the wheel's standard hash records and reports Git installation metadata
+in the exported provenance. A standalone wheel has no Git revision to report.
 To adopt starter changes, update Studio's Template dependency and lockfile.
 A Core update also requires a compatible Template project lock. Installed
 resources are read-only; browser builds and downloaded ZIPs still contain the
-complete project and its exact Core library. Downloaded projects use the root
-project's Core-only Python setup and do not install the resource package.
+complete project and its exact Core library. The root project uses
+`tool.uv.package = false`, so native setup and downloaded projects install only
+Core; they do not build or install the Template resource package.
 
 Build and test the distribution with:
 
 ```bash
-uv build package --out-dir dist
+uv build --out-dir dist
 uv run --locked --group test pytest
 ```
 
