@@ -9,7 +9,7 @@
   },
   {
     "client_id": "8427350155",
-    "template": "affirmative_schedule_v1.fr.typ"
+    "template": "affirmative_schedule_v1.en.typ"
   },
   {
     "client_id": "8741538445",
@@ -37,6 +37,6 @@
   },
   {
     "client_id": "2051410912",
-    "template": "affirmative_schedule_v1.fr.typ"
+    "template": "affirmative_schedule_v1.en.typ"
   }
 ]
