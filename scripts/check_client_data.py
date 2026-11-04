@@ -1,6 +1,6 @@
 """Refuse files that may contain client information.
 
-Only the synthetic sample in input/sample/ may be committed. The pre-commit hook
+Only the fictional sample and its assignments in input/sample/ may be committed. The pre-commit hook
 passes the files being committed; with no arguments, every tracked file is checked.
 
     uv run python scripts/check_client_data.py [paths...]

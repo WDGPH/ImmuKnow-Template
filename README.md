@@ -7,7 +7,8 @@ ImmuKnow codebase.
 This repository maintains the starter letters, Settings, display translations,
 example branding and project configuration used by Studio and native projects.
 ImmuKnow Core ships the processing engine and shared Typst library, with no
-starter letters. Studio owns its fictional client scenarios.
+starter letters. Template maintains fictional clients for notice development;
+Studio uses those same clients for previews.
 
 ImmuKnow does all the processing. This repository holds what belongs to your
 health unit:
@@ -16,12 +17,12 @@ health unit:
 |---|---|
 | `config/`: run dates, notice catalog, vaccine and disease reference data | Processing, checks and the CSV input schema |
 | `templates/`: your notice wording, layout, logo and translations | The shared Typst library (`templates/lib/immuknow/`, generated locally) |
-| `input/`: your client CSVs (not committed); fictional sample files | |
+| `input/`: your client CSVs (not committed); fictional sample and assignments | |
 | `runs/`: one folder per run (never committed) | |
 
 Studio downloads include this project's Python setup and helper scripts, the
 selected notice and its configuration. The **Include fictional client data**
-checkbox controls whether the selected fictional inputs and sample setup are
+checkbox controls whether fictional inputs and sample setup are
 included; custom imported sample data is preserved. Extract the ZIP to run it;
 no separate Template checkout is needed. The notice catalog may list notices that are not
 in the project.
@@ -47,7 +48,7 @@ immuknow-template/
 │   ├── translations/             # Disease names shown on notices
 │   ├── assets/                   # logo.png, signature.png
 │   └── lib/immuknow/             # Generated from installed Core; ignored by Git
-├── input/sample/                 # Synthetic sample cohort and assignments
+├── input/sample/                 # Fictional example clients and assignments
 ├── scripts/
 │   ├── run.py                    # Run ImmuKnow with this project's folders
 │   ├── check.py                  # Check this machine and project are ready
@@ -89,19 +90,51 @@ CSV and assignments before running notices. Install Git
 as well: uv fetches the pinned Core release from GitHub. If you want to commit
 changes, run `git init` before `uv run --locked prek install`.
 
-`sample.json`, when present, names the sample CSV and assignments relative to
-the project folder. When fictional client data is included, Studio sets it to
-the selected fictional example. Without it, the scripts use `input/sample/sample_students.csv` and
-`input/sample/sample_assignments.json`. An imported project's existing sample
-selection is preserved. Without fictional data or a prepared example, provide
-your own inputs and sample selection before using `--sample`. For example:
+The full Template uses six fictional clients in the [example CSV](input/sample/sample_students.csv)
+and the notice assignments in `input/sample/sample_assignments.json`. Template
+maintains these clients for notice development and shares them with Studio.
+Use them to explore notice wording and layout.
+The Template assignments select suitable starter notices for the native sample run. The starter dates
+match Studio’s initial preview dates; changing the project dates can change age
+and notice applicability.
+
+The six clients have fictional identities and curated immunization histories.
+Addresses, towns, postal codes, schools and boards use obvious example labels.
+A fictional OIID and a guardian-directed notice demonstrate those options.
+
+The histories and supplied forecasts are shown as of January 15, 2026. The six
+clients give authors different notices to explore:
+
+- Grace has an otherwise routine history with a missing meningococcal record.
+- Eleanor has a longer history, including Japanese encephalitis doses during
+  a fictional stay in Japan, and no overdue diseases.
+- Angela has no doses on file and a guardian-directed request for records.
+- María Teresa is a grade 9 student whose hepatitis B and HPV doses are missing
+  from the record.
+- Michele has an earlier MMR dose but no record of the second dose.
+- Adèle has a routine history with no overdue diseases.
+
+The curated histories draw on [Ontario’s routine immunization schedule](https://www.ontario.ca/page/ontarios-routine-immunization-schedule),
+[Public Health Ontario’s historical pneumococcal program](https://www.publichealthontario.ca/-/media/documents/R/2014/rdto-2012.pdf),
+and [Japan’s Japanese encephalitis schedule](https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou20/japanese_encephalitis.html).
+These are fictional records with supplied assessments, not clinical assessments
+or guidance for an individual. Review changes to the records and their supplied
+assessments together.
+
+`sample.json`, when present, overrides both sample paths with files relative to
+the project folder. Studio sets it to the selected fictional client when data
+is included in a download. An imported project's existing selection is
+preserved. For example:
 
 ```json
 {
-  "csv": "input/sample/sample_students.csv",
-  "assignments": "input/sample/sample_assignments.json"
+  "csv": "examples/clients/short.csv",
+  "assignments": "examples/assignments/short.overdue_diseases_v1.en.json"
 }
 ```
+
+Without a sample selection or the full Template assignments, provide your own
+inputs and `sample.json` before using `--sample`.
 
 `prek install` adds Git hooks that lint and format Python with Ruff and refuse
 to commit files that may hold
@@ -226,16 +259,9 @@ release it with the token shown in `report.html`:
 uv run immuknow-rebundle runs/<run-id> --accept-warning <token> --reason "Checked layout"
 ```
 
-The full Template sample finishes `completed_with_warnings` on purpose. A Studio
-download may have a different sample, so its findings differ. The full Template
-sample warnings show what review looks like:
-
-- `content.multiple_links`: every notice links to more than one website.
-- `data.forecast_coverage`: two clients are overdue for one disease, but the
-  agent offered (MMR) also covers others.
-- `source.address_incomplete`: one client has no street address.
-- `layout.section_pages`: one client's immunization history runs onto a second
-  page.
+The sample may report warnings such as layout or source findings. Review them
+in the report before accepting a notice. A Studio download can select one
+client, so its findings may differ from the full cohort.
 
 Configure delivery in `config/parameters.yaml`. The starter groups up to 100
 notices per bundle without splitting them by field, and encryption is disabled.
@@ -410,7 +436,7 @@ installation; native Typst uses system fonts.
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@c71d386a0c31724749365ae5a40f5c88c9eb54ba",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@1476fba70662e2145187e31c0f9c897d3e5eaada",
 ]
 ```
 
@@ -451,11 +477,14 @@ The root `pyproject.toml` includes the authored `templates/`, `config/` and
 source archive. New authored files ship automatically; generated library files
 and Python caches are excluded. Hatch packages the existing files directly;
 there are no custom build scripts or committed copies. Core's library,
-maintainer tests and client inputs are excluded.
+maintainer tests and client inputs are excluded. The fictional CSV and its
+default notice assignments are separate read-only resources for Studio. They
+are not included automatically in project exports.
 
 Studio pins `immuknow-template-resources` to an exact Git revision and reads
-`immuknow_template.resources.project_files()`. The helper reads the installed files and reports Git installation metadata
-and file hashes in the exported provenance. A standalone wheel has no Git revision to report.
+`immuknow_template.resources.project_files()`. The helper reads the installed
+files and reports Git installation metadata and file hashes in the exported
+provenance. A standalone wheel has no Git revision to report.
 To adopt starter changes, update Studio's Template dependency and lockfile.
 A Core update also requires a compatible Template project lock. Installed
 resources are read-only; browser builds and downloaded ZIPs still contain the
