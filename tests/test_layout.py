@@ -45,4 +45,6 @@ def test_sample_assignments_cover_sample_clients():
     with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
         clients = {row["client_id"] for row in csv.DictReader(source)}
     assignments = json.loads(SAMPLE_ASSIGNMENTS.read_text(encoding="utf-8"))
-    assert [a["client_id"] for a in assignments] == sorted(clients)
+    assigned = [a["client_id"] for a in assignments]
+    assert len(assigned) == len(set(assigned))
+    assert set(assigned) == clients

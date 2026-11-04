@@ -83,6 +83,14 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
     assert payload(direct_wheel) == original
     with zipfile.ZipFile(direct_wheel) as archive:
         assert "immuknow_template/stale.py" not in archive.namelist()
+        assert (
+            archive.read("immuknow_template/examples/assignments.json")
+            == (checkout / "input/sample/sample_assignments.json").read_bytes()
+        )
+        assert (
+            archive.read("immuknow_template/examples/clients.csv")
+            == (checkout / "input/sample/sample_students.csv").read_bytes()
+        )
     unpacked = tmp_path / "source"
     with tarfile.open(next(first.glob("*.tar.gz"))) as archive:
         archived = {name.split("/", 1)[1] for name in archive.getnames() if "/" in name}
@@ -114,8 +122,20 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
     code = """
 import json, tomllib
 from pathlib import Path
-from immuknow_template.resources import project_files
+from immuknow_template.resources import example_assignments_path, example_clients_path, project_files
+example = example_clients_path()
+assert example.is_file()
+assert example.read_bytes() == Path("checkout/input/sample/sample_students.csv").read_bytes()
+assignments = example_assignments_path()
+assert assignments.read_bytes() == Path("checkout/input/sample/sample_assignments.json").read_bytes()
+import csv
+with example.open(newline="", encoding="utf-8-sig") as stream:
+    clients = {row["client_id"] for row in csv.DictReader(stream)}
+assigned = [row["client_id"] for row in json.loads(assignments.read_text())]
+assert len(assigned) == len(set(assigned)) and set(assigned) == clients
 files = project_files()
+assert "input/sample/sample_students.csv" not in files
+assert "input/sample/sample_assignments.json" not in files
 assert "templates/setup.typ" in files
 assert "scripts/sync_lib.py" in files
 project = tomllib.loads(files["pyproject.toml"].decode())

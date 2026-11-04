@@ -24,7 +24,7 @@ output/
 run.json
 report.html
 
-# Input data may contain client information. Only the synthetic sample is tracked.
+# Input data may contain client information. Only the fictional sample and its assignments are tracked.
 # Keep cohort CSVs and assignments files in input/: an assignments file lists
 # client IDs and, being .json, is only ignored inside this folder.
 input/*
