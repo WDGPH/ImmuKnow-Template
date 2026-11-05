@@ -11,7 +11,7 @@ import yaml
 from pypdf import PdfReader
 
 from immuknow.data_models import ClientRecord
-from immuknow.compile_notices import compile_render_job, evaluate_render_job
+from immuknow.compile_notices import compile_render_job
 from immuknow.generate_notices import prepare_render_jobs
 from project import CONFIG_DIR, TEMPLATES_DIR
 
@@ -63,8 +63,10 @@ def prepare_case(workspace, version, language):
 
 def compile_case(job):
     native = os.environ.get("TYPST_BIN", "typst")
-    assert not compile_render_job(job, native)
-    report = evaluate_render_job(job, native)
+    diagnostics, report, error = compile_render_job(job, native)
+    assert not diagnostics
+    assert error is None
+    assert report is not None
     return report, PdfReader(job.pdf)
 
 
