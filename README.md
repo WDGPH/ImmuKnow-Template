@@ -436,7 +436,7 @@ installation; native Typst uses system fonts.
 
 ```toml
 dependencies = [
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@ee7146f2f7813ccb58b2678db1b22e1fb99aff55",
+    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@014a1a33e3385cebd0d4a8ae123d05ec9541a923",
 ]
 ```
 
