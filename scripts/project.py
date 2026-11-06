@@ -1,6 +1,8 @@
 """Project directories and sample paths used by the helper scripts."""
 
 import json
+import os
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,3 +43,14 @@ def sample_paths() -> tuple[Path, Path]:
 
 SAMPLE_INPUT, SAMPLE_ASSIGNMENTS = sample_paths()
 LIBRARY = Path("lib") / "immuknow"
+
+
+def immuknow_command() -> str:
+    """Locate the standalone executable, honoring an explicit path first."""
+    selected = os.environ.get("IMMUKNOW_BIN") or "immuknow"
+    found = shutil.which(selected)
+    if found is None:
+        raise RuntimeError(
+            "The immuknow executable was not found. Install Core or set IMMUKNOW_BIN to its path."
+        )
+    return found

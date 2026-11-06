@@ -1,18 +1,18 @@
 # Contributor guidance
 
-Follow the [shared language and project responsibilities](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/documentation.md#shared-language-and-project-responsibilities).
+Follow the [shared language and project responsibilities](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/documentation.md).
 
 Template owns authored starter letters, Settings, display translations, example
 branding, project configuration, local setup, helper commands, readiness checks
-and starter presentation tests. Core ships the shared library and no starters.
+and starter presentation tests. Core ships the shared library and schemas; project settings and reference lists belong here.
 Template owns the shared fictional example clients for notice development.
 Studio uses them for previews and consumes a pinned resource package. Keep
-project instructions in the [README](README.md). Link to
+user instructions in the [README](README.md), and maintainer instructions in [CONTRIBUTING.md](CONTRIBUTING.md). Link to
 [ImmuKnow Core](https://github.com/WDGPH/ImmuKnow) for native contracts and
 [ImmuKnow Studio](https://github.com/WDGPH/ImmuKnow-Studio) for the browser
 workflow.
 
-Follow the [shared testing strategy](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/testing.md#testing-across-the-projects).
+Follow the [shared testing strategy](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/testing.md).
 Test helper commands, paths, readiness checks and the handoff to Core. Keep one
 shared native sample journey plus starter wording/page-count checks; do not
 duplicate Core's validation suite. Studio downloads include the user-facing setup and sample check, not maintainer tests.
@@ -29,4 +29,4 @@ Make setup and helper changes here, then update Studio's dependency and lock.
 Never edit installed resources. Build copies belong in generated output only.
 
 Prefer clear, direct authoring and abstractions that earn their complexity. Follow
-Core's [authoring principles](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/documentation.md#template-authoring-principles).
+Core's [authoring principles](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/templates.md).

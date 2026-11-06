@@ -1,45 +1,25 @@
-"""templates/lib/immuknow must match the installed ImmuKnow byte for byte."""
-
-import shutil
+"""Library synchronization uses the executable's exported Typst resources."""
 
 import pytest
-from immuknow.component_resources import verify_components
 
 import sync_lib
-from project import LIBRARY, TEMPLATES_DIR
+from project import LIBRARY
 
 
-def test_library_matches_installed_immuknow():
-    verify_components(TEMPLATES_DIR)
-
-
-def test_sync_replaces_a_changed_library(monkeypatch, tmp_path):
-    templates = tmp_path / "templates"
-    shutil.copytree(TEMPLATES_DIR / LIBRARY, templates / LIBRARY)
-    (templates / LIBRARY / "lib.typ").write_text("// edited\n", encoding="utf-8")
-    (templates / LIBRARY / "extra.typ").write_text("", encoding="utf-8")
-    with pytest.raises(ValueError):
-        verify_components(templates)
-    monkeypatch.setattr(sync_lib, "TEMPLATES_DIR", templates)
-    assert sync_lib.main() == 0
-    verify_components(templates)
-    assert [path.name for path in tmp_path.iterdir()] == ["templates"]
-
-
-def test_missing_library_is_generated_and_changed_library_requires_explicit_refresh(
-    tmp_path,
-):
+def test_missing_library_is_generated_and_changes_require_explicit_refresh(tmp_path):
     templates = tmp_path / "templates"
     templates.mkdir()
     sync_lib.ensure_library(templates)
-    verify_components(templates)
+    original = sync_lib.library_files(templates / LIBRARY)
     changed = templates / LIBRARY / "lib.typ"
     changed.write_text("// local change\n")
+    (templates / LIBRARY / "extra.typ").write_text("")
     with pytest.raises(ValueError, match="differs"):
         sync_lib.ensure_library(templates)
     assert changed.read_text() == "// local change\n"
     sync_lib.ensure_library(templates, replace=True)
-    verify_components(templates)
+    assert sync_lib.library_files(templates / LIBRARY) == original
+    assert [path.name for path in tmp_path.iterdir()] == ["templates"]
 
 
 def test_missing_library_does_not_follow_a_linked_parent(tmp_path):
@@ -51,3 +31,12 @@ def test_missing_library_does_not_follow_a_linked_parent(tmp_path):
     with pytest.raises(ValueError, match="linked"):
         sync_lib.ensure_library(templates)
     assert not list(outside.iterdir())
+
+
+def test_linked_file_in_existing_library_is_rejected(tmp_path):
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    sync_lib.ensure_library(templates)
+    (templates / LIBRARY / "link.typ").symlink_to(tmp_path / "missing")
+    with pytest.raises(ValueError, match="linked"):
+        sync_lib.ensure_library(templates, replace=True)

@@ -2,8 +2,8 @@
 
 Usage
 -----
-    uv run python scripts/run.py input/students.csv --notice-assignments input/assignments.json
-    uv run python scripts/run.py input/students.csv --template overdue_diseases_v1.en.typ
+    python scripts/run.py input/students.csv --notice-assignments input/assignments.json
+    python scripts/run.py input/students.csv --template overdue_diseases_v1.en.typ
 
 Relative paths start from your working directory, as with immuknow itself. A
 --template given as a bare file name is a file in templates/, as in an
@@ -11,15 +11,14 @@ assignments file. --config, --templates and --output default to this project's
 directories. Any other option, such as --input-encoding cp1252, is passed to
 immuknow unchanged.
 
-The exit code is immuknow's: 0 when every notice was produced (warnings may
-still need review before delivery), 1 otherwise.
+The exit code is ImmuKnow's: 0 when all requested work succeeds, 1 otherwise.
+Warnings remain eligible for sending.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -32,13 +31,14 @@ from project import (
     SAMPLE_ASSIGNMENTS,
     SAMPLE_INPUT,
     TEMPLATES_DIR,
+    immuknow_command,
 )
 
 
 def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[str]]:
     parser = argparse.ArgumentParser(
         description="Run immuknow with this project's directories.",
-        epilog="Other options are passed to immuknow; see `uv run immuknow --help`.",
+        epilog="Other options are passed to immuknow; see `immuknow run --help`.",
         allow_abbrev=False,
     )
     parser.add_argument("input_file", type=Path, nargs="?", help="Cohort CSV")
@@ -99,15 +99,6 @@ def parse_args(argv: list[str] | None = None) -> tuple[argparse.Namespace, list[
     return args, passthrough
 
 
-def immuknow_command() -> str:
-    """Prefer the immuknow installed beside this Python, as `uv run` provides."""
-    scripts = Path(sys.executable).parent
-    found = shutil.which("immuknow", path=str(scripts)) or shutil.which("immuknow")
-    if found is None:
-        raise RuntimeError("The immuknow command is not installed. Run `uv sync`.")
-    return found
-
-
 def run_ids(output_dir: Path) -> set[str]:
     if not output_dir.is_dir():
         return set()
@@ -129,12 +120,7 @@ def print_outcome(run_dir: Path) -> None:
         return
     print(f"Run status: {status}\nReport: {run_dir / 'report.html'}")
     if status == "completed_with_warnings":
-        print(
-            "Some notices have warnings and are held for review. Open the report, "
-            "then release reviewed notices with:\n"
-            f"  uv run immuknow-rebundle {run_dir} --accept-warning <token> "
-            '--reason "<why it is acceptable>"'
-        )
+        print("Some notices have warnings. Open the report to review them.")
     elif status != "completed":
         print("Open the report to see which rows or notices failed and why.")
 
@@ -148,7 +134,7 @@ def main(argv: list[str] | None = None, *, quiet: bool = False) -> int:
         )
         if selected.resolve() == TEMPLATES_DIR.resolve():
             ensure_library(TEMPLATES_DIR)
-        command = [immuknow_command(), str(args.input_file)]
+        command = [immuknow_command(), "run", str(args.input_file)]
     except (RuntimeError, ValueError, OSError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
