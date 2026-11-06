@@ -4,7 +4,6 @@ import json
 
 import pytest
 
-from check import catalog_entry_points
 from project import CONFIG_DIR, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT, TEMPLATES_DIR
 
 
@@ -26,9 +25,16 @@ def test_template_support_file_present(name):
     assert (TEMPLATES_DIR / name).is_file()
 
 
-def test_project_has_catalog_notice_entry_points():
-    entry_points = catalog_entry_points(CONFIG_DIR, TEMPLATES_DIR)
-    assert entry_points
+def test_project_has_maintained_notice_entry_points():
+    for name in (
+        "overdue_diseases_v1.en.typ",
+        "overdue_diseases_v1.fr.typ",
+        "overdue_agents_v1.en.typ",
+        "overdue_agents_v1.fr.typ",
+        "affirmative_schedule_v1.en.typ",
+        "suspension_order_v1.en.typ",
+    ):
+        assert (TEMPLATES_DIR / name).is_file()
 
 
 def test_sample_assignments_name_existing_templates():

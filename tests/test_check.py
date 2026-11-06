@@ -50,26 +50,81 @@ def test_clean_run_has_no_summary():
     )
 
 
-def test_selected_notice_project_accepts_catalog_superset(tmp_path):
-    from check import catalog_entry_points
+def test_prepare_calls_native_cli_and_reads_versioned_json(monkeypatch):
+    import json
+    import subprocess
+    import check
 
-    config = tmp_path / "config"
-    config.mkdir()
-    (config / "notice_versions.yaml").write_text(
-        "schema_version: 1\nversions:\n"
-        "  overdue_diseases_v1: {kind: overdue}\n"
-        "  other_v1: {kind: informational}\n"
-    )
-    templates = tmp_path / "templates"
-    templates.mkdir()
-    (templates / "overdue_diseases_v1.fr.typ").write_text("Selected notice")
-    assert catalog_entry_points(config, templates) == {"overdue_diseases_v1": ["fr"]}
+    calls = []
+
+    def fake(command, **kwargs):
+        calls.append(command)
+        return subprocess.CompletedProcess(
+            command, 0, json.dumps({"schema_version": 1, "entries": [{}]}), ""
+        )
+
+    monkeypatch.setattr(check, "immuknow_command", lambda: "immuknow")
+    monkeypatch.setattr(check.subprocess, "run", fake)
+    assert len(check.prepare_sample()["entries"]) == 1
+    assert calls[0][0:2] == ["immuknow", "prepare"]
+    assert "--notice-assignments" in calls[0]
 
 
-def test_no_included_notice_is_a_setup_error(tmp_path):
+def test_prepare_surfaces_cli_errors(monkeypatch):
+    import subprocess
     import pytest
-    from check import catalog_entry_points
-    from project import CONFIG_DIR
+    import check
 
-    with pytest.raises(ValueError, match="No catalog notice"):
-        catalog_entry_points(CONFIG_DIR, tmp_path)
+    monkeypatch.setattr(check, "immuknow_command", lambda: "immuknow")
+    monkeypatch.setattr(
+        check.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command, 1, "", "Invalid assignment"
+        ),
+    )
+    with pytest.raises(ValueError, match="Invalid assignment"):
+        check.prepare_sample()
+
+
+def test_effective_findings_override_observed_statuses():
+    record = {
+        "entries": [
+            {
+                "checks": [
+                    {"code": "adjusted", "status": "warn"},
+                    {"code": "disabled", "status": "warn"},
+                ],
+                "effective_checks": [
+                    {"code": "adjusted", "status": "fail"},
+                    {"code": "disabled", "status": "not_run"},
+                ],
+            },
+            entry(("fallback", "warn")),
+        ],
+        "checks": [],
+    }
+    assert finding_summary(record) == [
+        "fail  adjusted: 1 notice",
+        "warn  fallback: 1 notice",
+    ]
+
+
+def test_artifact_and_run_errors_explain_failed_output():
+    record = {
+        "entries": [
+            {
+                "row_key": "row-000001",
+                "checks": [],
+                "original": {"status": "failed", "error": "Template failed"},
+                "encryption": {"status": "failed", "error": "Password field missing"},
+            }
+        ],
+        "checks": [],
+        "error": "Bundle assembly failed",
+    }
+    assert finding_summary(record) == [
+        "fail  row-000001 original PDF: Template failed",
+        "fail  row-000001 encrypted copy: Password field missing",
+        "fail  run: Bundle assembly failed",
+    ]

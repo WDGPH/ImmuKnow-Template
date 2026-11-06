@@ -3,8 +3,7 @@ __pycache__/
 *.py[cod]
 .venv/
 
-# uv.lock and .python-version are committed: they pin the ImmuKnow
-# version this project was checked against.
+# uv.lock pins maintainer tools. core-revision.txt pins the native application.
 
 # Run output contains client information and is never committed. Both names
 # match at any depth: runs/ is the default, output/ holds runs from older
@@ -43,9 +42,12 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Generated from the locked Core package, never edited or committed.
+# Exported from the reviewed native executable, never edited or committed.
 /templates/lib/immuknow/
 # Resource package build output.
 **/build/
 **/*.egg-info/
 /dist/
+
+# Temporary resource export used for manual library setup.
+/core-resources/

@@ -2,59 +2,65 @@
 
 Usage
 -----
-    uv run python scripts/check.py           # setup checks
-    uv run python scripts/check.py --sample  # also run the sample end to end
+    python scripts/check.py           # setup checks
+    python scripts/check.py --sample  # also run the sample end to end
 
-Checks cover the run settings, compiler, shared Typst library and catalog
-notices present in the project. Missing fonts appear only when Typst compiles a
-notice, so --sample reports them as compiler.font_substitution.
+Checks compare the shared Typst library and ask the standalone executable to
+prepare the sample. --sample also compiles the notices and reports findings.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import os
+import subprocess
 import sys
 import tempfile
 from collections import Counter
 from pathlib import Path
 
-from immuknow.compile_notices import check_compiler
-from immuknow.component_resources import verify_components
-from immuknow.load_config import load_config
-from immuknow.resources import rendering_build_info
-from immuknow.version_notices import Language, load_catalog
-
 import run
+from project import (
+    CONFIG_DIR,
+    LIBRARY,
+    SAMPLE_ASSIGNMENTS,
+    SAMPLE_INPUT,
+    TEMPLATES_DIR,
+    immuknow_command,
+)
 from sync_lib import ensure_library
-from project import CONFIG_DIR, LIBRARY, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT, TEMPLATES_DIR
 
 
-def typst_bin(config: dict) -> str:
-    """Select the compiler with the expression ImmuKnow's orchestrator uses."""
-    return os.environ.get("TYPST_BIN", config.get("typst", {}).get("bin", "typst"))
-
-
-def catalog_entry_points(config_dir: Path, templates_dir: Path) -> dict[str, list[str]]:
-    """List the catalog notices included in this project, which may be a subset."""
-    available = {
-        version: [
-            language.value
-            for language in Language
-            if (templates_dir / f"{version}.{language.value}.typ").is_file()
-        ]
-        for version in load_catalog(config_dir).versions
-    }
-    included = {
-        version: languages for version, languages in available.items() if languages
-    }
-    if not included:
-        raise ValueError(
-            "No catalog notice has a matching <version_id>.<language>.typ file "
-            "in templates/ (see config/notice_versions.yaml)"
-        )
-    return included
+def prepare_sample() -> dict:
+    """Ask the standalone executable to validate inputs without making PDFs."""
+    result = subprocess.run(
+        [
+            immuknow_command(),
+            "prepare",
+            str(SAMPLE_INPUT),
+            "--notice-assignments",
+            str(SAMPLE_ASSIGNMENTS),
+            "--templates",
+            str(TEMPLATES_DIR),
+            "--config",
+            str(CONFIG_DIR),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode:
+        raise ValueError(result.stderr.strip() or "ImmuKnow preparation failed")
+    try:
+        prepared = json.loads(result.stdout)
+    except ValueError as exc:
+        raise ValueError("ImmuKnow returned invalid preparation JSON") from exc
+    if (
+        not isinstance(prepared, dict)
+        or prepared.get("schema_version") != 1
+        or not isinstance(prepared.get("entries"), list)
+    ):
+        raise ValueError("ImmuKnow returned an unsupported preparation record")
+    return prepared
 
 
 def run_sample() -> tuple[int, dict | None]:
@@ -76,12 +82,12 @@ def run_sample() -> tuple[int, dict | None]:
 
 
 def finding_summary(record: dict) -> list[str]:
-    """One line per warning or failure code, counting the notices it affects."""
+    """Summarize effective findings and errors that explain failed output."""
     notices: Counter[tuple[str, str]] = Counter()
     for entry in record["entries"]:
         for status, code in {
             (check["status"], check["code"])
-            for check in entry["checks"]
+            for check in entry.get("effective_checks", entry.get("checks", []))
             if check["status"] in ("warn", "fail")
         }:
             notices[status, code] += 1
@@ -97,6 +103,17 @@ def finding_summary(record: dict) -> list[str]:
         for check in record["checks"]
         if check["status"] in ("warn", "fail")
     ]
+    for entry in record["entries"]:
+        row = entry.get("row_key", "unknown row")
+        for field, label in (
+            ("original", "original PDF"),
+            ("encryption", "encrypted copy"),
+        ):
+            artifact = entry.get(field) or {}
+            if artifact.get("error"):
+                lines.append(f"fail  {row} {label}: {artifact['error']}")
+    if record.get("error"):
+        lines.append(f"fail  run: {record['error']}")
     return lines
 
 
@@ -117,46 +134,22 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     report = Report()
 
-    build = rendering_build_info()
-    revision = (build["core_source_revision"] or "unknown")[:7]
-    modified = " (with local changes)" if build["core_source_modified"] else ""
-    report.line(
-        "OK", "ImmuKnow", f"{build['application_version']} at {revision}{modified}"
-    )
-
-    config: dict = {}
     try:
-        config = load_config(CONFIG_DIR / "parameters.yaml")
-        report.line("OK", "config/parameters.yaml")
-    except (OSError, ValueError) as exc:
-        report.line("FAIL", "config/parameters.yaml", str(exc))
-
-    # A diagnostic reports any compiler problem, including timeouts, rather than stopping.
-    try:
-        report.line("OK", "Typst", check_compiler(typst_bin(config)))
-    except Exception as exc:
-        report.line("FAIL", "Typst", str(exc))
-
-    try:
+        binary = immuknow_command()
+        version = subprocess.run([binary, "--version"], capture_output=True, text=True)
+        if version.returncode:
+            raise ValueError(version.stderr.strip() or "Could not run ImmuKnow")
+        report.line("OK", "ImmuKnow", version.stdout.strip())
         ensure_library(TEMPLATES_DIR)
-        verify_components(TEMPLATES_DIR)
         report.line(
             "OK", f"templates/{LIBRARY.as_posix()}", "matches installed ImmuKnow"
         )
-    except ValueError as exc:
+        prepared = prepare_sample()
         report.line(
-            "FAIL",
-            f"templates/{LIBRARY.as_posix()}",
-            f"{exc} Run `uv run python scripts/sync_lib.py`.",
+            "OK", "sample preparation", f"{len(prepared['entries'])} source rows"
         )
-
-    try:
-        entry_points = catalog_entry_points(CONFIG_DIR, TEMPLATES_DIR)
-    except (OSError, ValueError) as exc:
-        report.line("FAIL", "config/notice_versions.yaml", str(exc))
-        entry_points = {}
-    for version, languages in entry_points.items():
-        report.line("OK", f"notice {version}", ", ".join(languages))
+    except (OSError, RuntimeError, ValueError) as exc:
+        report.line("FAIL", "project setup", str(exc))
 
     if args.sample:
         if report.failed:

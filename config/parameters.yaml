@@ -5,19 +5,13 @@ bundling:
   group_by: null
 school_validation:
   enabled: false
-  # null uses the school list shipped with ImmuKnow. To use your own, add the
-  # file to config/ and give its name here, e.g. school_reference.json.
+  # null uses school_reference.json in this config directory. Replace the
+  # fictional list with your own, or set a path relative to this directory.
   reference_file: null
   target_phu: Cedar Ridge Health Unit
-  column_prefix: school_
 date_as_of: '2026-01-15'
 date_of_delivery: '2026-02-01'
 encryption:
   enabled: false
   password:
     template: '{date_of_birth_iso_compact}'
-pipeline:
-  after_run:
-    remove_artifacts: false
-typst:
-  bin: typst

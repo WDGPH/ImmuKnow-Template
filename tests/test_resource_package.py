@@ -50,7 +50,7 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
         "scripts/__pycache__/cached.pyc": b"Cache",
         "scripts/cached.pyc": b"Cache",
         "tests/not_distributed.py": b"Maintainer test",
-        "input/not_distributed.csv": b"Synthetic input",
+        "input/not_distributed.csv": b"Fictional input",
         "unrelated.txt": b"Unrelated root file",
     }
     for name, data in (additions | excluded).items():
@@ -140,8 +140,10 @@ assert "templates/setup.typ" in files
 assert "scripts/sync_lib.py" in files
 project = tomllib.loads(files["pyproject.toml"].decode())
 assert project["tool"]["uv"]["package"] is False
-assert len(project["project"]["dependencies"]) == 1
-assert project["project"]["dependencies"][0].startswith("ImmuKnow @ git+")
+assert project["project"]["dependencies"] == []
+assert "core-revision.txt" in files
+assert "CONTRIBUTING.md" in files
+assert "references/ontario_schools.json" in files
 assert not any(name.startswith("templates/lib/") for name in files)
 for name, data in files.items():
     path = Path("downloaded") / name

@@ -31,3 +31,17 @@ def test_sample_cannot_escape_project(monkeypatch, tmp_path, path):
     )
     with pytest.raises(ValueError, match="relative path"):
         project.sample_paths()
+
+
+def test_binary_override_precedes_path(monkeypatch, tmp_path):
+    binary = tmp_path / "core"
+    binary.write_text("#!/bin/sh\n")
+    binary.chmod(0o755)
+    monkeypatch.setenv("IMMUKNOW_BIN", str(binary))
+    assert project.immuknow_command() == str(binary)
+
+
+def test_missing_binary_has_actionable_error(monkeypatch):
+    monkeypatch.setenv("IMMUKNOW_BIN", "/missing/immuknow")
+    with pytest.raises(RuntimeError, match="IMMUKNOW_BIN"):
+        project.immuknow_command()
