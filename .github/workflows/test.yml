@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      CARGO_BUILD_JOBS: 1
-      CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+      CARGO_BUILD_JOBS: '1'
+      CARGO_TARGET_DIR: ${{ github.workspace }}/target
       TYPST_FONT_PATHS: /usr/share/fonts/truetype/freefont
       TYPST_IGNORE_SYSTEM_FONTS: 'true'
     steps:
@@ -40,7 +40,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ${{ runner.temp }}/cargo-target
+            ${{ github.workspace }}/target
           key: ${{ runner.os }}-immuknow-core-${{ hashFiles('core-revision.txt') }}
 
       - name: Install pinned standalone Core

@@ -51,3 +51,6 @@ Thumbs.db
 
 # Temporary resource export used for manual library setup.
 /core-resources/
+
+# Native build cache used by project CI.
+/target/
