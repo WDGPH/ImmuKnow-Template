@@ -27,7 +27,7 @@ library is copied into `templates/lib/immuknow/` during setup and is not committ
    `core-revision.txt`. Ask your project maintainer for it. Developers can
    [build the pinned revision](CONTRIBUTING.md#build-the-reviewed-core).
 2. Install the fonts named in `templates/settings.typ`. The examples use
-   FreeSans from GNU FreeFont.
+   FreeSans and FreeSerif from GNU FreeFont.
 3. Export the shared files and copy the entire `core-resources/typst/` folder
    into `templates/lib/immuknow/`:
 
@@ -90,8 +90,8 @@ immuknow run input/clients.csv --template templates/overdue_diseases_v1.en.typ \
   --config config --output runs
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/a5bfe974178731629810162f6b99f48f353cf5f8/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/a5bfe974178731629810162f6b99f48f353cf5f8/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/c5d8b5a2249099de777074c15fd0fc739c70a246/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/c5d8b5a2249099de777074c15fd0fc739c70a246/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -122,10 +122,15 @@ line. `setup.typ` and `settings.typ` connect client information to the shared
 helpers. Put your own changes outside `templates/lib/immuknow/`; Core requires
 that shared library to match the executable.
 
+The default connected-square QR style uses Core's faster vector rendering.
+Settings also allow dots, rounded or separated squares, independent corner and
+alignment colours, and a centre image. Core's template guide below explains
+the options and image constraints.
+
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/a5bfe974178731629810162f6b99f48f353cf5f8/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/c5d8b5a2249099de777074c15fd0fc739c70a246/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names

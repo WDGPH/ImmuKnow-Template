@@ -39,7 +39,9 @@
   width: 3cm,
   foreground: accent-color,
   background: white,
-  module-shape: "square",
+  corner-foreground: auto, // The three large finder targets inherit foreground
+  alignment-foreground: auto, // Smaller alignment targets inherit foreground
+  module-shape: "square", // Or "dots", "rounded", "separated"
   corner-style: "square",
 )
 // #let qr = (..qr, enabled: false)
