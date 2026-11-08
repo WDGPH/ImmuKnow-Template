@@ -99,7 +99,7 @@
   min-rows: 5, // Minimum number of vaccination rows
   font-size: if notice.language == "fr" { 10.6pt } else { 11pt },
   heading-size: auto, // Same size as chart text; use e.g. 11pt to override
-  indicator-font: "FreeSans", // Consistent dots across letter typefaces
+  indicator-font: "FreeSerif", // Contains the dot and circle markers; avoids ambient font fallback
   indicator-size: auto, // Same size as chart text
   indicator-offset: (x: 0pt, y: 0pt), // Optical adjustment for your typeface
   labels: presentation.selected-labels(),

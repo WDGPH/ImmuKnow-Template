@@ -68,10 +68,11 @@ readable notices that failed checks, and matching CSV page lists. Warnings can
 be included for sending by default, so review them too. A notice that could not
 be created appears in the report without a PDF.
 
-The fictional clients cover English and French letters, missing records,
-a longer history, optional Ontario Immunization IDs and a guardian-directed
-notice. Their dates and supplied assessments are examples, as of January 15,
-2026. They are not clinical assessments or advice for an individual.
+The ten fictional clients cover English and French letters, supplied overdue
+and up-to-date records, optional Ontario Immunization IDs and a guardian-directed
+notice. All ten have recorded histories. Example run dates are in November 2026,
+after the supplied vaccination dates. These records are not clinical assessments
+or advice for an individual.
 
 ## Use your own client list
 
