@@ -2,7 +2,7 @@
 
 A starting project for creating personalized immunization notices with
 [ImmuKnow](https://github.com/WDGPH/ImmuKnow). It contains example notices,
-settings, translations, images and six fictional clients. Adapt and review the
+settings, translations, images and fictional clients. Adapt and review the
 content for your organization before sending notices.
 
 The system supplying your client information assesses immunization status.
@@ -68,7 +68,7 @@ readable notices that failed checks, and matching CSV page lists. Warnings can
 be included for sending by default, so review them too. A notice that could not
 be created appears in the report without a PDF.
 
-The six fictional clients cover English and French letters, missing records,
+The fictional clients cover English and French letters, missing records,
 a longer history, optional Ontario Immunization IDs and a guardian-directed
 notice. Their dates and supplied assessments are examples, as of January 15,
 2026. They are not clinical assessments or advice for an individual.

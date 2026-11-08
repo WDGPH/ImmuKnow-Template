@@ -20,7 +20,8 @@ def test_every_sample_notice_is_produced(sample_run):
     with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
         expected = list(csv.DictReader(source))
     entries = record["entries"]
-    assert len(expected) == len(entries) == 6
+    assert len(expected) == len(entries)
+    assert entries, "The fictional sample must contain at least one client"
     for row, entry in zip(expected, entries, strict=True):
         assert entry["source"] == row
         assert entry["original"]["status"] == "completed"

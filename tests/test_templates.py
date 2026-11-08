@@ -31,16 +31,38 @@ def test_sample_starters_have_expected_titles_and_pages(sample_run):
 
 def test_sample_selects_expected_starter_content(sample_run):
     _, directory, record = sample_run
-    by_id = {entry["client_id"]: entry for entry in record["entries"]}
+    entries = record["entries"]
 
-    def first_page(client_id):
-        entry = by_id[client_id]
+    def first_page(entry):
         reader = PdfReader(directory / entry["original"]["path"])
         return " ".join(reader.pages[0].extract_text().split())
 
-    assert "your child has" in first_page("6110045227")
-    assert "your child is" in first_page("5391767254")
-    assert "votre enfant" in first_page("6661252922")
+    def child(entry):
+        return entry["notice"]["intended_reader"] == "guardian" or (
+            entry["notice"]["intended_reader"] is None
+            and entry["notice"]["client_data"]["age"] < 16
+        )
+
+    overdue = next(
+        e
+        for e in entries
+        if e["assignment"]["language"] == "en"
+        and e["assignment"]["notice_kind"] == "overdue"
+        and child(e)
+    )
+    affirmative = next(
+        e
+        for e in entries
+        if e["assignment"]["language"] == "en"
+        and e["assignment"]["notice_kind"] == "affirmative"
+        and child(e)
+    )
+    french = next(
+        e for e in entries if e["assignment"]["language"] == "fr" and child(e)
+    )
+    assert "your child has" in first_page(overdue)
+    assert "your child is" in first_page(affirmative)
+    assert "votre enfant" in first_page(french)
 
 
 def test_suspension_starter_has_its_own_title_and_one_page(tmp_path):

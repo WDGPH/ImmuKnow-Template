@@ -38,7 +38,7 @@ uv run --locked --group test pytest
 
 Python dependencies are for project checks and the Studio resource package,
 not the notice-processing engine. Tests use a real native executable and one
-six-client sample run for presentation checks. Core owns the input and PDF
+shared fictional sample run for presentation checks. Core owns the input and PDF
 validation suite; do not repeat it here. The commit check rejects client-data
 files even when run output is accidentally placed outside `runs/`.
 
