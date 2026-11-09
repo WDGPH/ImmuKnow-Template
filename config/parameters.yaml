@@ -3,6 +3,9 @@ bundling:
   # Use school, board, language, page_count or notice_variant; combine them in a list.
   # Example: [board, language, page_count]
   group_by: null
+# Explicit exceptions for repeated client IDs; quote IDs to keep leading zeros.
+# Every repeated row is retained with a warning and shares its client's assignment.
+allowed_duplicate_client_ids: []
 school_validation:
   enabled: false
   # null uses school_reference.json in this config directory. Replace the

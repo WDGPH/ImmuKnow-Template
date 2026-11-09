@@ -82,10 +82,17 @@ To use one notice for everyone:
 immuknow run input/clients.csv --project . --template overdue_diseases.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/5ff69752594e46185e55f61cde038028f72fe85d/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/5ff69752594e46185e55f61cde038028f72fe85d/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/def71d732c9f9e17879bd380e7e215e822ec4efa/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/def71d732c9f9e17879bd380e7e215e822ec4efa/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
+
+Duplicate nonblank client IDs normally reject the input. To accept repeats for
+specific clients, set `allowed_duplicate_client_ids: ["0123456789"]` in
+`config/parameters.yaml`. Keep the IDs quoted. Every repeated source row is
+rendered separately with a warning, using the same assignment for that client ID.
+Unlisted duplicate IDs still reject the input. Use the report's distinct row keys
+for holds or row-specific policy decisions.
 
 To hold a notice or create a new set of combined PDFs from a saved run:
 
@@ -129,7 +136,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/5ff69752594e46185e55f61cde038028f72fe85d/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/def71d732c9f9e17879bd380e7e215e822ec4efa/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names

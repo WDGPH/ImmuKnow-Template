@@ -96,7 +96,16 @@
   notice,
   diseases: ("Diphtheria", "Tetanus", "Pertussis", "Polio", "Hib", "Pneumococcal",
     "Rotavirus", "Measles", "Mumps", "Rubella", "Meningococcal", "Varicella"),
-  ignore-agents: ("RSVAb", "VarIg", "HBIg", "RabIg", "Ig"), // Vaccines left out of the table
+  ignore-agents: ( // Vaccines left out of the table
+    "RSVAb", "VarIg", "HBIg", "RabIg", "Ig",
+    "COVID-19 mRNA",
+    "COVID-19 recombinant spike protein",
+    "COVID-19 unspecified",
+    "COVID-19 whole inactivated virus",
+    "Inf (QIV)",
+    "Inf (TIV)",
+    "inf-unspecified",
+  ),
   include-other: true, // Include a column for other vaccines
   show-validity: true, // Show which doses count toward requirements
   legend-labels: (:), // Override valid, invalid, or unspecified text for this language
