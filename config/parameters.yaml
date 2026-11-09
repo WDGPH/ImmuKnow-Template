@@ -3,6 +3,19 @@ bundling:
   # Use school, board, language, page_count or notice_variant; combine them in a list.
   # Example: [board, language, page_count]
   group_by: null
+# Filename stems use supported {field} placeholders, like password templates.
+# Core appends .pdf/.csv. Originals and protected copies use the individual stem.
+filenames:
+  individual:
+    template: '{client_id}_{notice_variant}_{language_code}'
+  bundle:
+    # Works with size-only grouping. For school names, use
+    # group_by: [school, notice_variant, language] above and the pattern
+    # '{school}_{notice_variant}_{bundle_number}' here.
+    template: '{route}_{bundle_number}'
+  # Optional; omitted uses the bundle template with review_ prefixed.
+  review_bundle:
+    template: 'review_{bundle_number}'
 # Explicit exceptions for repeated client IDs; quote IDs to keep leading zeros.
 # Every repeated row is retained with a warning and shares its client's assignment.
 allowed_duplicate_client_ids: []

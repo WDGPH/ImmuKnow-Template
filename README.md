@@ -56,7 +56,7 @@ The check renders the sample in a temporary folder and removes its output.
 The run keeps the results. Open the new folder inside `runs`, then open
 `report.html` in a browser. Review
 the checks and original notices. When grouping is enabled, `bundles-0001/`
-contains PDFs combining notices for sending, separate `review-*.pdf` files for
+contains PDFs combining notices for sending, separate review PDFs for
 readable notices that failed checks, and matching CSV page lists. Warnings can
 be included for sending by default, so review them too. A notice that could not
 be created appears in the report without a PDF.
@@ -226,3 +226,23 @@ version ID, such as `overdue_agents`, rather than the general notice kind.
 Starter filenames use descriptive notice IDs without a default `_v1` suffix.
 The catalog and assignments use the same IDs. Existing projects can keep their
 original names and matching catalog; saved runs retain their original identities.
+
+## Output filenames
+
+Edit `filenames` in `config/parameters.yaml` using `{field}` placeholders, as
+with the encryption password template. The starter individual pattern is
+`{client_id}_{notice_variant}_{language_code}` for originals and protected copies
+in separate directories. The bundle pattern `{route}_{bundle_number}` works
+with size-only grouping. Core appends PDF/CSV extensions and matching CSV stems.
+
+For school-based batch names, set `bundling.group_by` to
+`[school, notice_variant, language]` and the bundle pattern to
+`{school}_{notice_variant}_{bundle_number}`. This produces names such as
+`example_school_overdue_agents_01.pdf`. The starter review pattern is `review_{bundle_number}`. Omit
+`review_bundle` for an automatic `review_` prefix, or provide its own pattern. A referenced bundle value must be
+identical across members. Missing/mixed values use a fallback with a warning;
+collisions receive deterministic suffixes. Removing filename settings restores
+Core's legacy naming for new runs.
+
+See Core's [supported fields and normalization](https://github.com/WDGPH/ImmuKnow/blob/main/docs/user_guide/configuration.md#filename-templates)
+and [rebundling with new names](https://github.com/WDGPH/ImmuKnow/blob/main/docs/user_guide/pdf_validation.md#rebuild-bundles).
