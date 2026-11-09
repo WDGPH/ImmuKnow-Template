@@ -89,7 +89,7 @@ def test_suspension_starter_has_its_own_title_and_one_page(tmp_path):
         [
             str(csv_path),
             "--template",
-            str(TEMPLATES_DIR / "suspension_order_v1.en.typ"),
+            str(TEMPLATES_DIR / "suspension_order.en.typ"),
             "--output",
             str(output),
         ]
@@ -106,3 +106,43 @@ def test_suspension_starter_has_its_own_title_and_one_page(tmp_path):
     assert "Suspension begins: December 1, 2026" in text
     assert "February 2, 2026" not in text
     assert "March 2, 2026" not in text
+
+
+def test_starter_excludes_recommendation_agents_but_preserves_source_facts(tmp_path):
+    import csv
+    import json
+
+    import run
+    from project import SAMPLE_INPUT, TEMPLATES_DIR
+
+    with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
+        reader = csv.DictReader(source)
+        fieldnames = reader.fieldnames
+        row = next(reader)
+    excluded = ["COVID-19 mRNA", "Inf (TIV)"]
+    row["overdue_agent"] += ";".join(excluded) + ";"
+    csv_path = tmp_path / "one-client.csv"
+    with csv_path.open("w", encoding="utf-8", newline="") as destination:
+        writer = csv.DictWriter(destination, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow(row)
+    output = tmp_path / "runs"
+    code = run.main(
+        [
+            str(csv_path),
+            "--template",
+            str(TEMPLATES_DIR / "overdue_agents.en.typ"),
+            "--output",
+            str(output),
+        ]
+    )
+    (record_path,) = output.glob("*/run.json")
+    record = json.loads(record_path.read_text(encoding="utf-8"))
+    assert code == 0, record["status"]
+    entry = record["entries"][0]
+    assert all(agent in entry["notice"]["overdue_agents"] for agent in excluded)
+    assert entry["source"]["overdue_agent"] == row["overdue_agent"]
+    pdf = PdfReader(record_path.parent / entry["original"]["path"])
+    text = " ".join(pdf.pages[0].extract_text().split())
+    assert "DTaP-IPV-Hib" in text
+    assert all(agent not in text for agent in excluded)

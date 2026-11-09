@@ -27,12 +27,12 @@ def test_template_support_file_present(name):
 
 def test_project_has_maintained_notice_entry_points():
     for name in (
-        "overdue_diseases_v1.en.typ",
-        "overdue_diseases_v1.fr.typ",
-        "overdue_agents_v1.en.typ",
-        "overdue_agents_v1.fr.typ",
-        "affirmative_schedule_v1.en.typ",
-        "suspension_order_v1.en.typ",
+        "overdue_diseases.en.typ",
+        "overdue_diseases.fr.typ",
+        "overdue_agents.en.typ",
+        "overdue_agents.fr.typ",
+        "affirmative_schedule.en.typ",
+        "suspension_order.en.typ",
     ):
         assert (TEMPLATES_DIR / name).is_file()
 

@@ -3,7 +3,7 @@
 Usage
 -----
     python scripts/run.py input/students.csv --notice-assignments input/assignments.json
-    python scripts/run.py input/students.csv --template overdue_diseases_v1.en.typ
+    python scripts/run.py input/students.csv --template overdue_diseases.en.typ
 
 Relative paths start from your working directory, as with immuknow itself. A
 --template given as a bare file name is a file in templates/, as in an

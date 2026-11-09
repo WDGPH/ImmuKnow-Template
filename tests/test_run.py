@@ -53,7 +53,7 @@ def test_assignments_use_project_directories(fake_immuknow):
 
 def test_single_template_omits_templates_directory(fake_immuknow):
     calls, _ = fake_immuknow
-    template = str(TEMPLATES_DIR / "overdue_diseases_v1.en.typ")
+    template = str(TEMPLATES_DIR / "overdue_diseases.en.typ")
     run.main(["cohort.csv", "--template", template])
     assert "--templates" not in calls[0]
     assert calls[0][3:5] == ["--template", template]
@@ -90,10 +90,10 @@ def test_warnings_print_review_instructions(fake_immuknow, tmp_path, capsys):
 
 def test_bare_template_name_is_in_templates(fake_immuknow):
     calls, _ = fake_immuknow
-    run.main(["cohort.csv", "--template", "overdue_diseases_v1.en.typ"])
+    run.main(["cohort.csv", "--template", "overdue_diseases.en.typ"])
     assert calls[0][3:5] == [
         "--template",
-        str(TEMPLATES_DIR / "overdue_diseases_v1.en.typ"),
+        str(TEMPLATES_DIR / "overdue_diseases.en.typ"),
     ]
 
 

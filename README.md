@@ -79,11 +79,11 @@ immuknow run input/clients.csv --notice-assignments input/assignments.json \
 To use one notice for everyone:
 
 ```sh
-immuknow run input/clients.csv --project . --template overdue_diseases_v1.en.typ
+immuknow run input/clients.csv --project . --template overdue_diseases.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/b5a1ae4c3a0411f570aae2f6f1d829eda746d787/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/b5a1ae4c3a0411f570aae2f6f1d829eda746d787/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/5ff69752594e46185e55f61cde038028f72fe85d/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/5ff69752594e46185e55f61cde038028f72fe85d/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -114,6 +114,13 @@ line. `setup.typ` and `settings.typ` connect client information to the shared
 helpers. Put your own changes outside `templates/lib/immuknow/`; Core requires
 that shared library to match the executable.
 
+Set `overdue-agent-exclusions` in Settings to omit exact source agent names from
+the overdue-agent list. This is separate from the history table's `ignore-agents`
+and leaves source facts, history and overdue-disease lists unchanged. The starter
+uses `("COVID-19 mRNA", "Inf (TIV)")`, omitting those labels only; use the actual
+labels in your input when they differ. A single call can override the shared
+choice with `#immuknow.overdue-agents(ignore-agents: ())`.
+
 The default connected-square QR style uses Core's faster vector rendering.
 Settings also allow dots, rounded or separated squares, independent corner and
 alignment colours, and a centre image. Core's template guide below explains
@@ -122,7 +129,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/b5a1ae4c3a0411f570aae2f6f1d829eda746d787/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/5ff69752594e46185e55f61cde038028f72fe85d/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names
@@ -204,6 +211,7 @@ Studio also exposes title alignment in Theme.
 To keep different notice versions in separate bundles, use
 `bundling.group_by: notice_variant`. Add language when it also needs separating:
 `bundling.group_by: [notice_variant, language]`. The variant is the selected
-version ID, such as `overdue_agents_v1`, rather than the general notice kind.
-Keep filename version suffixes until intentionally migrating the matching
-catalog and assignments; they identify notices in runs and bundles.
+version ID, such as `overdue_agents`, rather than the general notice kind.
+Starter filenames use descriptive notice IDs without a default `_v1` suffix.
+The catalog and assignments use the same IDs. Existing projects can keep their
+original names and matching catalog; saved runs retain their original identities.

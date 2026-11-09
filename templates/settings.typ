@@ -121,7 +121,12 @@
 )
 #let address-block = immuknow.address-block.with(notice)
 #let overdue-diseases = immuknow.overdue-diseases.with(notice, labels: presentation.selected-labels(), no-records: auto, ispa-only: false)
-#let overdue-agents = immuknow.overdue-agents.with(notice, no-records: auto)
+// Notice exclusions are independent of the history table's ignore-agents.
+// Use exact agent names from overdue_agents in the source data.
+#let overdue-agent-exclusions = ("COVID-19 mRNA", "Inf (TIV)")
+#let overdue-agents = immuknow.overdue-agents.with(
+  notice, no-records: auto, ignore-agents: overdue-agent-exclusions,
+)
 #let notice-flags = immuknow.notice-flags.with(notice)
 #let qr-code = immuknow.qr-code.with(notice)
 #let notice-dates = immuknow.notice-dates.with(notice)
