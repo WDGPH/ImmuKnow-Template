@@ -1,16 +1,12 @@
 # Plan: reference fixes, notice intent and project defaults
 
-Template work from the [shared investigation plan](../plan.md). Filename templates are implemented; other tasks remain planned. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
+Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates are implemented; other tasks remain planned. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
 
-## P0: editable individual and batch filename templates — highest usability priority
+## F0: filename defaults complete
 
-- [x] After Core supports filename settings, add documented patterns to [parameters.yaml](config/parameters.yaml), following the existing `encryption.password.template` authoring approach. Configuration: `filenames.individual.template`, `filenames.bundle.template`, optional `filenames.review_bundle.template`; stem-only values, with extensions supplied by Core.
-- [x] Show an individual example `{last_name}_{first_name}_{client_id}_{notice_variant}` and batch example `{school}_{notice_variant}_{bundle_number}`, producing `normalized_schoolname_noticevariant_01.pdf`. The individual pattern also names protected copies in their separate directory; review batches have a clear prefix and PDF/CSV stems match.
-- [x] Document Core's explicit supported-field lists for individual versus batch scope. Reuse encryption names such as `school` and `language_code`; batch fields need one value across all actual members. Explain chunk numbering, filename normalization, missing/mixed-field fallback and deterministic collision suffixes. Keep filename fields independent from password derivation.
-- [x] Verify authored patterns survive package export and an actual native original/protected/bundle/review journey. Existing projects without patterns retain old names. Adopt the compatible Core pin before adding settings to avoid rejection by old strict readers.
-- [x] Ship this usability work independently of warning acknowledgment, catalog redesign and optional last-name/DOB sorting; retain grouping behavior; mixed batch fields use an explicit filename fallback. Studio then updates matching pins and preserves editable patterns in downloads.
+The active starter patterns in [parameters.yaml](config/parameters.yaml) are individual `{client_id}_{notice_variant}_{language_code}`, normal bundle `{route}_{bundle_number}`, and review bundle `review_{bundle_number}`. They work with size-only grouping and have passed package/native handoff tests. Last-name and school/variant patterns in the README are customization examples, not shipped defaults. Retain this delivered behavior.
 
-## P0: carry run-local reference fixes upstream
+## R1: reference fixes — ready next
 
 The inspected checkout does not contain the user's successful project edits:
 
@@ -22,29 +18,29 @@ The inspected checkout does not contain the user's successful project edits:
 
 Checks: Core preparation with fictional Meningococcal disease and TIg recognizes the mapping; representative history and agent notices omit TIg while retaining the original facts; all existing meningococcal mappings remain correct. Keep malformed/conflicting validation fixtures in Core. Template should test project values and rendered behavior, not duplicate its entire validation suite.
 
-## P1: move requirements beside notice wording
+## R2a/R2b: notice-local requirements and presentation
 
 [notice_versions.yaml](config/notice_versions.yaml) currently supplies coarse `kind`/`requires` checks. The agreed prerelease v2.0 breaking change removes that file outright and replaces it with a shared helper in each notice that emits validated eligibility/coverage metadata and structured findings. There is no legacy YAML fallback or deprecation period.
 
-- [ ] Adopt Core's shared helper/report contract only after the compatible library and schema support exist. Declare agent/disease coverage intent separately from eligibility, without inferring intent from filenames.
+- [ ] Participate in R2a before implementation: write the maintained-notice table of existing eligibility predicates, agent/disease/neutral coverage basis and intentional no-records/alternative branches for both languages. The shared helper owns evaluation in native/browser; use the same Core fixture contract rather than inventing separate semantics here. Adopt R2b only after that contract/library exists.
 - [ ] Put requirements beside the wording they protect. Share declarations where English/French entry points share intent, while supporting genuinely conditional notices.
-- [ ] Review existing affirmative/suspension assertions. Use structured failures where retaining a readable review PDF is intended; keep assertions where producing any PDF is inappropriate. Do not merely replace the YAML with more fatal assertions.
+- [ ] Convert affirmative and suspension eligibility assertions to structured failures so readable ineligible notices go to review. Preserve their existing predicates/ISPA selection; keep fundamental input/schema/layout assertions when a trustworthy PDF cannot be rendered. Explicitly cover intentional no-records and alternate-text branches in the R2a table.
 - [ ] Update maintained notice requirements and remove the YAML catalog from project resources, package expectations, setup/readiness checks, tests and instructions. Use the v2.0 notice-local contract only; add no legacy catalog loader, precedence rules or compatibility resources.
 - [ ] Verify an agent coverage mismatch becomes a row failure/review PDF and the corresponding disease notice warns, without changing source facts or assignments. Verify starters/packages contain no notice YAML catalog, valid notices run without it, and missing local requirements cannot fall back to an obsolete file.
 - [ ] Review the shared empty-agent-display finding against starter wording, including flu/COVID/TIg exclusions and intentional no-records replacements. Preserve clients/facts and require review for accidental empty recommendations.
 - [ ] Explain exact-name exclusions and their display-only effect in the README. Eligibility changes and alternate assignments stay explicit.
 
-Existing evidence: [settings.typ](templates/settings.typ) defines separate history and overdue-agent exclusions; [test_templates.py](tests/test_templates.py) confirms excluded agents remain in facts. The [affirmative notice](templates/affirmative_schedule.en.typ) and [suspension notice](templates/suspension_order.en.typ) already contain local assertions; their PDF-retention behavior needs an explicit migration decision.
+Existing evidence: [settings.typ](templates/settings.typ) defines separate history and overdue-agent exclusions; [test_templates.py](tests/test_templates.py) confirms excluded agents remain in facts. The [affirmative notice](templates/affirmative_schedule.en.typ) and [suspension notice](templates/suspension_order.en.typ) already contain local assertions; their eligibility mismatch behavior will become structured failure/review; prerequisite rendering failures remain report-only.
 
-## P1/P2: project review, grouping and bundle preferences
+## G1/W1/W2/S1: consume the owning Core changes
 
 - [ ] Review repeated authored website/email/phone destinations with Core's forthcoming aggregate findings. Existing rule-wide overrides are broader than acknowledging one link; do not add blanket URL disabling to project defaults.
 - [ ] Keep personalized QR destinations in [settings.typ](templates/settings.typ) distinct: they include client ID and DOB. Do not use a stripped URL as an acceptance key. Authored stable link IDs, if later supported, need an explicit shared contract.
 - [ ] Review school reference/export assumptions with the upstream data owner. School validation is currently disabled in [parameters.yaml](config/parameters.yaml); enabling it is a local project choice, not a substitute for Core's missing-ID grouping fix.
-- [ ] Keep optional last-name/DOB ordering separate from P0 filename patterns. Once Core supports sorting, document it and opt in through project configuration; source order remains backward compatible.
+- [ ] Keep optional last-name/DOB ordering separate from completed F0 filename support. Once Core supports sorting, document it and opt in through project configuration; source order remains backward compatible.
 - [ ] Keep all native policy and bundle changes upstream in Core. Do not restore a local Core patch in this project.
 
-## Explore: disease catalog and languages
+## D1: disease catalog/languages — exploration only
 
 Current normalization standardizes input aliases. Four files under [translations](templates/translations) supply en/fr labels separately for charts and overdue wording; English labels are also presentation data. French files currently contain both `Meningococcal` and `Meningococcal disease` keys, so migration needs alias conflict detection.
 
@@ -59,4 +55,4 @@ This exploration must not delay the small Meningococcal/TIg fixes.
 
 Use [CONTRIBUTING.md](CONTRIBUTING.md): run Ruff checks/format check and the relevant `pytest` project/presentation/package checks with the intended native binary. Use one shared fictional sample journey and representative English/French notices; inspect wording and page counts, including empty-list/no-records and exclusion cases. Keep private client data out of examples.
 
-For shared contract changes, update `core-revision.txt`, refresh the complete generated library through native project sync, and test before publishing the Template resource revision. Build/inspect wheel and source distributions with `uv build --out-dir dist` when package contents change. Studio then updates its Template dependency/lock and matching Core revision, regenerates assets and verifies preview plus downloaded native `project sync`, `project check --sample`, `run` and `rebundle`. Preserve imported/authored project bytes; do not change installed package resources in place.
+R1 can ship independently. R2a precedes R2b; adopt the schema versions and deferred/prepared evidence specified there. For shared contract changes, update `core-revision.txt`, refresh the complete generated library through native project sync, and test before publishing the Template resource revision. Build/inspect wheel and source distributions with `uv build --out-dir dist` when package contents change. Studio then updates its Template dependency/lock and matching Core revision, regenerates assets and verifies preview plus downloaded native `project sync`, `project check --sample`, `run` and `rebundle`. Preserve imported/authored project bytes; do not change installed package resources in place.
