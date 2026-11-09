@@ -1,12 +1,12 @@
 # Plan: reference fixes, notice intent and project defaults
 
-Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates and reference fixes are implemented here; Studio adoption of the reference fixes is pending. Other tasks remain planned. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
+Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates and reference fixes are implemented here and adopted in Studio. Other tasks remain planned. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
 
 ## F0: filename defaults complete
 
 The active starter patterns in [parameters.yaml](config/parameters.yaml) are individual `{client_id}_{notice_variant}_{language_code}`, normal bundle `{route}_{bundle_number}`, and review bundle `review_{bundle_number}`. They work with size-only grouping and have passed package/native handoff tests. Last-name and school/variant patterns in the README are customization examples, not shipped defaults. Retain this delivered behavior.
 
-## R1: reference fixes — Template complete; Studio adoption pending
+## R1: reference fixes complete
 
 The starter now includes the user's successful project edits:
 
@@ -15,7 +15,7 @@ The starter now includes the user's successful project edits:
 - [x] Add `TIg` to both history `ignore-agents` and `overdue-agent-exclusions` in [settings.typ](templates/settings.typ). Recognition, history display and notice display remain distinct.
 - [x] Remove redundant `"Varicella": "Varicella"` normalization.
 - [x] Verify the authored files appear in the resource distribution. No Core schema change is needed for these data edits.
-- [ ] Update Studio's Template package pin/lock to adopt this change.
+- [x] Studio adopted the Template resource revision through its package pin/lock in `e851bb0ef752c1d6f052fff73daebe18f7aaf7da`, with fresh build, unit and browser/native handoff checks.
 
 Checks: Core preparation with fictional Meningococcal disease and TIg recognizes the mapping; representative history and agent notices omit TIg while retaining the original facts; all existing meningococcal mappings remain correct. Keep malformed/conflicting validation fixtures in Core. Template should test project values and rendered behavior, not duplicate its entire validation suite.
 
