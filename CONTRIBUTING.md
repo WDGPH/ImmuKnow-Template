@@ -12,11 +12,11 @@ by Studio. Keep examples fictional and project instructions in plain language.
 ```sh
 cargo install --git https://github.com/WDGPH/ImmuKnow \
   --rev "$(cat core-revision.txt)" --locked
-python scripts/sync_lib.py
+immuknow project sync --replace
 ```
 
-To test a local Core build, set `IMMUKNOW_BIN` to its executable. The helpers
-call Core's `run`, `prepare` and `resources` commands; they never import a
+To test a local Core build, set `IMMUKNOW_BIN` to its executable. Project setup, checks and sample runs use Core's native commands. Legacy Python
+helpers remain for compatibility and maintainer tests; they never import a
 Python Core package. No separate Typst executable is used.
 
 When updating Core, change the recorded commit, refresh the complete generated
@@ -52,8 +52,10 @@ The `immuknow-template-resources` Python package contains project files for
 Studio to read. It has no dependency on the former Python Core application.
 The installed files are read-only; Studio copies them to a project before
 changing them. The package includes configuration, optional reference lists,
-notices, helpers and the recorded Core revision. It excludes generated Core
-library files, maintainer tests and real client data.
+notices, user instructions and the recorded Core revision. It excludes generated Core
+library files, Python helpers/setup, maintainer tests and real client data.
+Python is used to build and consume the resource distribution; its exported
+project requires only the native executable and installed fonts.
 
 Build and inspect both distribution formats with:
 
@@ -66,23 +68,9 @@ source hashes. The two example-data helpers supply the fictional client CSV
 and default selections separately. Git installs also report their Template
 commit; a standalone wheel has no Git commit to report.
 
-Studio must update its Template dependency and lock when adopting this PR. Its
-integration also needs the native Core commands, unversioned schema filenames,
-and the matching exported library. Those Studio changes belong in its repository;
-this Template PR supplies the compatible project files and package.
-
-Before updating Studio's Template pin, change `scripts/project_template.py` to
-read `core-revision.txt` instead of looking for a Python Core dependency in
-`uv.lock`. Its preparation, resource and build-info scripts must call the native
-commands; its font preparation and CI must stop installing or importing Python
-Core. Update the contract-preparation script to use `rendering.json` and
-`report.json`. Test a browser preview and a downloaded project together before
-adopting the new pin. The installed Template resource API and fictional example
-paths are unchanged.
-
-Studio's downloaded-project tests must also read `render_report` rather than
-`render_summary`, and replace warning-token acceptance and Python rebundling
-with native `rebundle` holds/releases. Keep the browser's build identity fields,
-but compose them from the reviewed executable build and exported resource hashes;
-`resources` returns hashes, not the former Python build-info object. Do not infer
-a source commit from `immuknow --version` alone.
+When updating Studio, change its Template dependency and lock alongside the
+matching Core pin. Regenerate browser resources, verify previews and exercise a
+downloaded project outside both checkouts using native `project sync`,
+`project check --sample`, `run` and `rebundle` commands. The Python test harness
+may inspect PDFs, but must not install Python tools into the downloaded project.
+Preserve imported project files, including legacy helpers if supplied by users.

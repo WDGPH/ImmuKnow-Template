@@ -4,7 +4,8 @@ Follow the [shared language and project responsibilities](https://github.com/WDG
 
 Template owns authored starter letters, Settings, display translations, example
 branding, project configuration, local setup, helper commands, readiness checks
-and starter presentation tests. Core ships the shared library and schemas; project settings and reference lists belong here.
+and starter presentation tests. Core ships the shared library, schemas and generic
+native project commands; project settings and reference lists belong here.
 Template owns the shared fictional example clients for notice development.
 Studio uses them for previews and consumes a pinned resource package. Keep
 user instructions in the [README](README.md), and maintainer instructions in [CONTRIBUTING.md](CONTRIBUTING.md). Link to
@@ -15,7 +16,8 @@ workflow.
 Follow the [shared testing strategy](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/testing.md).
 Test helper commands, paths, readiness checks and the handoff to Core. Keep one
 shared native sample journey plus starter wording/page-count checks; do not
-duplicate Core's validation suite. Studio downloads include the user-facing setup and sample check, not maintainer tests.
+duplicate Core's validation suite. Studio downloads use native setup and sample
+commands and omit Python tooling and maintainer tests.
 
 Use plausible fictional sample records for notice development. Keep deliberately
 invalid data in test fixtures. Do not commit real client data or private assets.

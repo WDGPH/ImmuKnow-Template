@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "immuknow-template-resources"
 version = "0.1.0"
-description = "ImmuKnow project for one public health unit: config, notice templates and run scripts"
+description = "Starter project resources for standalone ImmuKnow"
 requires-python = ">=3.11"
 dependencies = []
 
@@ -53,24 +53,18 @@ only-include = [
 exclude = ["/templates/lib", "**/__pycache__", "*.py[cod]"]
 
 [tool.hatch.build.targets.wheel]
-only-include = ["src/immuknow_template", "templates", "config", "references", "scripts"]
+only-include = ["src/immuknow_template", "templates", "config", "references"]
 
 [tool.hatch.build.targets.wheel.sources]
 "src" = ""
 "templates" = "immuknow_template/data/templates"
 "config" = "immuknow_template/data/config"
 "references" = "immuknow_template/data/references"
-"scripts" = "immuknow_template/data/scripts"
 
 [tool.hatch.build.targets.wheel.force-include]
 "input/sample/sample_students.csv" = "immuknow_template/examples/clients.csv"
 "input/sample/sample_assignments.json" = "immuknow_template/examples/assignments.json"
 ".gitignore" = "immuknow_template/data/.gitignore"
-".pre-commit-config.yaml" = "immuknow_template/data/.pre-commit-config.yaml"
-".python-version" = "immuknow_template/data/.python-version"
 "LICENSE" = "immuknow_template/data/LICENSE"
 "README.md" = "immuknow_template/data/README.md"
-"CONTRIBUTING.md" = "immuknow_template/data/CONTRIBUTING.md"
-"pyproject.toml" = "immuknow_template/data/pyproject.toml"
-"uv.lock" = "immuknow_template/data/uv.lock"
 "core-revision.txt" = "immuknow_template/data/core-revision.txt"

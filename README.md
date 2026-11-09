@@ -25,43 +25,36 @@ library is copied into `templates/lib/immuknow/` during setup and is not committ
 
 1. Obtain an `immuknow` executable matching the Core revision recorded in
    `core-revision.txt`. Ask your project maintainer for it. Developers can
-   [build the pinned revision](CONTRIBUTING.md#build-the-reviewed-core).
+   [build the pinned revision](https://github.com/WDGPH/ImmuKnow-Template/blob/feat/rust-core-project/CONTRIBUTING.md#build-the-reviewed-core).
 2. Install the fonts named in `templates/settings.typ`. The examples use
    FreeSans and FreeSerif from GNU FreeFont.
-3. Export the shared files and copy the entire `core-resources/typst/` folder
-   into `templates/lib/immuknow/`:
+3. Install the shared library supplied by the executable:
 
    ```sh
-   immuknow resources --output ./core-resources
+   immuknow project sync
+   immuknow project check
    ```
 
-   If you have Python 3.11 or later, the optional helper performs the copy and
-   checks existing files for you:
-
-   ```sh
-   python scripts/sync_lib.py
-   ```
-
-The executable includes Typst. Running notices needs neither Python nor a
-separate Typst installation. Python is needed only for the optional project
-helpers and maintainer checks. `IMMUKNOW_BIN` can point those helpers to an
-executable outside your command search path.
+The executable includes Typst. Setup, sample checks and notice generation need
+neither Python, uv nor a separate Typst installation. Run commands from the
+project folder, or supply `--project /path/to/project`.
 
 Keep personal information out of Git. The ignore rules exclude run outputs and
 common client-data files; maintainers can also install the
-[commit checks](CONTRIBUTING.md#checks-before-committing).
+[commit checks](https://github.com/WDGPH/ImmuKnow-Template/blob/feat/rust-core-project/CONTRIBUTING.md#checks-before-committing).
 
 ## Try the fictional clients
 
 From the project folder, run:
 
 ```sh
-immuknow run input/sample/sample_students.csv \
-  --notice-assignments input/sample/sample_assignments.json \
-  --templates templates --config config --output runs
+immuknow project check --sample
+immuknow run --sample
 ```
 
-Open the new folder inside `runs`, then open `report.html` in a browser. Review
+The check renders the sample in a temporary folder and removes its output.
+The run keeps the results. Open the new folder inside `runs`, then open
+`report.html` in a browser. Review
 the checks and original notices. When grouping is enabled, `bundles-0001/`
 contains PDFs combining notices for sending, separate `review-*.pdf` files for
 readable notices that failed checks, and matching CSV page lists. Warnings can
@@ -86,12 +79,11 @@ immuknow run input/clients.csv --notice-assignments input/assignments.json \
 To use one notice for everyone:
 
 ```sh
-immuknow run input/clients.csv --template templates/overdue_diseases_v1.en.typ \
-  --config config --output runs
+immuknow run input/clients.csv --project . --template overdue_diseases_v1.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/ddca40958fc48a767b5150c738b8ee379f33ce3f/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/ddca40958fc48a767b5150c738b8ee379f33ce3f/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/bb0c6cc815e5154495f2502aa1ecd41eddfc9aa7/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/bb0c6cc815e5154495f2502aa1ecd41eddfc9aa7/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -130,7 +122,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/ddca40958fc48a767b5150c738b8ee379f33ce3f/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/bb0c6cc815e5154495f2502aa1ecd41eddfc9aa7/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names
@@ -156,21 +148,13 @@ school_validation:
 Updating Core does not update your school list. This project's reference files
 are maintained separately from the application.
 
-## Optional project helpers
+## Project checks and samples
 
-These helpers use the native executable and Python's standard library:
-
-```sh
-python scripts/check.py
-python scripts/check.py --sample
-python scripts/run.py --sample
-python scripts/run.py input/clients.csv --template overdue_diseases_v1.en.typ
-```
-
-`check.py` checks the project and, with `--sample`, creates the selected sample
-notices in a temporary folder. `run.py` supplies this project's default folders;
-other options are passed to Core. A bare template filename is looked up in
-`templates/`. The helpers return Core's error status when work fails.
+`immuknow project check` compares the entire shared library with the executable
+and prepares the sample to check its configuration and inputs. Add `--sample`
+to create the sample notices in a temporary folder. Checks leave authored files
+unchanged. Use `immuknow run --sample` to keep the notices and their full report.
+Warnings remain eligible for sending; failures return a nonzero exit status.
 
 `sample.json`, when present, selects a sample CSV and notice choices relative
 to the project folder. Studio uses this for a selected or imported example:
@@ -185,14 +169,20 @@ version instructions; updating this repository does not update Studio's pin.
 
 ## Update Core
 
-Get the reviewed executable recorded in `core-revision.txt`, then run
-`python scripts/sync_lib.py` to refresh its complete shared library. Keep your
-notices, settings, images and translations. Remove retired settings when moving
-from the Python application: `typst.bin`, `typst.timeouts_seconds`,
-`school_validation.column_prefix` and automatic output cleanup.
+Get the reviewed executable recorded in `core-revision.txt`, then refresh its
+complete shared library:
 
-Run the sample and inspect the report after an update. If the shared library
-is reported as different, refresh it with `sync_lib.py`; do not edit individual
-library files to make the check pass.
+```sh
+immuknow project sync --replace
+immuknow project check --sample
+```
 
-Developers and resource-package maintainers: see [contributing](CONTRIBUTING.md).
+Keep your notices, settings, images and translations. `--replace` only replaces
+`templates/lib/immuknow/`; it refuses linked library paths. Without `--replace`,
+sync accepts an identical library and refuses to overwrite a different one.
+Inspect a retained sample run and its report after an update.
+
+Developers and resource-package maintainers: see
+[contributing](https://github.com/WDGPH/ImmuKnow-Template/blob/feat/rust-core-project/CONTRIBUTING.md).
+Python helpers remain in the source repository for compatibility and maintainer
+checks; Studio's starter resource package omits them and Python setup files.

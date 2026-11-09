@@ -69,7 +69,9 @@ jobs:
           sudo install -m 644 "$RUNNER_TEMP/fonts/usr/share/fonts/truetype/freefont/"*.ttf /usr/share/fonts/truetype/freefont/
 
       - name: Check the project
-        run: uv run --locked --group test python scripts/check.py
+        run: |
+          immuknow project sync
+          immuknow project check
 
       - name: Run tests
         run: uv run --locked --group test pytest

@@ -42,9 +42,9 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
         "templates/new_notice.typ": b"New starter",
         "templates/translations/new.json": b"{}",
         "config/new.json": b"{}",
-        "scripts/new_helper.py": b"# New helper\n",
     }
     excluded = {
+        "scripts/new_helper.py": b"# Maintainer helper\n",
         "templates/lib/immuknow/generated.typ": b"Generated Core",
         "templates/__pycache__/cached.pyc": b"Cache",
         "scripts/__pycache__/cached.pyc": b"Cache",
@@ -64,9 +64,8 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
     assert not set(excluded).intersection(original)
     assert {
         "templates/setup.typ",
-        "scripts/run.py",
-        "pyproject.toml",
-        "uv.lock",
+        "core-revision.txt",
+        "README.md",
     } <= set(original)
     assert not any(
         name.startswith(("templates/lib/", "tests/", "input/")) for name in original
@@ -95,7 +94,7 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
     with tarfile.open(next(first.glob("*.tar.gz"))) as archive:
         archived = {name.split("/", 1)[1] for name in archive.getnames() if "/" in name}
         assert set(additions) <= archived
-        assert not set(excluded).intersection(archived)
+        assert not (set(excluded) - {"scripts/new_helper.py"}).intersection(archived)
         archive.extractall(unpacked, filter="data")
     (source,) = unpacked.iterdir()
     rebuilt = tmp_path / "rebuilt"
@@ -137,12 +136,10 @@ files = project_files()
 assert "input/sample/sample_students.csv" not in files
 assert "input/sample/sample_assignments.json" not in files
 assert "templates/setup.typ" in files
-assert "scripts/sync_lib.py" in files
-project = tomllib.loads(files["pyproject.toml"].decode())
-assert project["tool"]["uv"]["package"] is False
-assert project["project"]["dependencies"] == []
+assert not any(name.startswith("scripts/") for name in files)
+assert not {"pyproject.toml", "uv.lock", ".python-version", ".pre-commit-config.yaml"}.intersection(files)
 assert "core-revision.txt" in files
-assert "CONTRIBUTING.md" in files
+assert "README.md" in files
 assert "references/ontario_schools.json" in files
 assert not any(name.startswith("templates/lib/") for name in files)
 for name, data in files.items():
@@ -151,7 +148,6 @@ for name, data in files.items():
     path.write_bytes(data)
 assert "templates/new_notice.typ" in files
 assert "config/new.json" in files
-assert "scripts/new_helper.py" in files
 assert not any("__pycache__" in name or name.endswith(".pyc") for name in files)
 assert json.loads(files["template-source.json"])["revision"] is None
 print("Read installed wheel")
@@ -159,17 +155,17 @@ print("Read installed wheel")
     result = run([str(python), "-I", "-c", code], tmp_path)
     assert result.stdout.strip() == "Read installed wheel"
     downloaded = tmp_path / "downloaded"
-    run(["uv", "sync", "--locked", "--no-default-groups"], downloaded)
-    run(
-        [
-            "uv",
-            "run",
-            "--locked",
-            "--no-default-groups",
-            "python",
-            "scripts/sync_lib.py",
-        ],
-        downloaded,
+    binary = os.environ.get("IMMUKNOW_BIN") or shutil.which("immuknow")
+    assert binary, "Install standalone Core or set IMMUKNOW_BIN"
+    # No Python environment or tools are installed in the exported project.
+    result = subprocess.run(
+        [binary, "project", "sync"],
+        cwd=downloaded,
+        env={**os.environ, "PATH": ""},
+        capture_output=True,
+        text=True,
     )
+    assert result.returncode == 0, result.stderr
     assert (downloaded / "templates/lib/immuknow").is_dir()
+    assert not (downloaded / ".venv").exists()
     assert not (checkout / "src/immuknow_template/data").exists()
