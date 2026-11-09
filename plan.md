@@ -22,17 +22,19 @@ The inspected checkout does not contain the user's successful project edits:
 
 Checks: Core preparation with fictional Meningococcal disease and TIg recognizes the mapping; representative history and agent notices omit TIg while retaining the original facts; all existing meningococcal mappings remain correct. Keep malformed/conflicting validation fixtures in Core. Template should test project values and rendered behavior, not duplicate its entire validation suite.
 
-## P1: declare notice coverage intent after Core supports it
+## P1: move requirements beside notice wording
 
-[notice_versions.yaml](config/notice_versions.yaml) currently declares `kind` and `requires`. Disease notices and suspension require overdue diseases; agent notices require overdue agents. These are assignment rules, not display declarations.
+[notice_versions.yaml](config/notice_versions.yaml) currently supplies coarse `kind`/`requires` checks. The agreed design replaces that separate authoring requirement with a shared helper in each notice that emits validated eligibility/coverage metadata and structured findings.
 
-- [ ] Adopt Core's proposed explicit coverage-basis metadata only after the native reader/schema supports it. Current readers reject unknown catalog fields.
-- [ ] Declare agent versus disease intent for maintained notices and review suspension/affirmative behavior explicitly. Keep `requires` for eligibility; do not use template filenames to infer policy.
-- [ ] Verify missing coverage fails only the agent notice row and routes its readable original to review, while the corresponding disease notice warns under the new Core default. Do not change source facts to make an example fit an assignment.
-- [ ] Review the shared empty-agent-display finding against starter wording. When flu/COVID/TIg exclusions empty an agent recommendation list, preserve the client/facts and require review instead of silently sending the blank recommendation. Account for intentional no-records replacement wording.
-- [ ] Explain exact-name exclusions and their display-only effect in the README. An eligibility change or alternate assignment must be explicit; exclusions do not remove clients or repair coverage.
+- [ ] Adopt Core's shared helper/report contract only after the compatible library and schema support exist. Declare agent/disease coverage intent separately from eligibility, without inferring intent from filenames.
+- [ ] Put requirements beside the wording they protect. Share declarations where English/French entry points share intent, while supporting genuinely conditional notices.
+- [ ] Review existing affirmative/suspension assertions. Use structured failures where retaining a readable review PDF is intended; keep assertions where producing any PDF is inappropriate. Do not merely replace the YAML with more fatal assertions.
+- [ ] Migrate maintained notice requirements, then remove the starter YAML catalog from new project resources and setup instructions. Core retains optional YAML fallback for older imported projects; users should not maintain duplicate declarations. Document migration and local-declaration precedence.
+- [ ] Verify an agent coverage mismatch becomes a row failure/review PDF and the corresponding disease notice warns, without changing source facts or assignments. Verify new projects run without the catalog and legacy projects still work.
+- [ ] Review the shared empty-agent-display finding against starter wording, including flu/COVID/TIg exclusions and intentional no-records replacements. Preserve clients/facts and require review for accidental empty recommendations.
+- [ ] Explain exact-name exclusions and their display-only effect in the README. Eligibility changes and alternate assignments stay explicit.
 
-Existing evidence: [settings.typ](templates/settings.typ) around 102–116 and 140–145 defines independent history and overdue-agent exclusions; [test_templates.py](tests/test_templates.py) around 111–148 checks excluded agents remain in facts. Starter [agent](templates/overdue_agents.en.typ) and [disease](templates/overdue_diseases.en.typ) notices call different shared components.
+Existing evidence: [settings.typ](templates/settings.typ) defines separate history and overdue-agent exclusions; [test_templates.py](tests/test_templates.py) confirms excluded agents remain in facts. The [affirmative notice](templates/affirmative_schedule.en.typ) and [suspension notice](templates/suspension_order.en.typ) already contain local assertions; their PDF-retention behavior needs an explicit migration decision.
 
 ## P1/P2: project review, grouping and bundle preferences
 
