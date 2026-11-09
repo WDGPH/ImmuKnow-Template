@@ -1,6 +1,6 @@
 # Plan: reference fixes, notice intent and project defaults
 
-Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates are implemented; other tasks remain planned. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
+Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates and reference fixes are implemented here; Studio adoption of the reference fixes is pending. Other tasks remain planned. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
 
 ## F0: filename defaults complete
 
