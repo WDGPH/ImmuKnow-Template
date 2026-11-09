@@ -82,8 +82,8 @@ To use one notice for everyone:
 immuknow run input/clients.csv --project . --template overdue_diseases.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/d2f22f021a40c2e2e21fb91b2781aa329ef8366b/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/d2f22f021a40c2e2e21fb91b2781aa329ef8366b/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/7784d9ce0dff6fc14d8061fd1aefc45df76e799d/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/7784d9ce0dff6fc14d8061fd1aefc45df76e799d/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -121,7 +121,7 @@ the previous files. Releasing a hold leaves the notice's checks in force.
 | Vaccine-to-disease mapping and source disease names | `config/vaccine_reference.json`, `config/disease_normalization.json` |
 
 Keep each notice's opening import, Settings marker and `#show: immuknow.letter`
-line. `setup.typ` and `settings.typ` connect client information to the shared
+line. `settings.typ` connects client information to the shared
 helpers. Put your own changes outside `templates/lib/immuknow/`; Core requires
 that shared library to match the executable.
 
@@ -140,7 +140,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/d2f22f021a40c2e2e21fb91b2781aa329ef8366b/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/7784d9ce0dff6fc14d8061fd1aefc45df76e799d/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names

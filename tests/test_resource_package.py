@@ -63,7 +63,7 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
     assert additions.items() <= original.items()
     assert not set(excluded).intersection(original)
     assert {
-        "templates/setup.typ",
+        "templates/settings.typ",
         "core-revision.txt",
         "README.md",
     } <= set(original)
@@ -135,7 +135,12 @@ assert len(assigned) == len(set(assigned)) and set(assigned) == clients
 files = project_files()
 assert "input/sample/sample_students.csv" not in files
 assert "input/sample/sample_assignments.json" not in files
-assert "templates/setup.typ" in files
+assert "templates/settings.typ" in files
+assert "templates/setup.typ" not in files
+assert "templates/presentation.typ" not in files
+for language in ("en", "fr"):
+    for kind in ("chart", "overdue"):
+        assert f"templates/translations/{language}_diseases_{kind}.json" in files
 assert not any(name.startswith("scripts/") for name in files)
 assert not {"pyproject.toml", "uv.lock", ".python-version", ".pre-commit-config.yaml"}.intersection(files)
 assert "core-revision.txt" in files

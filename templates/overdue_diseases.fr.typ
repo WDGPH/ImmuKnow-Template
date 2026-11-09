@@ -1,16 +1,16 @@
 // Essential setup: keep these opening lines.
 // @immuknow-settings: settings.typ
-#import "setup.typ": *
+#import "settings.typ" as immuknow
 #show: immuknow.letter // Apply the letter layout
 
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
-// to_student and to_guardian identify the intended reader; the final else is neutral.
+// immuknow.to_student and immuknow.to_guardian identify the intended reader; the final else is neutral.
 #immuknow.notice-page("Demande de dossier d'immunisation")[
-#if date_of_delivery != "" [#align(right)[#date_of_delivery]]
-#immuknow.client-block(window: envelope-window) // Mailing address and client details
+#if immuknow.date_of_delivery != "" [#align(right)[#immuknow.date_of_delivery]]
+#immuknow.client-block(window: immuknow.envelope-window) // Mailing address and client details
 #v(0.3cm) // Space before the message
 
-#if not no_records [En date du *#date_as_of*, nos dossiers indiquent que #if to_student [vous n'avez] else if to_guardian [votre enfant n'a] else [la personne nommée n'a] pas reçu les immunisations suivantes :]
+#if not immuknow.no_records [En date du *#immuknow.date_as_of*, nos dossiers indiquent que #if immuknow.to_student [vous n'avez] else if immuknow.to_guardian [votre enfant n'a] else [la personne nommée n'a] pas reçu les immunisations suivantes :]
 
 #strong(
   immuknow.overdue-diseases(
@@ -20,27 +20,27 @@
   )
 )
 
-#if date_due != "" [Veuillez transmettre votre mise à jour au plus tard le *#date_due*.]
+#if immuknow.date_due != "" [Veuillez transmettre votre mise à jour au plus tard le *#immuknow.date_due*.]
 
-Veuillez examiner le dossier d'immunisation à la page 2 et mettre à jour #if to_student [votre dossier] else if to_guardian [le dossier de votre enfant] else [le dossier de la personne nommée] en utilisant l'une des options suivantes :
+Veuillez examiner le dossier d'immunisation à la page 2 et mettre à jour #if immuknow.to_student [votre dossier] else if immuknow.to_guardian [le dossier de votre enfant] else [le dossier de la personne nommée] en utilisant l'une des options suivantes :
 
 1. En visitant #immuknow.link("https://example.org/immunization")
 2. En envoyant un courriel à #immuknow.link("mailto:records@example.org")
-3. En envoyant par la poste une photocopie #if to_student [de votre dossier d'immunisation] else if to_guardian [du dossier d'immunisation de votre enfant] else [du dossier d'immunisation de la personne nommée] à Cedar Ridge Health Unit, 123 Example Street, Demo City, ON N0N 0N0
+3. En envoyant par la poste une photocopie #if immuknow.to_student [de votre dossier d'immunisation] else if immuknow.to_guardian [du dossier d'immunisation de votre enfant] else [du dossier d'immunisation de la personne nommée] à Cedar Ridge Health Unit, 123 Example Street, Demo City, ON N0N 0N0
 4. Par téléphone : #immuknow.link("tel:1-800-555-0100")
 
-Veuillez informer la Santé publique#if to_guardian [ et votre centre de garde d'enfants] chaque fois que #if to_student [vous recevez] else if to_guardian [votre enfant reçoit] else [la personne nommée reçoit] un vaccin.
+Veuillez informer la Santé publique#if immuknow.to_guardian [ et votre centre de garde d'enfants] chaque fois que #if immuknow.to_student [vous recevez] else if immuknow.to_guardian [votre enfant reçoit] else [la personne nommée reçoit] un vaccin.
 
 #grid(
   columns: (1fr, auto),
   gutter: 10pt,
-  [*Si vous choisissez de ne pas #if to_student [vous faire vacciner] else if to_guardian [immuniser votre enfant] else [immuniser la personne nommée]*, une exemption médicale valide ou une déclaration de conscience ou de croyance religieuse doit être remplie et soumise à la Santé publique. Les liens vers ces formulaires se trouvent à #immuknow.link("https://example.org/exemptions"). Veuillez noter que cette exemption est uniquement pour la garde d'enfants et qu'une nouvelle exemption sera requise lors de l'inscription à l'école primaire.],
-  [#immuknow.qr-code(..qr)]
+  [*Si vous choisissez de ne pas #if immuknow.to_student [vous faire vacciner] else if immuknow.to_guardian [immuniser votre enfant] else [immuniser la personne nommée]*, une exemption médicale valide ou une déclaration de conscience ou de croyance religieuse doit être remplie et soumise à la Santé publique. Les liens vers ces formulaires se trouvent à #immuknow.link("https://example.org/exemptions"). Veuillez noter que cette exemption est uniquement pour la garde d'enfants et qu'une nouvelle exemption sera requise lors de l'inscription à l'école primaire.],
+  [#immuknow.qr-code(..immuknow.qr)]
 )
 
 En cas d'éclosion, les enfants qui ne sont pas adéquatement immunisés peuvent être exclus du centre de garde d'enfants.
 
-Si vous avez des questions sur #if to_student [vos vaccins] else if to_guardian [les vaccins de votre enfant] else [les vaccins de la personne nommée], veuillez appeler le #immuknow.link("tel:1-800-555-0100") pour parler à une infirmière de la Santé publique.
+Si vous avez des questions sur #if immuknow.to_student [vos vaccins] else if immuknow.to_guardian [les vaccins de votre enfant] else [les vaccins de la personne nommée], veuillez appeler le #immuknow.link("tel:1-800-555-0100") pour parler à une infirmière de la Santé publique.
 
   Sincères salutations,
 

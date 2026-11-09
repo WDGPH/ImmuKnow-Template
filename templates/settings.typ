@@ -1,6 +1,14 @@
 #import "lib/immuknow/lib.typ" as immuknow
-#import "presentation.typ" as presentation
 #import "lib/immuknow/lib.typ": notice-header, notice-section, signature-block, privacy-notice, envelope-preset, long-date, localization, url-encode, query-url, link
+
+// Authored project labels may be edited independently of normalized disease names.
+// Literal paths keep every translation dependency explicit for project export.
+#let selected-labels() = (
+  en_diseases_chart: json("translations/en_diseases_chart.json"),
+  en_diseases_overdue: json("translations/en_diseases_overdue.json"),
+  fr_diseases_chart: json("translations/fr_diseases_chart.json"),
+  fr_diseases_overdue: json("translations/fr_diseases_overdue.json"),
+)
 
 // Page and envelope
 // Paper: keep one choice uncommented
@@ -117,7 +125,7 @@
   indicator-font: "FreeSerif", // Contains the dot and circle markers; avoids ambient font fallback
   indicator-size: auto, // Same size as chart text
   indicator-offset: (x: 0pt, y: 0pt), // Optical adjustment for your typeface
-  labels: presentation.selected-labels(),
+  labels: selected-labels(),
 )
 
 // These helpers always use this letter’s client data.
@@ -129,7 +137,7 @@
   id-label: auto, oiid-label: auto, // Bilingual defaults or your own plain-text labels
 )
 #let address-block = immuknow.address-block.with(notice)
-#let overdue-diseases = immuknow.overdue-diseases.with(notice, labels: presentation.selected-labels(), no-records: auto, ispa-only: false)
+#let overdue-diseases = immuknow.overdue-diseases.with(notice, labels: selected-labels(), no-records: auto, ispa-only: false)
 // Notice exclusions are independent of the history table's ignore-agents.
 // Use exact agent names from overdue_agents in the source data.
 #let overdue-agent-exclusions = ("COVID-19 mRNA", "Inf (TIV)")
