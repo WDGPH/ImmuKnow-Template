@@ -24,13 +24,13 @@ Checks: Core preparation with fictional Meningococcal disease and TIg recognizes
 
 ## P1: move requirements beside notice wording
 
-[notice_versions.yaml](config/notice_versions.yaml) currently supplies coarse `kind`/`requires` checks. The agreed design replaces that separate authoring requirement with a shared helper in each notice that emits validated eligibility/coverage metadata and structured findings.
+[notice_versions.yaml](config/notice_versions.yaml) currently supplies coarse `kind`/`requires` checks. The agreed prerelease v2.0 breaking change removes that file outright and replaces it with a shared helper in each notice that emits validated eligibility/coverage metadata and structured findings. There is no legacy YAML fallback or deprecation period.
 
 - [ ] Adopt Core's shared helper/report contract only after the compatible library and schema support exist. Declare agent/disease coverage intent separately from eligibility, without inferring intent from filenames.
 - [ ] Put requirements beside the wording they protect. Share declarations where English/French entry points share intent, while supporting genuinely conditional notices.
 - [ ] Review existing affirmative/suspension assertions. Use structured failures where retaining a readable review PDF is intended; keep assertions where producing any PDF is inappropriate. Do not merely replace the YAML with more fatal assertions.
-- [ ] Migrate maintained notice requirements, then remove the starter YAML catalog from new project resources and setup instructions. Core retains optional YAML fallback for older imported projects; users should not maintain duplicate declarations. Document migration and local-declaration precedence.
-- [ ] Verify an agent coverage mismatch becomes a row failure/review PDF and the corresponding disease notice warns, without changing source facts or assignments. Verify new projects run without the catalog and legacy projects still work.
+- [ ] Update maintained notice requirements and remove the YAML catalog from project resources, package expectations, setup/readiness checks, tests and instructions. Use the v2.0 notice-local contract only; add no legacy catalog loader, precedence rules or compatibility resources.
+- [ ] Verify an agent coverage mismatch becomes a row failure/review PDF and the corresponding disease notice warns, without changing source facts or assignments. Verify starters/packages contain no notice YAML catalog, valid notices run without it, and missing local requirements cannot fall back to an obsolete file.
 - [ ] Review the shared empty-agent-display finding against starter wording, including flu/COVID/TIg exclusions and intentional no-records replacements. Preserve clients/facts and require review for accidental empty recommendations.
 - [ ] Explain exact-name exclusions and their display-only effect in the README. Eligibility changes and alternate assignments stay explicit.
 
