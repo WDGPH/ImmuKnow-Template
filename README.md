@@ -82,8 +82,8 @@ To use one notice for everyone:
 immuknow run input/clients.csv --project . --template overdue_diseases_v1.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/bb0c6cc815e5154495f2502aa1ecd41eddfc9aa7/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/bb0c6cc815e5154495f2502aa1ecd41eddfc9aa7/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/f7238d39aecf46f32a027254e30b409f6275008d/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/f7238d39aecf46f32a027254e30b409f6275008d/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -122,7 +122,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/bb0c6cc815e5154495f2502aa1ecd41eddfc9aa7/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/f7238d39aecf46f32a027254e30b409f6275008d/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names
