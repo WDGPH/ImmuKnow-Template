@@ -60,6 +60,14 @@ def prepare_sample() -> dict:
         or not isinstance(prepared.get("entries"), list)
     ):
         raise ValueError("ImmuKnow returned an unsupported preparation record")
+    if any(
+        finding.get("status") == "fail"
+        for entry in prepared["entries"]
+        for finding in entry.get("checks", [])
+    ):
+        raise ValueError(
+            "Sample preparation contains failed rows; inspect the source and run prepare for findings"
+        )
     return prepared
 
 

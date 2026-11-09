@@ -70,6 +70,33 @@ def test_prepare_calls_native_cli_and_reads_versioned_json(monkeypatch):
     assert "--notice-assignments" in calls[0]
 
 
+def test_prepare_surfaces_failed_row_findings(monkeypatch):
+    import json
+    import subprocess
+    import pytest
+    import check
+
+    result = {
+        "schema_version": 2,
+        "entries": [
+            {
+                "row_key": "row-000001",
+                "checks": [{"code": "source.history_unusable", "status": "fail"}],
+            }
+        ],
+    }
+    monkeypatch.setattr(check, "immuknow_command", lambda: "immuknow")
+    monkeypatch.setattr(
+        check.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command, 0, json.dumps(result), ""
+        ),
+    )
+    with pytest.raises(ValueError, match="Sample preparation contains failed rows"):
+        check.prepare_sample()
+
+
 def test_prepare_surfaces_cli_errors(monkeypatch):
     import subprocess
     import pytest

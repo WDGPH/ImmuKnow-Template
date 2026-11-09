@@ -1,6 +1,6 @@
 # Plan: reference fixes, notice intent and project defaults
 
-Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates and reference fixes are implemented here and adopted in Studio. Notice-local requirements and the current Core runtime are verified in this project; Studio adoption is the next handoff. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
+Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates and reference fixes are implemented here and adopted in Studio. Notice-local requirements are verified here and adopted in Studio; the R3 Core pin is ready for the next Studio handoff. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
 
 ## F0: filename defaults complete
 
@@ -33,29 +33,21 @@ The prerelease v2.0 notice-local requirements contract replaces the former YAML 
 
 Verification: the shared sample and [test_templates.py](tests/test_templates.py) exercise English/French presentation, agent/disease coverage, review routing, intentional no-records replacement and exclusions while retaining source facts. Affirmative and suspension eligibility failures retain readable notices for review; fundamental rendering failures remain report-only. The package no longer includes the notice YAML catalog.
 
-## G1/W1/W2/S1: consume the owning Core changes
+## G1/W1/W2/S1: adopted Core behavior
 
-The pinned Core includes grouping safety, optional last-name/DOB ordering, and distinct-link review. The starter retains size-only grouping and source ordering; school grouping and sorting are local configuration choices.
+The pinned Core includes grouping safety, optional last-name/DOB ordering, structured link aggregation and run-scoped acknowledgment. The starter retains size-only grouping and source ordering; school grouping and sorting are local configuration choices.
 
-- [ ] Review repeated authored website/email/phone destinations with Core's forthcoming aggregate findings. Existing rule-wide overrides are broader than acknowledging one link; do not add blanket URL disabling to project defaults.
-- [ ] Keep personalized QR destinations in [settings.typ](templates/settings.typ) distinct: they include client ID and DOB. Do not use a stripped URL as an acceptance key. Authored stable link IDs, if later supported, need an explicit shared contract.
-- [ ] Review school reference/export assumptions with the upstream data owner. School validation is currently disabled in [parameters.yaml](config/parameters.yaml); enabling it is a local project choice, not a substitute for Core's missing-ID grouping fix.
+- [x] The starter leaves URL checks enabled. Core aggregates exact destinations and supports run-scoped acknowledgment; personalized QR values remain distinct.
+- [ ] Review the real school reference/export with its upstream data owner when identified. School validation remains a local configuration choice.
 - [x] Document optional last-name/DOB ordering separately from completed F0 filename support; source order remains the default.
-- [ ] Keep all native policy and bundle changes upstream in Core. Do not restore a local Core patch in this project.
+- [x] Keep policy and bundle implementation in Core; no local Core patch is needed.
 
-## D1: disease catalog/languages — exploration only
+## D1: disease catalog exploration
 
-Current normalization standardizes input aliases. Four files under [translations](templates/translations) supply en/fr labels separately for charts and overdue wording; English labels are also presentation data. French files currently contain both `Meningococcal` and `Meningococcal disease` keys, so migration needs alias conflict detection.
-
-- [ ] With Core, prototype a catalog with stable IDs, aliases, and language/context labels. Keep project-specific data and wording editable here.
-- [ ] Inventory current agent mapping values, aliases and both label contexts before converting. Preserve chart abbreviations and notice wording separately; do not collapse them into one translated name.
-- [ ] Keep old files and imported projects supported until an explicit migration path is tested. A rename to `languages/` is optional presentation organization, not the implementation of normalization or new language support.
-- [ ] Verify package inclusion, relative Typst paths, missing-label fallback, unknown names, conflicting aliases and authored label overrides. New languages beyond en/fr need Core and Studio support too.
-
-This exploration must not delay the small Meningococcal/TIg fixes.
+The shared plan records the completed initial inventory and deferred migration work. The existing normalization and language/context label files remain the active format; catalog migration and new-language support need a separate agreed contract.
 
 ## Verification and adoption
 
 Use [CONTRIBUTING.md](CONTRIBUTING.md): run Ruff checks/format check and the relevant `pytest` project/presentation/package checks with the intended native binary. Use one shared fictional sample journey and representative English/French notices; inspect wording and page counts, including empty-list/no-records and exclusion cases. Keep private client data out of examples.
 
-R1 and R2 are implemented and verified against the pinned Core. The complete generated library was refreshed through native project sync. Build/inspect wheel and source distributions with `uv build --out-dir dist` when package contents change. Studio then updates its Template dependency/lock and matching Core revision, regenerates assets and verifies preview plus downloaded native `project sync`, `project check --sample`, `run` and `rebundle`. Preserve imported/authored project bytes; do not change installed package resources in place.
+R1 and R2 are implemented and verified, including Studio adoption at `02fb2dc`. R3 is adopted here through the new Core pin; Studio must update its matching pins. The complete generated library was refreshed through native project sync. Build/inspect wheel and source distributions with `uv build --out-dir dist` when package contents change. Studio then updates its Template dependency/lock and matching Core revision, regenerates assets and verifies preview plus downloaded native `project sync`, `project check --sample`, `run` and `rebundle`. Preserve imported/authored project bytes; do not change installed package resources in place.
