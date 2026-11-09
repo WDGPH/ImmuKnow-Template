@@ -2,6 +2,7 @@
 // @immuknow-settings: settings.typ
 #import "settings.typ" as immuknow
 #show: immuknow.letter // Apply the letter layout
+#immuknow.requirements(eligibility: "has_overdue", coverage: "diseases")
 
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
 // immuknow.to_student and immuknow.to_guardian identify the intended reader; the final else is neutral.

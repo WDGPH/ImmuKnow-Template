@@ -117,7 +117,7 @@ the previous files. Releasing a hold leaves the notice's checks in force.
 | Fonts, colours, title alignment, page size, envelope window and QR appearance | `templates/settings.typ` |
 | Logo and signature | `templates/assets/` and the image calls in the notices |
 | Disease names shown on notices | `templates/translations/` |
-| Which notices exist and when each applies | `config/notice_versions.yaml` |
+| Which notices exist and when each applies | The notice files and their `immuknow.requirements` calls |
 | Vaccine-to-disease mapping and source disease names | `config/vaccine_reference.json`, `config/disease_normalization.json` |
 
 Keep each notice's opening import, Settings marker and `#show: immuknow.letter`
@@ -130,7 +130,17 @@ the overdue-agent list. This is separate from the history table's `ignore-agents
 and leaves source facts, history and overdue-disease lists unchanged. The starter
 uses `("COVID-19 mRNA", "Inf (TIV)", "TIg")`, omitting those labels only; use the actual
 labels in your input when they differ. A single call can override the shared
-choice with `#immuknow.overdue-agents(ignore-agents: ())`.
+choice with `#immuknow.overdue-agents(ignore-agents: ())`. If every source
+agent is excluded, the notice is sent to review unless a no-records or authored
+alternative is displayed. Exclusions do not change eligibility or assignments.
+
+Each notice places one `#immuknow.requirements(eligibility: "...", coverage: "...")`
+call beside its wording. These requirements check whether the selected notice
+applies and whether its recommendations cover the supplied diseases. A readable
+notice that fails a requirement is retained for review. To write alternative
+agent wording, use `#immuknow.agent-alternative[Your wording]` in place of the
+agent list; it records the intentional replacement. The default no-records
+wording is also an intentional replacement, but does not change eligibility.
 
 The default connected-square QR style uses Core's faster vector rendering.
 Settings also allow dots, rounded or separated squares, independent corner and
@@ -224,8 +234,13 @@ To keep different notice versions in separate bundles, use
 `bundling.group_by: [notice_variant, language]`. The variant is the selected
 version ID, such as `overdue_agents`, rather than the general notice kind.
 Starter filenames use descriptive notice IDs without a default `_v1` suffix.
-The catalog and assignments use the same IDs. Existing projects can keep their
-original names and matching catalog; saved runs retain their original identities.
+Assignments use the same IDs as the notice filenames; saved runs retain their
+original identities.
+
+When grouping by school or board, Core warns if an ID is missing and uses the available name; missing identities and conflicting names for one ID go to review. Verify source identifiers with the data owner.
+
+Bundles keep source order by default (`bundling.sort_by: source`). To order
+notices by last name and date of birth, set `bundling.sort_by: last_name_dob`.
 
 ## Output filenames
 

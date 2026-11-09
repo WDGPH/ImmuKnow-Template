@@ -3,6 +3,8 @@ bundling:
   # Use school, board, language, page_count or notice_variant; combine them in a list.
   # Example: [board, language, page_count]
   group_by: null
+  # Optional: source (default) or last_name_dob.
+  # sort_by: last_name_dob
 # Filename stems use supported {field} placeholders, like password templates.
 # Core appends .pdf/.csv. Originals and protected copies use the individual stem.
 filenames:

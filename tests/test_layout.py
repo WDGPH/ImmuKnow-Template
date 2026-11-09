@@ -11,13 +11,16 @@ from project import CONFIG_DIR, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT, TEMPLATES_DIR
     "name",
     [
         "parameters.yaml",
-        "notice_versions.yaml",
         "vaccine_reference.json",
         "disease_normalization.json",
     ],
 )
 def test_config_file_present(name):
     assert (CONFIG_DIR / name).is_file()
+
+
+def test_notice_catalog_is_absent():
+    assert not (CONFIG_DIR / "notice_versions.yaml").exists()
 
 
 def test_settings_contains_explicit_translation_dependencies():

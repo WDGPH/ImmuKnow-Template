@@ -56,7 +56,7 @@ def prepare_sample() -> dict:
         raise ValueError("ImmuKnow returned invalid preparation JSON") from exc
     if (
         not isinstance(prepared, dict)
-        or prepared.get("schema_version") != 1
+        or prepared.get("schema_version") != 2
         or not isinstance(prepared.get("entries"), list)
     ):
         raise ValueError("ImmuKnow returned an unsupported preparation record")

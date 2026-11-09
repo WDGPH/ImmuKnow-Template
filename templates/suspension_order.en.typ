@@ -2,8 +2,7 @@
 // @immuknow-settings: settings.typ
 #import "settings.typ" as immuknow
 #show: immuknow.letter // Apply the letter layout
-#let ispa_up_to_date = immuknow.notice-flags(include-ispa: true).ispa_up_to_date
-#assert(not ispa_up_to_date, message: "This suspension notice requires an overdue ISPA disease for the birth cohort.")
+#immuknow.requirements(eligibility: "has_ispa_overdue", coverage: "diseases")
 
 // Name used in the legal wording; the printed signature may include credentials.
 #let order-signatory-name = "Dr. Annie Body"

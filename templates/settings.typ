@@ -144,6 +144,8 @@
 #let overdue-agents = immuknow.overdue-agents.with(
   notice, no-records: auto, ignore-agents: overdue-agent-exclusions,
 )
+#let requirements = immuknow.requirements.with(notice)
+#let agent-alternative = immuknow.agent-alternative.with(notice)
 #let notice-flags = immuknow.notice-flags.with(notice)
 #let qr-code = immuknow.qr-code.with(notice)
 #let notice-dates = immuknow.notice-dates.with(notice)

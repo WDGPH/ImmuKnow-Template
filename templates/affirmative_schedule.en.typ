@@ -2,7 +2,7 @@
 // @immuknow-settings: settings.typ
 #import "settings.typ" as immuknow
 #show: immuknow.letter // Apply the letter layout
-#assert(immuknow.up_to_date, message: "This affirmative notice requires no overdue diseases.")
+#immuknow.requirements(eligibility: "no_overdue", coverage: "neutral")
 
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
 // immuknow.to_student and immuknow.to_guardian identify the intended reader; the final else is neutral.

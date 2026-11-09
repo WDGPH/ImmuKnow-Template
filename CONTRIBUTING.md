@@ -75,6 +75,5 @@ downloaded project outside both checkouts using native `project sync`,
 may inspect PDFs, but must not install Python tools into the downloaded project.
 Preserve imported project files, including legacy helpers if supplied by users.
 
-Starter notice IDs now omit `_v1`. Update entry filenames, catalog keys and
-assignments together when adopting these names in an existing project. Do not
+Starter notice IDs now omit `_v1`. Update entry filenames and assignments together when adopting these names in an existing project. Do not
 rename saved-run artifacts; rebundling uses their recorded original identities.

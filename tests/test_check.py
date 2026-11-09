@@ -60,7 +60,7 @@ def test_prepare_calls_native_cli_and_reads_versioned_json(monkeypatch):
     def fake(command, **kwargs):
         calls.append(command)
         return subprocess.CompletedProcess(
-            command, 0, json.dumps({"schema_version": 1, "entries": [{}]}), ""
+            command, 0, json.dumps({"schema_version": 2, "entries": [{}]}), ""
         )
 
     monkeypatch.setattr(check, "immuknow_command", lambda: "immuknow")

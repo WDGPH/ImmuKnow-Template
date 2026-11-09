@@ -50,14 +50,14 @@ def test_sample_selects_expected_starter_content(sample_run):
         e
         for e in entries
         if e["assignment"]["language"] == "en"
-        and e["assignment"]["notice_kind"] == "overdue"
+        and e["assignment"]["version_id"] in {"overdue_agents", "overdue_diseases"}
         and child(e)
     )
     affirmative = next(
         e
         for e in entries
         if e["assignment"]["language"] == "en"
-        and e["assignment"]["notice_kind"] == "affirmative"
+        and e["assignment"]["version_id"] == "affirmative_schedule"
         and child(e)
     )
     french = next(
@@ -155,3 +155,119 @@ def test_starter_excludes_recommendation_agents_but_preserves_source_facts(tmp_p
     assert all(agent not in text for agent in excluded)
     history = " ".join(pdf.pages[1].extract_text().split())
     assert "2020-01-13" not in history
+
+
+@pytest.mark.parametrize(
+    (
+        "template",
+        "diseases",
+        "agents",
+        "history",
+        "check",
+        "status",
+        "routing",
+        "wording",
+    ),
+    [
+        (
+            "affirmative_schedule",
+            "Diphtheria;",
+            "DTaP-IPV-Hib;",
+            "keep",
+            "notice.eligibility",
+            "fail",
+            "review",
+            "up-to-date",
+        ),
+        (
+            "suspension_order",
+            "",
+            "",
+            "keep",
+            "notice.eligibility",
+            "fail",
+            "review",
+            "Order for Suspension",
+        ),
+        (
+            "overdue_agents",
+            "Diphtheria;",
+            "Var;",
+            "keep",
+            "data.forecast_coverage",
+            "fail",
+            "review",
+            "Var",
+        ),
+        (
+            "overdue_diseases",
+            "Diphtheria;",
+            "Var;",
+            "keep",
+            "data.forecast_coverage",
+            "warn",
+            None,
+            "Diphtheria",
+        ),
+        (
+            "overdue_agents",
+            "Diphtheria;",
+            "COVID-19 mRNA; Inf (TIV); TIg;",
+            "keep",
+            "content.agent_display",
+            "fail",
+            "review",
+            "Request for Immunization Record",
+        ),
+        (
+            "overdue_agents",
+            "Diphtheria;",
+            "COVID-19 mRNA; Inf (TIV); TIg;",
+            "",
+            "content.agent_display",
+            "pass",
+            None,
+            "We have no immunization records on file",
+        ),
+    ],
+)
+def test_starter_requirements_and_display_keep_readable_notices(
+    tmp_path, template, diseases, agents, history, check, status, routing, wording
+):
+    import csv
+    import json
+
+    import run
+    from project import SAMPLE_INPUT, TEMPLATES_DIR
+
+    with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
+        reader = csv.DictReader(source)
+        fieldnames = reader.fieldnames
+        row = next(reader)
+    row["overdue_disease"] = diseases
+    row["overdue_agent"] = agents
+    if history != "keep":
+        row["immunizations_given"] = history
+    csv_path = tmp_path / "one-client.csv"
+    with csv_path.open("w", encoding="utf-8", newline="") as destination:
+        writer = csv.DictWriter(destination, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow(row)
+    output = tmp_path / "runs"
+    run.main(
+        [
+            str(csv_path),
+            "--template",
+            str(TEMPLATES_DIR / f"{template}.en.typ"),
+            "--output",
+            str(output),
+        ]
+    )
+    (record_path,) = output.glob("*/run.json")
+    entry = json.loads(record_path.read_text(encoding="utf-8"))["entries"][0]
+    assert next(c for c in entry["checks"] if c["code"] == check)["status"] == status
+    if routing is not None:
+        assert entry["routing"] == routing
+    assert entry["source"]["overdue_agent"] == agents
+    pdf = PdfReader(record_path.parent / entry["original"]["path"])
+    assert wording in " ".join(pdf.pages[0].extract_text().split())

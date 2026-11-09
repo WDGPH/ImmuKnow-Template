@@ -61,6 +61,7 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
     run(["uv", "build", "--out-dir", str(first)], checkout)
     original = payload(next(first.glob("*.whl")))
     assert additions.items() <= original.items()
+    assert "config/notice_versions.yaml" not in original
     assert not set(excluded).intersection(original)
     assert {
         "templates/settings.typ",
@@ -94,6 +95,7 @@ def test_wheel_and_sdist_include_authored_files_and_support_native_setup(tmp_pat
     with tarfile.open(next(first.glob("*.tar.gz"))) as archive:
         archived = {name.split("/", 1)[1] for name in archive.getnames() if "/" in name}
         assert set(additions) <= archived
+        assert "config/notice_versions.yaml" not in archived
         assert not (set(excluded) - {"scripts/new_helper.py"}).intersection(archived)
         archive.extractall(unpacked, filter="data")
     (source,) = unpacked.iterdir()
