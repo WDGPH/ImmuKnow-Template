@@ -7,6 +7,7 @@
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
 // to_student and to_guardian identify the intended reader; the final else is neutral.
 #immuknow.notice-page("Request for Immunization Record")[
+#if date_of_delivery != "" [#align(right)[#date_of_delivery]]
 #immuknow.client-block(window: envelope-window) // Mailing address and client details
 #v(0.3cm) // Space before the message
 

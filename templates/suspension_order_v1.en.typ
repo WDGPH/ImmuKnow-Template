@@ -23,13 +23,11 @@
 ]
 
 #v(10pt) // Separate service instructions from the order
-I, *#order-signatory-name*, Medical Officer of Health for *Cedar Ridge Health Unit*, order the suspension of the above named student for a period of twenty school days,
+I, *#order-signatory-name*, Medical Officer of Health for *Cedar Ridge Health Unit*, order the suspension of the above named student for a period of twenty school days.
 
-// Sample suspension dates: set the end date using your school calendar (20 school days)
-#grid(columns: (1fr, 1fr), gutter: 12pt,
-  [*From:* #immuknow.long-date("2026-02-02", "en")],
-  [*To:* #immuknow.long-date("2026-03-02", "en")],
-)
+// The project supplies the start; school calendars determine the end of the
+// authored twenty-school-day period. Core does not infer school days.
+#if date_of_suspension != "" [*Suspension begins:* #date_of_suspension]
 
 #v(10pt) // Space after the suspension dates
 *This order will be cancelled where circumstances for making the order no longer exist.*
@@ -66,7 +64,7 @@ Questions about this Order can be directed to Cedar Ridge Health Unit — Toll-f
 
 You are entitled to a hearing by the Health Services Appeal and Review Board if you mail or deliver to me, and the Health Services Appeal and Review Board, 151 Bloor Street West, 9th Floor, Toronto, ON M5S 1S4, and the principal of *#notice.client_data.school*, a request for a hearing within 15 days of this notice being served.
 
-Although a hearing may be requested, this order takes effect when it is served.
+Although a hearing may be requested, #if date_of_suspension != "" [the suspension begins on *#date_of_suspension*.] else [the suspension begins when this order is served.]
 
 #v(10pt) // Space above the signature and service date
 #grid(columns: (1fr, auto), gutter: 12pt, align: horizon,

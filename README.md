@@ -82,8 +82,8 @@ To use one notice for everyone:
 immuknow run input/clients.csv --project . --template overdue_diseases_v1.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/f7238d39aecf46f32a027254e30b409f6275008d/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/f7238d39aecf46f32a027254e30b409f6275008d/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/b5a1ae4c3a0411f570aae2f6f1d829eda746d787/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/b5a1ae4c3a0411f570aae2f6f1d829eda746d787/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -103,7 +103,7 @@ the previous files. Releasing a hold leaves the notice's checks in force.
 | --- | --- |
 | Dates, grouping, password-protected copies | `config/parameters.yaml` |
 | Wording, contacts, privacy text and suspension dates | The `<version_id>.<language>.typ` notices |
-| Fonts, colours, page size, envelope window and QR appearance | `templates/settings.typ` |
+| Fonts, colours, title alignment, page size, envelope window and QR appearance | `templates/settings.typ` |
 | Logo and signature | `templates/assets/` and the image calls in the notices |
 | Disease names shown on notices | `templates/translations/` |
 | Which notices exist and when each applies | `config/notice_versions.yaml` |
@@ -122,7 +122,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/f7238d39aecf46f32a027254e30b409f6275008d/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/b5a1ae4c3a0411f570aae2f6f1d829eda746d787/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names
@@ -186,3 +186,24 @@ Developers and resource-package maintainers: see
 [contributing](https://github.com/WDGPH/ImmuKnow-Template/blob/feat/rust-core-project/CONTRIBUTING.md).
 Python helpers remain in the source repository for compatibility and maintainer
 checks; Studio's starter resource package omits them and Python setup files.
+
+## Dates, headings and grouping
+
+The letters print `date_of_delivery` as the letter date. `date_as_of` is the
+assessment date used in the wording. Optional `date_due` and
+`date_of_suspension` select the update deadline and suspension start. Omit them
+or use `null` when they do not apply. Supplied dates must follow
+`date_as_of <= date_of_delivery < date_due < date_of_suspension`; omitted dates
+are skipped when comparing. Set suspension timing from your reviewed project
+requirements and school calendar; Core does not calculate the end date.
+
+Set `title-align` in `templates/settings.typ` to `left`, `center` or `right`.
+Individual `immuknow.notice-page` calls can override that option for one page.
+Studio also exposes title alignment in Theme.
+
+To keep different notice versions in separate bundles, use
+`bundling.group_by: notice_variant`. Add language when it also needs separating:
+`bundling.group_by: [notice_variant, language]`. The variant is the selected
+version ID, such as `overdue_agents_v1`, rather than the general notice kind.
+Keep filename version suffixes until intentionally migrating the matching
+catalog and assignments; they identify notices in runs and bundles.

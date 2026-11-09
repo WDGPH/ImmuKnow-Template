@@ -20,6 +20,9 @@ def test_sample_starters_have_expected_titles_and_pages(sample_run):
         )
         assert title in first
         assert entry["client_id"] in first
+        assert (
+            "15 novembre 2026" if language == "fr" else "November 15, 2026"
+        ) in first
         assert reader.root_object["/Lang"] == f"{language}-CA"
         assert len(reader.pages) == 2
         assert all(
@@ -100,3 +103,6 @@ def test_suspension_starter_has_its_own_title_and_one_page(tmp_path):
     text = " ".join(pdf.pages[0].extract_text().split())
     assert "Order for Suspension from Attendance at School" in text
     assert "twenty school days" in text
+    assert "Suspension begins: December 1, 2026" in text
+    assert "February 2, 2026" not in text
+    assert "March 2, 2026" not in text

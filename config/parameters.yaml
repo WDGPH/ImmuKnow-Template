@@ -1,6 +1,6 @@
 bundling:
   bundle_size: 100
-  # Use school, board, language, or page_count; combine them in a list.
+  # Use school, board, language, page_count or notice_variant; combine them in a list.
   # Example: [board, language, page_count]
   group_by: null
 school_validation:
@@ -11,6 +11,9 @@ school_validation:
   target_phu: Cedar Ridge Health Unit
 date_as_of: '2026-11-01'
 date_of_delivery: '2026-11-15'
+# Optional deadlines; use null when a date does not apply.
+date_due: '2026-11-30'
+date_of_suspension: '2026-12-01'
 encryption:
   enabled: false
   password:

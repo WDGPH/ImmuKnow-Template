@@ -6,6 +6,7 @@
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
 // to_student and to_guardian identify the intended reader; the final else is neutral.
 #immuknow.notice-page("Demande de dossier d'immunisation")[
+#if date_of_delivery != "" [#align(right)[#date_of_delivery]]
 #immuknow.client-block(window: envelope-window) // Mailing address and client details
 #v(0.3cm) // Space before the message
 
@@ -18,6 +19,8 @@
     include-dose: false,
   )
 )
+
+#if date_due != "" [Veuillez transmettre votre mise à jour au plus tard le *#date_due*.]
 
 Veuillez examiner le dossier d'immunisation à la page 2 et mettre à jour #if to_student [votre dossier] else if to_guardian [le dossier de votre enfant] else [le dossier de la personne nommée] en utilisant l'une des options suivantes :
 

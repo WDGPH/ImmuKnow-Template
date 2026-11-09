@@ -27,6 +27,7 @@
 #let link-color = rgb("#0000ee") // Colour of website and email links
 #let accent-color = rgb("#005568") // Default colour of the QR code
 #let title-size = 20pt // Size of the letter and history headings
+#let title-align = center // left, center or right within the heading area
 
 // QR destination is resolved in Typst and shared by the code and its clickable link
 #let qr = (
@@ -65,6 +66,8 @@
 #let dates = immuknow.notice-dates(notice)
 #let date_of_delivery = dates.date_of_delivery
 #let date_as_of = dates.date_as_of
+#let date_due = dates.date_due
+#let date_of_suspension = dates.date_of_suspension
 #let date_of_birth = dates.date_of_birth
 
 #let letter = immuknow.letter.with(
@@ -82,6 +85,7 @@
   logo: logo,
   logo-width: logo-width,
   title-size: title-size,
+  title-align: title-align,
   fill: heading-color,
   heading-above: 0.2cm,
   heading-below: 0.5cm,
