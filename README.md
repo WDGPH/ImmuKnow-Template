@@ -128,7 +128,7 @@ that shared library to match the executable.
 Set `overdue-agent-exclusions` in Settings to omit exact source agent names from
 the overdue-agent list. This is separate from the history table's `ignore-agents`
 and leaves source facts, history and overdue-disease lists unchanged. The starter
-uses `("COVID-19 mRNA", "Inf (TIV)")`, omitting those labels only; use the actual
+uses `("COVID-19 mRNA", "Inf (TIV)", "TIg")`, omitting those labels only; use the actual
 labels in your input when they differ. A single call can override the shared
 choice with `#immuknow.overdue-agents(ignore-agents: ())`.
 

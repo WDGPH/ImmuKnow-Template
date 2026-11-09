@@ -119,8 +119,10 @@ def test_starter_excludes_recommendation_agents_but_preserves_source_facts(tmp_p
         reader = csv.DictReader(source)
         fieldnames = reader.fieldnames
         row = next(reader)
-    excluded = ["COVID-19 mRNA", "Inf (TIV)"]
-    row["overdue_agent"] += ";".join(excluded) + ";"
+    excluded = ["COVID-19 mRNA", "Inf (TIV)", "TIg"]
+    row["overdue_disease"] += "Meningococcal disease;"
+    row["overdue_agent"] += ";".join(["Men-C-ACYW-135", *excluded]) + ";"
+    row["immunizations_given"] += " 2020-01-13 - TIg - Valid;"
     csv_path = tmp_path / "one-client.csv"
     with csv_path.open("w", encoding="utf-8", newline="") as destination:
         writer = csv.DictWriter(destination, fieldnames=fieldnames)
@@ -142,7 +144,14 @@ def test_starter_excludes_recommendation_agents_but_preserves_source_facts(tmp_p
     entry = record["entries"][0]
     assert all(agent in entry["notice"]["overdue_agents"] for agent in excluded)
     assert entry["source"]["overdue_agent"] == row["overdue_agent"]
+    assert entry["source"]["immunizations_given"] == row["immunizations_given"]
+    coverage = next(c for c in entry["checks"] if c["code"] == "data.forecast_coverage")
+    assert coverage["measurements"]["missing_diseases"] == []
+    assert coverage["measurements"]["unmapped_agents"] == []
     pdf = PdfReader(record_path.parent / entry["original"]["path"])
     text = " ".join(pdf.pages[0].extract_text().split())
     assert "DTaP-IPV-Hib" in text
+    assert "Men-C-ACYW-135" in text
     assert all(agent not in text for agent in excluded)
+    history = " ".join(pdf.pages[1].extract_text().split())
+    assert "2020-01-13" not in history

@@ -105,7 +105,7 @@
   diseases: ("Diphtheria", "Tetanus", "Pertussis", "Polio", "Hib", "Pneumococcal",
     "Rotavirus", "Measles", "Mumps", "Rubella", "Meningococcal", "Varicella"),
   ignore-agents: ( // Vaccines left out of the table
-    "RSVAb", "VarIg", "HBIg", "RabIg", "Ig",
+    "RSVAb", "VarIg", "HBIg", "RabIg", "Ig", "TIg",
     "COVID-19 mRNA",
     "COVID-19 recombinant spike protein",
     "COVID-19 unspecified",
@@ -140,7 +140,7 @@
 #let overdue-diseases = immuknow.overdue-diseases.with(notice, labels: selected-labels(), no-records: auto, ispa-only: false)
 // Notice exclusions are independent of the history table's ignore-agents.
 // Use exact agent names from overdue_agents in the source data.
-#let overdue-agent-exclusions = ("COVID-19 mRNA", "Inf (TIV)")
+#let overdue-agent-exclusions = ("COVID-19 mRNA", "Inf (TIV)", "TIg")
 #let overdue-agents = immuknow.overdue-agents.with(
   notice, no-records: auto, ignore-agents: overdue-agent-exclusions,
 )

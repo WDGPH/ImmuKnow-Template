@@ -6,15 +6,16 @@ Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Fil
 
 The active starter patterns in [parameters.yaml](config/parameters.yaml) are individual `{client_id}_{notice_variant}_{language_code}`, normal bundle `{route}_{bundle_number}`, and review bundle `review_{bundle_number}`. They work with size-only grouping and have passed package/native handoff tests. Last-name and school/variant patterns in the README are customization examples, not shipped defaults. Retain this delivered behavior.
 
-## R1: reference fixes — ready next
+## R1: reference fixes — Template complete; Studio adoption pending
 
-The inspected checkout does not contain the user's successful project edits:
+The starter now includes the user's successful project edits:
 
-- [ ] Add `"Meningococcal disease": "Meningococcal"` to [disease_normalization.json](config/disease_normalization.json). All 14 meningococcal agent entries in [vaccine_reference.json](config/vaccine_reference.json) already map to `Meningococcal`; keep them as they are.
-- [ ] Add `"TIg": ["Tetanus"]` to the vaccine reference.
-- [ ] Add `TIg` to both history `ignore-agents` and `overdue-agent-exclusions` in [settings.typ](templates/settings.typ). Preserve these separate settings: recognition, history display and notice display have distinct purposes.
-- [ ] Remove redundant `"Varicella": "Varicella"` if cleaning normalization. Do not create identity mappings for every disease.
-- [ ] Verify these authored files appear in the resource distribution, then update Studio's Template package pin/lock. No Core schema change is needed for these data edits.
+- [x] Add `"Meningococcal disease": "Meningococcal"` to [disease_normalization.json](config/disease_normalization.json). All 14 meningococcal agent entries in [vaccine_reference.json](config/vaccine_reference.json) already map to `Meningococcal` and remain unchanged.
+- [x] Add `"TIg": ["Tetanus"]` to the vaccine reference.
+- [x] Add `TIg` to both history `ignore-agents` and `overdue-agent-exclusions` in [settings.typ](templates/settings.typ). Recognition, history display and notice display remain distinct.
+- [x] Remove redundant `"Varicella": "Varicella"` normalization.
+- [x] Verify the authored files appear in the resource distribution. No Core schema change is needed for these data edits.
+- [ ] Update Studio's Template package pin/lock to adopt this change.
 
 Checks: Core preparation with fictional Meningococcal disease and TIg recognizes the mapping; representative history and agent notices omit TIg while retaining the original facts; all existing meningococcal mappings remain correct. Keep malformed/conflicting validation fixtures in Core. Template should test project values and rendered behavior, not duplicate its entire validation suite.
 
