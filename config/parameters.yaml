@@ -6,7 +6,7 @@ bundling:
   # Optional: source (default) or last_name_dob.
   # sort_by: last_name_dob
 # Filename stems use supported {field} placeholders, like password templates.
-# Core appends .pdf/.csv. Originals and protected copies use the individual stem.
+# Core appends .pdf. Originals and protected copies use the individual stem.
 filenames:
   individual:
     template: '{client_id}_{notice_variant}_{language_code}'

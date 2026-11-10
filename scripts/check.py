@@ -91,11 +91,30 @@ def run_sample() -> tuple[int, dict | None]:
 
 def finding_summary(record: dict) -> list[str]:
     """Summarize effective findings and errors that explain failed output."""
+    if record.get("run_schema_version") != 2:
+        raise ValueError("Unsupported saved-run version")
     notices: Counter[tuple[str, str]] = Counter()
     for entry in record["entries"]:
+        observed = entry["checks"]
+        if "effective_checks" not in entry:
+            if record.get("status") not in ("running", "failed"):
+                raise ValueError("Completed saved row is missing effective results")
+            checks = observed
+        else:
+            by_key = {check["finding_key"]: check for check in observed}
+            if len(by_key) != len(observed):
+                raise ValueError("Duplicate observed finding key")
+            results = entry["effective_checks"]
+            keys = [result["finding_key"] for result in results]
+            if len(keys) != len(set(keys)) or set(keys) != set(by_key):
+                raise ValueError("Effective results do not match observed findings")
+            checks = [
+                dict(by_key[result["finding_key"]], status=result["status"])
+                for result in results
+            ]
         for status, code in {
             (check["status"], check["code"])
-            for check in entry.get("effective_checks", entry.get("checks", []))
+            for check in checks
             if check["status"] in ("warn", "fail")
         }:
             notices[status, code] += 1
@@ -185,14 +204,17 @@ def main(argv: list[str] | None = None) -> int:
                     "sample run",
                     f"{record['status']}, {produced}/{len(record['entries'])} PDFs",
                 )
-                findings = finding_summary(record)
-                for finding in findings:
-                    print(f"        {finding}")
-                if findings:
-                    print(
-                        "      For the full report, run the sample with scripts/run.py "
-                        "(see README)."
-                    )
+                try:
+                    findings = finding_summary(record)
+                except (KeyError, TypeError, ValueError) as exc:
+                    report.line("FAIL", "saved findings", str(exc))
+                else:
+                    for finding in findings:
+                        print(f"        {finding}")
+                    if findings:
+                        print(
+                            "      Run the sample to retain its CSV exports (see README)."
+                        )
 
     return 1 if report.failed else 0
 

@@ -53,13 +53,17 @@ immuknow run --sample
 ```
 
 The check renders the sample in a temporary folder and removes its output.
-The run keeps the results. Open the new folder inside `runs`, then open
-`report.html` in a browser. Review
-the checks and original notices. When grouping is enabled, `bundles-0001/`
-contains PDFs combining notices for sending, separate review PDFs for
-readable notices that failed checks, and matching CSV page lists. Warnings can
-be included for sending by default, so review them too. A notice that could not
-be created appears in the report without a PDF.
+The run keeps the results and prints counts and percentages for error, warning,
+clear and pending records, followed by the selected `records.csv` and
+`findings.csv` paths. `records.csv` has one row per source record; use `row_key`
+to join its findings, and open IDs as text in your spreadsheet. Paths are relative
+to the run folder. Original and protected PDF paths and inclusive bundle page
+ranges identify available notices. The selected paths are also in `run.json`.
+
+Severity summarizes effective findings and required work; route describes delivery. A warning can
+still be eligible for sending, while a readable notice with failed checks goes
+to review. A notice that could not be created has no PDF path. Review the findings
+and PDFs before delivery.
 
 The ten fictional clients cover English and French letters, supplied overdue
 and up-to-date records, optional Ontario Immunization IDs and a guardian-directed
@@ -82,8 +86,8 @@ To use one notice for everyone:
 immuknow run input/clients.csv --project . --template overdue_diseases.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/7784d9ce0dff6fc14d8061fd1aefc45df76e799d/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/7784d9ce0dff6fc14d8061fd1aefc45df76e799d/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/073dde56ad71cc852141e69135a8b779d4332fe6/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/073dde56ad71cc852141e69135a8b779d4332fe6/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -106,7 +110,13 @@ immuknow rebundle runs/<run-id> --release row-000001
 ```
 
 A hold excludes the notice from both normal and review PDFs. Each attempt keeps
-the previous files. Releasing a hold leaves the notice's checks in force.
+the previous files. Releasing a hold leaves the notice's checks in force. The
+selected CSV pair changes with each successful rebundle; earlier exports remain
+available. Use `immuknow warnings runs/<run-id>` to review warnings and
+`immuknow warnings runs/<run-id> --refresh` to regenerate exports. The
+[review guide](https://github.com/WDGPH/ImmuKnow/blob/073dde56ad71cc852141e69135a8b779d4332fe6/docs/user_guide/pdf_validation.md)
+explains acknowledgment and revocation. Acknowledging a warning does not approve
+delivery or change severity.
 
 ## Change your notices
 
@@ -150,7 +160,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/7784d9ce0dff6fc14d8061fd1aefc45df76e799d/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/073dde56ad71cc852141e69135a8b779d4332fe6/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names

@@ -73,19 +73,12 @@ def test_exit_code_comes_from_immuknow(fake_immuknow):
     assert run.main(["cohort.csv", "--notice-assignments", "a.json"]) == 1
 
 
-def test_warnings_print_review_instructions(fake_immuknow, tmp_path, capsys):
-    _, result = fake_immuknow
-    result["status"] = "completed_with_warnings"
-    run.main(
-        [
-            "cohort.csv",
-            "--notice-assignments",
-            "a.json",
-            "--output",
-            str(tmp_path / "out"),
-        ]
+def test_normal_run_delegates_receipts_to_core(fake_immuknow, monkeypatch, capsys):
+    monkeypatch.setattr(
+        run, "run_ids", lambda *_: pytest.fail("normal output must not scan runs")
     )
-    assert "warnings" in capsys.readouterr().out
+    assert run.main(["cohort.csv", "--notice-assignments", "a.json"]) == 0
+    assert capsys.readouterr().out == ""
 
 
 def test_bare_template_name_is_in_templates(fake_immuknow):
@@ -103,24 +96,6 @@ def test_templates_with_template_is_an_error(fake_immuknow, capsys):
         run.main(["cohort.csv", "--template", "a.en.typ", "--templates", "elsewhere"])
     assert calls == []
     assert "--templates cannot be used with --template" in capsys.readouterr().err
-
-
-def test_unreadable_run_record_is_explained(fake_immuknow, tmp_path, capsys):
-    _, result = fake_immuknow
-    result["status"] = "completed"
-    run.main(
-        [
-            "cohort.csv",
-            "--notice-assignments",
-            "a.json",
-            "--output",
-            str(tmp_path / "out"),
-        ]
-    )
-    (record,) = (tmp_path / "out").glob("*/run.json")
-    record.write_text("{", encoding="utf-8")
-    run.print_outcome(record.parent)
-    assert "Could not read the run record" in capsys.readouterr().err
 
 
 def test_quiet_run_hides_immuknow_output_and_review_hint(
@@ -153,26 +128,26 @@ def test_sample_uses_project_selection(fake_immuknow):
     ]
 
 
-def test_concurrent_runs_are_not_misattributed(monkeypatch, tmp_path, capsys):
-    def concurrent_run(command, **kwargs):
-        for name, status in [("own", "completed"), ("other", "failed_setup")]:
-            directory = tmp_path / name
-            directory.mkdir()
-            (directory / "run.json").write_text(json.dumps({"status": status}))
-        return subprocess.CompletedProcess(command, 0)
-
+def test_quiet_run_without_record_surfaces_native_failure(
+    monkeypatch, tmp_path, capsys
+):
     monkeypatch.setattr(run, "ensure_library", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(run, "immuknow_command", lambda: "immuknow")
-    monkeypatch.setattr(run.subprocess, "run", concurrent_run)
+    monkeypatch.setattr(
+        run.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command, 1, "", "native failure"
+        ),
+    )
     assert (
         run.main(
-            ["cohort.csv", "--template", "notice.en.typ", "--output", str(tmp_path)]
+            ["cohort.csv", "--template", "notice.en.typ", "--output", str(tmp_path)],
+            quiet=True,
         )
-        == 0
+        == 1
     )
-    captured = capsys.readouterr()
-    assert "Run status:" not in captured.out
-    assert "Several runs appeared" in captured.err
+    assert "native failure" in capsys.readouterr().err
 
 
 def test_sample_forwards_value_taking_core_options(fake_immuknow):

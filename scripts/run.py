@@ -18,7 +18,6 @@ Warnings remain eligible for sending.
 from __future__ import annotations
 
 import argparse
-import json
 import subprocess
 import sys
 from pathlib import Path
@@ -105,26 +104,6 @@ def run_ids(output_dir: Path) -> set[str]:
     return {path.name for path in output_dir.iterdir() if (path / "run.json").is_file()}
 
 
-def print_outcome(run_dir: Path) -> None:
-    """Say where the run's report is and what to do next."""
-    try:
-        status = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))[
-            "status"
-        ]
-    except (OSError, ValueError, KeyError) as exc:
-        print(
-            f"Could not read the run record {run_dir / 'run.json'} ({exc}). "
-            f"Look in {run_dir} for what the run left.",
-            file=sys.stderr,
-        )
-        return
-    print(f"Run status: {status}\nReport: {run_dir / 'report.html'}")
-    if status == "completed_with_warnings":
-        print("Some notices have warnings. Open the report to review them.")
-    elif status != "completed":
-        print("Open the report to see which rows or notices failed and why.")
-
-
 def main(argv: list[str] | None = None, *, quiet: bool = False) -> int:
     """Run immuknow; quiet captures its output unless no run record explains the result."""
     args, passthrough = parse_args(argv)
@@ -150,21 +129,10 @@ def main(argv: list[str] | None = None, *, quiet: bool = False) -> int:
     command += ["--config", str(args.config_dir), "--output", str(args.output_dir)]
     command += passthrough
 
-    before = run_ids(args.output_dir)
+    before = run_ids(args.output_dir) if quiet else set()
     result = subprocess.run(command, capture_output=quiet, text=True)
-    new_runs = sorted(run_ids(args.output_dir) - before)
-    if quiet:
-        if not new_runs:
-            print(result.stdout + result.stderr, end="", file=sys.stderr)
-        return result.returncode
-    if len(new_runs) == 1:
-        print_outcome(args.output_dir / new_runs[0])
-    elif new_runs:
-        print(
-            f"Several runs appeared in {args.output_dir}; check their reports "
-            "to identify this invocation's result.",
-            file=sys.stderr,
-        )
+    if quiet and not (run_ids(args.output_dir) - before):
+        print(result.stdout + result.stderr, end="", file=sys.stderr)
     return result.returncode
 
 

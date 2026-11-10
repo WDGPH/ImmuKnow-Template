@@ -271,3 +271,75 @@ def test_starter_requirements_and_display_keep_readable_notices(
     assert entry["source"]["overdue_agent"] == agents
     pdf = PdfReader(record_path.parent / entry["original"]["path"])
     assert wording in " ".join(pdf.pages[0].extract_text().split())
+
+
+def test_bilingual_variants_keep_long_history_and_qr_evidence(tmp_path):
+    import csv
+    import datetime
+    import json
+
+    import run
+    from project import SAMPLE_ASSIGNMENTS, SAMPLE_INPUT
+
+    with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
+        reader = csv.DictReader(source)
+        fields = reader.fieldnames
+        sample = {row["client_id"]: row for row in reader}
+    assignments = json.loads(SAMPLE_ASSIGNMENTS.read_text())
+    agents = ["MMR", "DTaP-IPV", "Hib", "Men-C-C", "Pneu-C-13"]
+    history = " ".join(
+        f"{(datetime.date(2015, 1, 1) + datetime.timedelta(days=i * 50)).isoformat()} - {agents[i % len(agents)]} - Valid;"
+        for i in range(50)
+    )
+    rows = []
+    selected = []
+    for language in ("en", "fr"):
+        for variant in ("overdue_agents", "overdue_diseases"):
+            original = next(
+                item
+                for item in assignments
+                if item["template"] == f"{variant}.{language}.typ"
+            )
+            row = sample[original["client_id"]].copy()
+            row["client_id"] = f"{2000000001 + len(rows):010}"
+            row["first_name"] = (
+                "Éléonore-Camille" if language == "fr" else "Alexandrine-Marie"
+            )
+            row["last_name"] = (
+                "Deschamps-Lefrançois"
+                if language == "fr"
+                else "Fictional-Sample-Longname"
+            )
+            row["street_address_line_1"] = "12345 Long Fictional Avenue"
+            row["street_address_line_2"] = "Apartment 123, Building North"
+            row["immunizations_given"] = history
+            rows.append(row)
+            selected.append(
+                {"client_id": row["client_id"], "template": original["template"]}
+            )
+    source = tmp_path / "long-fictional.csv"
+    with source.open("w", encoding="utf-8", newline="") as destination:
+        writer = csv.DictWriter(destination, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    manifest = tmp_path / "assignments.json"
+    manifest.write_text(json.dumps(selected))
+    output = tmp_path / "runs"
+    code = run.main(
+        [str(source), "--notice-assignments", str(manifest), "--output", str(output)]
+    )
+    (record_path,) = output.glob("*/run.json")
+    record = json.loads(record_path.read_text())
+    assert code == 0, record["status"]
+    assert len(record["entries"]) == 4
+    for entry in record["entries"]:
+        assert len(entry["notice"]["history"]) == 50
+        assert (
+            entry["saved_evidence"]["measurements"]["history"][0]["displayed_rows"]
+            == 50
+        )
+        assert len(entry["saved_evidence"]["qr_urls"]) == 1
+        pdf = PdfReader(record_path.parent / entry["original"]["path"])
+        assert len(pdf.pages) >= 3
+        assert pdf.root_object["/Lang"] == f"{entry['assignment']['language']}-CA"
+        assert entry["client_id"] in " ".join(pdf.pages[0].extract_text().split())
