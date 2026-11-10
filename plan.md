@@ -1,53 +1,41 @@
-# Plan: reference fixes, notice intent and project defaults
+# v2 plan: adopt CSV reporting and revised shared QR resources
 
-Template work from the [tracked shared execution plan](../ImmuKnow/plan.md). Filename templates and reference fixes are implemented here and adopted in Studio. Notice-local requirements are verified here and adopted in Studio; the R3 Core pin is ready for the next Studio handoff. Native preparation, checks, policy and bundle implementation belong in Core; this repo owns project data, notice settings, labels, wording and packaged resources.
+**Status: planned; implementation pending.** This repository checklist implements Phase 2 and records the Template migration notes arising during Phase 1 in the [shared Core plan](../ImmuKnow/plan.md). That plan owns schemas, report semantics, performance acceptance and cross-repository order; do not duplicate those contracts here. This planning change does not alter runtime files, pins or published resources.
 
-## F0: filename defaults complete
+Start at `91c5b1cf5e573d8c8f234d71252ea65bfbe6d9fb`, currently pinning Core `16792decc1e4fb405f63d2780ed87d5f46dba37c`. Template owns authored notices, Settings, translations, reference files, fictional clients, project setup/instructions and the resource package. Core owns the native reporting and shared QR implementation; Studio consumes this package.
 
-The active starter patterns in [parameters.yaml](config/parameters.yaml) are individual `{client_id}_{notice_variant}_{language_code}`, normal bundle `{route}_{bundle_number}`, and review bundle `review_{bundle_number}`. They work with size-only grouping and have passed package/native handoff tests. Last-name and school/variant patterns in the README are customization examples, not shipped defaults. Retain this delivered behavior.
+Sol coordinates this repository phase, with most implementation delegated to Terra subagents and occasional Astra review of consequential integration decisions. Parallelize independent work where useful; do not split a small migration into artificial release gates. Keep this checklist current while Core iterates, then perform the consumer changes together.
 
-## R1: reference fixes complete
+## 1. Prepare the consumer handoff
 
-The starter now includes the user's successful project edits:
+- [ ] Review the shared CSV v1 / saved-run v2 / render-report v4 fixtures as Core evolves; carry forward final changes in the shared migration ledger. Identify native readers in `tests/conftest.py`, `tests/test_templates.py`, other presentation tests and helper-output assertions. They must consume the new saved evidence/effective-result shape rather than reconstruct the old `render_report` or HTML output.
+- [ ] Keep the current authored notice requirements, English/French wording and QR Settings contract. The internal Core grid becomes integer-valued; no boolean compatibility wrapper belongs in this project. Search maintained notices/helpers for direct internal imports and update any that exist. Public `immuknow.qr-code` styling remains available.
+- [ ] Prepare representative QR acceptance cases using existing fictional clients: distinct corner/alignment colors to exercise the styled-grid path, each module/corner style, representative Unicode destinations and logo/mask constraints. Also retain default RGB SVG and non-RGB run-path cases. The ordinary default sample may bypass the optimized grid; do not use it to claim the measured speedup.
 
-- [x] Add `"Meningococcal disease": "Meningococcal"` to [disease_normalization.json](config/disease_normalization.json). All 14 meningococcal agent entries in [vaccine_reference.json](config/vaccine_reference.json) already map to `Meningococcal` and remain unchanged.
-- [x] Add `"TIg": ["Tetanus"]` to the vaccine reference.
-- [x] Add `TIg` to both history `ignore-agents` and `overdue-agent-exclusions` in [settings.typ](templates/settings.typ). Recognition, history display and notice display remain distinct.
-- [x] Remove redundant `"Varicella": "Varicella"` normalization.
-- [x] Verify the authored files appear in the resource distribution. No Core schema change is needed for these data edits.
-- [x] Studio adopted the Template resource revision through its package pin/lock in `e851bb0ef752c1d6f052fff73daebe18f7aaf7da`, with fresh build, unit and browser/native handoff checks.
+## 2. Adopt the verified Core commit
 
-Checks: Core preparation with fictional Meningococcal disease and TIg recognizes the mapping; representative history and agent notices omit TIg while retaining the original facts; all existing meningococcal mappings remain correct. Keep malformed/conflicting validation fixtures in Core. Template should test project values and rendered behavior, not duplicate its entire validation suite.
+After all Core work is coherent and verified:
 
-## R2a/R2b: notice-local requirements and presentation
+- [ ] Set `core-revision.txt` to the exact reviewed Core commit and obtain that executable. Refresh the complete generated library with `immuknow project sync --replace`; never edit generated `templates/lib/immuknow/` or ship a partial resource patch.
+- [ ] Run `immuknow project check --sample` and retain one `immuknow run --sample` for presentation/native handoff checks. Use the new canonical record and its selected export paths. Check both CSV headers and one row per source record, then follow a record through its original/protected copy when requested and bundle page range.
+- [ ] Adapt the existing shared native journey to perform a hold/release and rebundle, resolve the new active export generation, and show earlier bundle/export snapshots still exist. Keep one representative readable requirement failure and one no-PDF case in appropriate test fixtures; Core owns the full failure/recovery matrix.
+- [ ] Verify both languages, notice-local coverage/eligibility/display outcomes, long names/addresses/histories, page counts and QR destination/appearance. Keep source facts and expected semantic findings unchanged across the report representation change. Native test readers should retain coverage/source-display evidence assertions while removing assertions for obsolete duplicate measurement storage.
 
-The prerelease v2.0 notice-local requirements contract replaces the former YAML catalog. Each notice places a shared helper declaration that emits eligibility/coverage metadata and structured findings. There is no legacy YAML fallback or deprecation period.
+## 3. Update the operator journey and packaged resources
 
-- [x] Participate in R2a before implementation: write the maintained-notice table of existing eligibility predicates, agent/disease/neutral coverage basis and intentional no-records/alternative branches for both languages. The shared helper owns evaluation in native/browser; use the same Core fixture contract rather than inventing separate semantics here. Adopt R2b only after that contract/library exists.
-- [x] Put requirements beside the wording they protect. Share declarations where English/French entry points share intent, while supporting genuinely conditional notices.
-- [x] Convert affirmative and suspension eligibility assertions to structured failures so readable ineligible notices go to review. Preserve their existing predicates/ISPA selection; keep fundamental input/schema/layout assertions when a trustworthy PDF cannot be rendered. Explicitly cover intentional no-records and alternate-text branches in the R2a table.
-- [x] Update maintained notice requirements and remove the YAML catalog from project resources, package expectations, setup/readiness checks, tests and instructions. Use the v2.0 notice-local contract only; add no legacy catalog loader, precedence rules or compatibility resources.
-- [x] Verify an agent coverage mismatch becomes a row failure/review PDF and the corresponding disease notice warns, without changing source facts or assignments. Verify starters/packages contain no notice YAML catalog, valid notices run without it, and missing local requirements cannot fall back to an obsolete file.
-- [x] Review the shared empty-agent-display finding against starter wording, including flu/COVID/TIg exclusions and intentional no-records replacements. Preserve clients/facts and require review for accidental empty recommendations.
-- [x] Explain exact-name exclusions and their display-only effect in the README. Eligibility changes and alternate assignments stay explicit.
+- [ ] Rewrite README sample/review instructions around terminal severity percentages, `records.csv`, `findings.csv`, original/bundle paths and page ranges. Explain the difference between highest severity and delivery route, text import for IDs, and locating the selected generation from the printed paths/`run.json`.
+- [ ] Replace references to opening `report.html`, matching per-bundle CSVs, appended CSV filename stems and full technical detail dumps. Explain `warnings`, acknowledgment/revoke and `warnings RUN --refresh` by linking to Core's owning review guide. Acknowledgment never approves delivery or changes severity.
+- [ ] Update `CONTRIBUTING.md`, helper messages, package/readiness tests and distribution expectations as needed. Keep native-only setup in the exported starter; add no spreadsheet generator dependency, HTML viewer or Python runtime requirement.
+- [ ] Inspect wheel and source distribution: revised README and Core pin, authored Settings/notices/references and fictional examples are present; generated shared library, reports, private data and maintainer tools remain excluded as intended. Do not add report-format settings or compatibility files for the old outputs.
 
-Verification: the shared sample and [test_templates.py](tests/test_templates.py) exercise English/French presentation, agent/disease coverage, review routing, intentional no-records replacement and exclusions while retaining source facts. Affirmative and suspension eligibility failures retain readable notices for review; fundamental rendering failures remain report-only. The package no longer includes the notice YAML catalog.
+## 4. Verify and hand off to Studio
 
-## G1/W1/W2/S1: adopted Core behavior
+- [ ] Follow `CONTRIBUTING.md`: Ruff check/format, `uv run --locked --group test pytest`, `uv build --out-dir dist`, package inspection and the representative native journey with `IMMUKNOW_BIN` pointing to the exact candidate executable. Use Core's tests for generic CSV/schema/recovery behavior instead of duplicating them here.
+- [ ] Keep tracked authored files unchanged by setup/tests. Record exact Core revision, actual checks and presentation limits, then create the Template adoption commit.
+- [ ] Supply Studio that exact Template commit and matching Core commit together. If a later integration change affects Core, refresh the matching pin and affected checks before final adoption; internal Core iterations need no consumer repin. Publishing is a separate task; this plan authorizes no push or release.
 
-The pinned Core includes grouping safety, optional last-name/DOB ordering, structured link aggregation and run-scoped acknowledgment. The starter retains size-only grouping and source ordering; school grouping and sorting are local configuration choices.
+## Preserve completed work
 
-- [x] The starter leaves URL checks enabled. Core aggregates exact destinations and supports run-scoped acknowledgment; personalized QR values remain distinct.
-- [ ] Review the real school reference/export with its upstream data owner when identified. School validation remains a local configuration choice.
-- [x] Document optional last-name/DOB ordering separately from completed F0 filename support; source order remains the default.
-- [x] Keep policy and bundle implementation in Core; no local Core patch is needed.
+Filename defaults remain individual `{client_id}_{notice_variant}_{language_code}`, normal bundle `{route}_{bundle_number}` and review bundle `review_{bundle_number}`; only obsolete CSV naming claims change. Preserve Meningococcal normalization, TIg recognition plus both display exclusions, notice-local requirements without YAML fallback, independent source-row failures, safe school grouping and optional `last_name_dob` sorting. Keep authored project bytes and reference ownership intact.
 
-## D1: disease catalog exploration
-
-The shared plan records the completed initial inventory and deferred migration work. The existing normalization and language/context label files remain the active format; catalog migration and new-language support need a separate agreed contract.
-
-## Verification and adoption
-
-Use [CONTRIBUTING.md](CONTRIBUTING.md): run Ruff checks/format check and the relevant `pytest` project/presentation/package checks with the intended native binary. Use one shared fictional sample journey and representative English/French notices; inspect wording and page counts, including empty-list/no-records and exclusion cases. Keep private client data out of examples.
-
-R1 and R2 are implemented and verified, including Studio adoption at `02fb2dc`. R3 is adopted here through the new Core pin; Studio must update its matching pins. The complete generated library was refreshed through native project sync. Build/inspect wheel and source distributions with `uv build --out-dir dist` when package contents change. Studio then updates its Template dependency/lock and matching Core revision, regenerates assets and verifies preview plus downloaded native `project sync`, `project check --sample`, `run` and `rebundle`. Preserve imported/authored project bytes; do not change installed package resources in place.
+The supplied native/report profiling is now completed evidence in the shared plan, not deferred work. Disease catalog/language migration and upstream school export review remain outside this change. No additional product decision is required here.
