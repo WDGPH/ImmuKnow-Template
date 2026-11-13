@@ -24,7 +24,11 @@ library is copied into `templates/lib/immuknow/` during setup and is not committ
 ## Set up the project
 
 1. Obtain an `immuknow` executable matching the Core revision recorded in
-   `core-revision.txt`. Ask your project maintainer for it. Developers can
+   `core-revision.txt`. When a matching release is available, download and extract
+   its archive from [Core releases](https://github.com/WDGPH/ImmuKnow/releases).
+   Choose Windows x64, Linux x64, Apple silicon macOS or Intel macOS, and put the
+   executable on your terminal's PATH. Your maintainer can supply a prepared
+   executable until then. Developers can
    [build the pinned revision](https://github.com/WDGPH/ImmuKnow-Template/blob/feat/rust-core-project/CONTRIBUTING.md#build-the-reviewed-core).
 2. Install the fonts named in `templates/settings.typ`. The examples use
    FreeSans and FreeSerif from GNU FreeFont.
@@ -67,7 +71,8 @@ and PDFs before delivery.
 
 The ten fictional clients cover English and French letters, supplied overdue
 and up-to-date records, optional Ontario Immunization IDs and a guardian-directed
-notice. Eight have recorded histories; two have no recorded immunizations. Example run dates are in November 2026,
+notice. Eight have recorded histories; two have no recorded immunizations.
+Example run dates are in November 2026,
 after the supplied vaccination dates. These records are not clinical assessments
 or advice for an individual.
 
@@ -86,8 +91,8 @@ To use one notice for everyone:
 immuknow run input/clients.csv --project . --template overdue_diseases.en.typ
 ```
 
-See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/e9189d1633a0c590a50adf0fb010b33760d919ba/docs/user_guide/input_schema.md)
-and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/e9189d1633a0c590a50adf0fb010b33760d919ba/docs/user_guide/configuration.md)
+See Core's [CSV guide](https://github.com/WDGPH/ImmuKnow/blob/189770ba3cf8aec1ff4414dad1acc2d575fcaeaf/docs/user_guide/input_schema.md)
+and [configuration guide](https://github.com/WDGPH/ImmuKnow/blob/189770ba3cf8aec1ff4414dad1acc2d575fcaeaf/docs/user_guide/configuration.md)
 for columns, history formatting and the JSON selection file. Keep the output
 folder separate from templates, settings and input files.
 
@@ -114,7 +119,7 @@ the previous files. Releasing a hold leaves the notice's checks in force. The
 selected CSV pair changes with each successful rebundle; earlier exports remain
 available. Use `immuknow warnings runs/<run-id>` to review warnings and
 `immuknow warnings runs/<run-id> --refresh` to regenerate exports. The
-[review guide](https://github.com/WDGPH/ImmuKnow/blob/e9189d1633a0c590a50adf0fb010b33760d919ba/docs/user_guide/pdf_validation.md)
+[review guide](https://github.com/WDGPH/ImmuKnow/blob/189770ba3cf8aec1ff4414dad1acc2d575fcaeaf/docs/user_guide/pdf_validation.md)
 explains acknowledgment and revocation. Acknowledging a warning does not approve
 delivery or change severity.
 
@@ -160,7 +165,7 @@ the options and image constraints.
 Replace placeholder contacts, branding and signatures before sending real
 notices. After changing fonts or layout, inspect English and French examples,
 long addresses and histories, envelope placement and QR links. Core's
-[template guide](https://github.com/WDGPH/ImmuKnow/blob/e9189d1633a0c590a50adf0fb010b33760d919ba/docs/developer_guide/templates.md)
+[template guide](https://github.com/WDGPH/ImmuKnow/blob/189770ba3cf8aec1ff4414dad1acc2d575fcaeaf/docs/developer_guide/templates.md)
 explains the available components and options.
 
 ## Check school names
