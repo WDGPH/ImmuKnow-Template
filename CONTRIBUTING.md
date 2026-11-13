@@ -7,7 +7,7 @@ by Studio. Keep examples fictional and project instructions in plain language.
 ## Build the reviewed Core
 
 `core-revision.txt` records the reviewed ImmuKnow source commit. Install Rust
-1.92 or later, then run:
+1.100 or later, then run:
 
 ```sh
 cargo install --git https://github.com/WDGPH/ImmuKnow \

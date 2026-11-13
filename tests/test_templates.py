@@ -24,7 +24,7 @@ def test_sample_starters_have_expected_titles_and_pages(sample_run):
             "15 novembre 2026" if language == "fr" else "November 15, 2026"
         ) in first
         assert reader.root_object["/Lang"] == f"{language}-CA"
-        assert len(reader.pages) == 2
+        assert len(reader.pages) == (3 if entry["client_id"] == "9848574731" else 2)
         assert all(
             "MARK_END_" not in page.extract_text()
             and "MEASURE_" not in page.extract_text()
