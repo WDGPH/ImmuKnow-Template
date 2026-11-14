@@ -1,6 +1,14 @@
 #import "lib/immuknow/lib.typ" as immuknow
-#import "presentation.typ" as presentation
 #import "lib/immuknow/lib.typ": notice-header, notice-section, signature-block, privacy-notice, envelope-preset, long-date, localization, url-encode, query-url, link
+
+// Authored project labels may be edited independently of normalized disease names.
+// Literal paths keep every translation dependency explicit for project export.
+#let selected-labels() = (
+  en_diseases_chart: json("translations/en_diseases_chart.json"),
+  en_diseases_overdue: json("translations/en_diseases_overdue.json"),
+  fr_diseases_chart: json("translations/fr_diseases_chart.json"),
+  fr_diseases_overdue: json("translations/fr_diseases_overdue.json"),
+)
 
 // Page and envelope
 // Paper: keep one choice uncommented
@@ -27,6 +35,7 @@
 #let link-color = rgb("#0000ee") // Colour of website and email links
 #let accent-color = rgb("#005568") // Default colour of the QR code
 #let title-size = 20pt // Size of the letter and history headings
+#let title-align = center // left, center or right within the heading area
 
 // QR destination is resolved in Typst and shared by the code and its clickable link
 #let qr = (
@@ -39,7 +48,9 @@
   width: 3cm,
   foreground: accent-color,
   background: white,
-  module-shape: "square",
+  corner-foreground: auto, // The three large finder targets inherit foreground
+  alignment-foreground: auto, // Smaller alignment targets inherit foreground
+  module-shape: "square", // Or "dots", "rounded", "separated"
   corner-style: "square",
 )
 // #let qr = (..qr, enabled: false)
@@ -63,6 +74,8 @@
 #let dates = immuknow.notice-dates(notice)
 #let date_of_delivery = dates.date_of_delivery
 #let date_as_of = dates.date_as_of
+#let date_due = dates.date_due
+#let date_of_suspension = dates.date_of_suspension
 #let date_of_birth = dates.date_of_birth
 
 #let letter = immuknow.letter.with(
@@ -80,6 +93,7 @@
   logo: logo,
   logo-width: logo-width,
   title-size: title-size,
+  title-align: title-align,
   fill: heading-color,
   heading-above: 0.2cm,
   heading-below: 0.5cm,
@@ -90,7 +104,16 @@
   notice,
   diseases: ("Diphtheria", "Tetanus", "Pertussis", "Polio", "Hib", "Pneumococcal",
     "Rotavirus", "Measles", "Mumps", "Rubella", "Meningococcal", "Varicella"),
-  ignore-agents: ("RSVAb", "VarIg", "HBIg", "RabIg", "Ig"), // Vaccines left out of the table
+  ignore-agents: ( // Vaccines left out of the table
+    "RSVAb", "VarIg", "HBIg", "RabIg", "Ig", "TIg",
+    "COVID-19 mRNA",
+    "COVID-19 recombinant spike protein",
+    "COVID-19 unspecified",
+    "COVID-19 whole inactivated virus",
+    "Inf (QIV)",
+    "Inf (TIV)",
+    "inf-unspecified",
+  ),
   include-other: true, // Include a column for other vaccines
   show-validity: true, // Show which doses count toward requirements
   legend-labels: (:), // Override valid, invalid, or unspecified text for this language
@@ -99,10 +122,10 @@
   min-rows: 5, // Minimum number of vaccination rows
   font-size: if notice.language == "fr" { 10.6pt } else { 11pt },
   heading-size: auto, // Same size as chart text; use e.g. 11pt to override
-  indicator-font: "FreeSans", // Consistent dots across letter typefaces
+  indicator-font: "FreeSerif", // Contains the dot and circle markers; avoids ambient font fallback
   indicator-size: auto, // Same size as chart text
   indicator-offset: (x: 0pt, y: 0pt), // Optical adjustment for your typeface
-  labels: presentation.selected-labels(),
+  labels: selected-labels(),
 )
 
 // These helpers always use this letter’s client data.
@@ -114,8 +137,15 @@
   id-label: auto, oiid-label: auto, // Bilingual defaults or your own plain-text labels
 )
 #let address-block = immuknow.address-block.with(notice)
-#let overdue-diseases = immuknow.overdue-diseases.with(notice, labels: presentation.selected-labels(), no-records: auto, ispa-only: false)
-#let overdue-agents = immuknow.overdue-agents.with(notice, no-records: auto)
+#let overdue-diseases = immuknow.overdue-diseases.with(notice, labels: selected-labels(), no-records: auto, ispa-only: false)
+// Notice exclusions are independent of the history table's ignore-agents.
+// Use exact agent names from overdue_agents in the source data.
+#let overdue-agent-exclusions = ("COVID-19 mRNA", "Inf (TIV)", "TIg")
+#let overdue-agents = immuknow.overdue-agents.with(
+  notice, no-records: auto, ignore-agents: overdue-agent-exclusions,
+)
+#let requirements = immuknow.requirements.with(notice)
+#let agent-alternative = immuknow.agent-alternative.with(notice)
 #let notice-flags = immuknow.notice-flags.with(notice)
 #let qr-code = immuknow.qr-code.with(notice)
 #let notice-dates = immuknow.notice-dates.with(notice)

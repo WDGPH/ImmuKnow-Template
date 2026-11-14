@@ -5,34 +5,26 @@ build-backend = "hatchling.build"
 [project]
 name = "immuknow-template-resources"
 version = "0.1.0"
-description = "ImmuKnow project for one public health unit: config, notice templates and run scripts"
+description = "Starter project resources for standalone ImmuKnow"
 requires-python = ">=3.11"
-dependencies = [
-    # Reviewed ImmuKnow commit. To upgrade, change the revision and run `uv sync`.
-    "ImmuKnow @ git+https://github.com/WDGPH/ImmuKnow@1476fba70662e2145187e31c0f9c897d3e5eaada",
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
     "prek",
     "ruff==0.17.2",
 ]
-test = ["pytest"]
+test = ["pytest", "pypdf==6.21.4"]
 
 [tool.uv]
-# Native setup installs Core only; build resource distributions explicitly.
+# Install maintainer tools only; Core is a separately installed executable.
 package = false
-
-# To test a local ImmuKnow checkout next to this repository, uncomment these lines
-# and run `uv sync`. Comment them again before committing.
-# [tool.uv.sources]
-# ImmuKnow = { path = "../ImmuKnow", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["scripts"]
+pythonpath = ["scripts", "tests"]
 markers = [
-    "pipeline: runs the full sample through ImmuKnow; requires Typst",
+    "pipeline: renders the authored notices through the standalone ImmuKnow executable",
 ]
 
 [tool.ruff.lint]
@@ -46,36 +38,33 @@ only-include = [
     "input/sample/sample_assignments.json",
     "templates",
     "config",
+    "references",
     "scripts",
     ".gitignore",
     ".pre-commit-config.yaml",
     ".python-version",
     "LICENSE",
     "README.md",
+    "CONTRIBUTING.md",
     "pyproject.toml",
     "uv.lock",
+    "core-revision.txt",
 ]
 exclude = ["/templates/lib", "**/__pycache__", "*.py[cod]"]
 
 [tool.hatch.build.targets.wheel]
-only-include = ["src/immuknow_template", "templates", "config", "scripts"]
+only-include = ["src/immuknow_template", "templates", "config", "references"]
 
 [tool.hatch.build.targets.wheel.sources]
 "src" = ""
 "templates" = "immuknow_template/data/templates"
 "config" = "immuknow_template/data/config"
-"scripts" = "immuknow_template/data/scripts"
+"references" = "immuknow_template/data/references"
 
 [tool.hatch.build.targets.wheel.force-include]
 "input/sample/sample_students.csv" = "immuknow_template/examples/clients.csv"
 "input/sample/sample_assignments.json" = "immuknow_template/examples/assignments.json"
 ".gitignore" = "immuknow_template/data/.gitignore"
-".pre-commit-config.yaml" = "immuknow_template/data/.pre-commit-config.yaml"
-".python-version" = "immuknow_template/data/.python-version"
 "LICENSE" = "immuknow_template/data/LICENSE"
 "README.md" = "immuknow_template/data/README.md"
-"pyproject.toml" = "immuknow_template/data/pyproject.toml"
-"uv.lock" = "immuknow_template/data/uv.lock"
-
-[tool.hatch.metadata]
-allow-direct-references = true
+"core-revision.txt" = "immuknow_template/data/core-revision.txt"

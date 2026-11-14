@@ -17,6 +17,18 @@
     "Chol-Ecol-O": [
         "Other"
     ],
+    "COVID-19 mRNA": [
+        "Other"
+    ],
+    "COVID-19 recombinant spike protein": [
+        "Other"
+    ],
+    "COVID-19 unspecified": [
+        "Other"
+    ],
+    "COVID-19 whole inactivated virus": [
+        "Other"
+    ],
     "D": [
         "Diphtheria"
     ],
@@ -345,6 +357,9 @@
         "Diphtheria",
         "Tetanus",
         "Polio"
+    ],
+    "TIg": [
+        "Tetanus"
     ],
     "Typh-I": [
         "Other"

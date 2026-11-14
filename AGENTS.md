@@ -1,32 +1,31 @@
 # Contributor guidance
 
-Follow the [shared language and project responsibilities](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/documentation.md#shared-language-and-project-responsibilities).
+Read [README.md](README.md) for operators and [CONTRIBUTING.md](CONTRIBUTING.md)
+for maintainers. Follow the shared
+[project responsibilities](https://docs.phiz.ca/immuknow/latest/ecosystem/),
+[documentation principles](https://docs.phiz.ca/immuknow/latest/developer_guide/documentation/)
+and [testing boundaries](https://docs.phiz.ca/immuknow/latest/developer_guide/testing/#test-ownership-and-execution).
 
-Template owns authored starter letters, Settings, display translations, example
-branding, project configuration, local setup, helper commands, readiness checks
-and starter presentation tests. Core ships the shared library and no starters.
-Template owns the shared fictional example clients for notice development.
-Studio uses them for previews and consumes a pinned resource package. Keep
-project instructions in the [README](README.md). Link to
-[ImmuKnow Core](https://github.com/WDGPH/ImmuKnow) for native contracts and
-[ImmuKnow Studio](https://github.com/WDGPH/ImmuKnow-Studio) for the browser
-workflow.
+Template owns authored starter notices, Settings and convenience wrappers,
+display translations, example branding, project configuration, reference lists
+and the shared fictional clients. Core owns the native engine, schemas and
+shared Typst APIs. Studio owns browser editing, previews, fonts, drafts and
+project import/export; link to its
+[manual](https://docs.phiz.ca/immuknow-studio/latest/) for those workflows.
 
-Follow the [shared testing strategy](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/testing.md#testing-across-the-projects).
-Test helper commands, paths, readiness checks and the handoff to Core. Keep one
-shared native sample journey plus starter wording/page-count checks; do not
-duplicate Core's validation suite. Studio downloads include the user-facing setup and sample check, not maintainer tests.
+Use Core's native commands for setup, checks and runs. Keep the privacy hook,
+packaging, starter presentation checks and one representative native sample
+journey here; do not duplicate Core's validation suite. Python remains a
+maintainer/build dependency. Exported operator projects require no Python or uv.
 
-Use plausible fictional sample records for notice development. Keep deliberately
-invalid data in test fixtures. Do not commit real client data or private assets.
+Keep authored files and relative paths intact. Never edit installed packages or
+Core's copied shared library. Build copies and generated outputs stay ignored.
+Studio consumes a reviewed Template package and matching Core pin; its own guide
+owns dependency adoption and browser checks.
 
-Documentation describes current behavior; Git history records how it changed.
-Keep pull request descriptions short and plain, focused on rationale and the
-result for users. Omit agent attribution and detailed verification logs.
-
-Studio installs the resource package from a pinned Template commit.
-Make setup and helper changes here, then update Studio's dependency and lock.
-Never edit installed resources. Build copies belong in generated output only.
-
-Prefer clear, direct authoring and abstractions that earn their complexity. Follow
-Core's [authoring principles](https://github.com/WDGPH/ImmuKnow/blob/main/docs/developer_guide/documentation.md#template-authoring-principles).
+Use plausible fictional sample records; keep deliberately invalid data in tests.
+Never commit real client data or private assets. Keep current behavior in docs,
+completed plans and detailed work evidence outside the repository, and PR
+summaries short and plain. Preserve third-party attribution. Prefer direct
+solutions that follow Core's
+[authoring principles](https://docs.phiz.ca/immuknow/latest/developer_guide/templates/).
