@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 .venv/
 
-# uv.lock pins maintainer tools. core-revision.txt pins the native application.
+# uv.lock pins maintainer tools. immuknow-revision.txt pins the native application.
 
 # Run output contains client information and is never committed. Both names
 # match at any depth: runs/ is the default, output/ holds runs from older
@@ -23,14 +23,13 @@ output/
 run.json
 report.html
 
-# Input data may contain client information. Only the fictional sample and its assignments are tracked.
+# Input data may contain client information. Only the fictional sample CSV is tracked.
 # Keep cohort CSVs and assignments files in input/: an assignments file lists
 # client IDs and, being .json, is only ignored inside this folder.
 input/*
 !input/sample/
 input/sample/*
 !input/sample/sample_students.csv
-!input/sample/sample_assignments.json
 
 # Tools
 .pytest_cache/
@@ -47,7 +46,7 @@ Thumbs.db
 /dist/
 
 # Temporary resource export used for manual library setup.
-/core-resources/
+/immuknow-resources/
 
 # Native build cache used by project CI.
 /target/

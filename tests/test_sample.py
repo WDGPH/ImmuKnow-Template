@@ -10,10 +10,15 @@ from support import SAMPLE_INPUT
 pytestmark = pytest.mark.pipeline
 
 
-def test_sample_exits_without_failures(sample_run):
+def test_sample_reports_inapplicable_notices(sample_run):
     code, _, record = sample_run
-    assert code == 0, record["status"]
-    assert record["status"] in {"completed", "completed_with_warnings"}
+    assert code != 0
+    assert record["status"] == "completed_with_failures"
+    assert any(
+        check["code"] == "notice.eligibility" and check["status"] == "fail"
+        for entry in record["entries"]
+        for check in entry["checks"]
+    )
 
 
 def test_every_sample_notice_is_produced(sample_run):
@@ -27,7 +32,7 @@ def test_every_sample_notice_is_produced(sample_run):
         assert entry["source"] == row
         assert entry["original"]["status"] == "completed"
         assert (directory / entry["original"]["path"]).is_file()
-        assert all(check["status"] != "fail" for check in entry["checks"])
+        assert entry["assignment"]["version_id"] == "overdue_diseases"
 
 
 def test_starter_filename_settings_reach_native_artifacts(sample_run):

@@ -20,12 +20,11 @@ def resource_root() -> Path:
 
 def example_clients_path() -> Path:
     """Return the packaged fictional source CSV used for notice previews."""
-    return Path(str(files("immuknow_template").joinpath("examples/clients.csv")))
-
-
-def example_assignments_path() -> Path:
-    """Return the packaged default notice choices for the fictional clients."""
-    return Path(str(files("immuknow_template").joinpath("examples/assignments.json")))
+    return Path(
+        str(
+            files("immuknow_template").joinpath("data/input/sample/sample_students.csv")
+        )
+    )
 
 
 def project_files() -> dict[str, bytes]:

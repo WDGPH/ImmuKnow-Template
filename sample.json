@@ -1,0 +1,4 @@
+{
+  "csv": "input/sample/sample_students.csv",
+  "template": "templates/overdue_diseases.en.typ"
+}

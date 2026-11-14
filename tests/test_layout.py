@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from support import CONFIG_DIR, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT, TEMPLATES_DIR
+from support import CONFIG_DIR, SAMPLE_SELECTION, SAMPLE_INPUT, TEMPLATES_DIR
 
 
 @pytest.mark.parametrize(
@@ -48,20 +48,7 @@ def test_project_has_maintained_notice_entry_points():
         assert "#show: immuknow.letter" in source
 
 
-def test_sample_assignments_name_existing_templates():
-    assignments = json.loads(SAMPLE_ASSIGNMENTS.read_text(encoding="utf-8"))
-    missing = {a["template"] for a in assignments} - {
-        path.name for path in TEMPLATES_DIR.glob("*.typ")
-    }
-    assert missing == set()
-
-
-def test_sample_assignments_cover_sample_clients():
-    import csv
-
-    with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
-        clients = {row["client_id"] for row in csv.DictReader(source)}
-    assignments = json.loads(SAMPLE_ASSIGNMENTS.read_text(encoding="utf-8"))
-    assigned = [a["client_id"] for a in assignments]
-    assert len(assigned) == len(set(assigned))
-    assert set(assigned) == clients
+def test_sample_selection_points_to_packaged_files():
+    selection = json.loads(SAMPLE_SELECTION.read_text(encoding="utf-8"))
+    assert SAMPLE_SELECTION.parent / selection["csv"] == SAMPLE_INPUT
+    assert (SAMPLE_SELECTION.parent / selection["template"]).is_file()
