@@ -1,25 +1,26 @@
 // Essential setup: keep these opening lines.
 // @immuknow-settings: settings.typ
-#import "setup.typ": *
+#import "settings.typ" as immuknow
 #show: immuknow.letter // Apply the letter layout
-#assert(up_to_date, message: "This affirmative notice requires no overdue diseases.")
+#immuknow.requirements(eligibility: "no_overdue", coverage: "neutral")
 
 // Page 1: the letter. Each if/else below chooses wording for the client or their parent
-// to_student and to_guardian identify the intended reader; the final else is neutral.
+// immuknow.to_student and immuknow.to_guardian identify the intended reader; the final else is neutral.
 #immuknow.notice-page("Request for Immunization Record")[
-#immuknow.client-block(window: envelope-window) // Mailing address and client details
+#if immuknow.date_of_delivery != "" [#align(right)[#immuknow.date_of_delivery]]
+#immuknow.client-block(window: immuknow.envelope-window) // Mailing address and client details
 #v(0.3cm) // Space before the message
 
-As of *#date_as_of* our files show that #if to_student [you are] else if to_guardian [your child is] else [the named client is] up-to-date for #if to_student [your] else if to_guardian [their] else [the client's] immunization(s)! #if to_student [Your] else if to_guardian [Their] else [The client's] Immunization Record can be viewed on page 2.
+As of *#immuknow.date_as_of* our files show that #if immuknow.to_student [you are] else if immuknow.to_guardian [your child is] else [the named client is] up-to-date for #if immuknow.to_student [your] else if immuknow.to_guardian [their] else [the client's] immunization(s)! #if immuknow.to_student [Your] else if immuknow.to_guardian [Their] else [The client's] Immunization Record can be viewed on page 2.
 
-For any future received vaccines, you can update #if to_student [your record] else if to_guardian [your child's record] else [the client's record] by using one of the following options:
+For any future received vaccines, you can update #if immuknow.to_student [your record] else if immuknow.to_guardian [your child's record] else [the client's record] by using one of the following options:
 
 1. By visiting #immuknow.link("https://example.org/immunization")
 2. By emailing #immuknow.link("mailto:records@example.org")
-3. By mailing a photocopy of #if to_student [your] else if to_guardian [your child's] else [the client's] immunization record to Cedar Ridge Health Unit, 123 Example Street, Demo City, ON N0N 0N0
+3. By mailing a photocopy of #if immuknow.to_student [your] else if immuknow.to_guardian [your child's] else [the client's] immunization record to Cedar Ridge Health Unit, 123 Example Street, Demo City, ON N0N 0N0
 4. By Phone: #immuknow.link("tel:1-800-555-0100")
 
-Please update Public Health#if to_guardian [ and your childcare centre] every time #if to_student [you receive] else if to_guardian [your child receives] else [the client receives] a vaccine.
+Please update Public Health#if immuknow.to_guardian [ and your childcare centre] every time #if immuknow.to_student [you receive] else if immuknow.to_guardian [your child receives] else [the client receives] a vaccine.
 
 If you have any questions, please call #immuknow.link("tel:1-800-555-0100").
 
