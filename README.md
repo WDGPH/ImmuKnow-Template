@@ -149,14 +149,14 @@ into an immunization assessment.
 
 ## Check school names
 
-School checking is off by default. `config/school_reference.json` contains
-fictional sample schools. To use your own list, put it in `config/`, enable
-`school_validation` in `config/parameters.yaml` and select its exact health unit
-name. Review the list independently when updating Core.
+School checking is enabled by default. `config/school_reference.json` contains
+the fictional sample schools. To use your own list, put it in `config/`, set
+`school_validation.reference_file` in `config/parameters.yaml` and select its
+exact health unit name with `target_phu`. Review the list independently when
+updating Core.
 
-`references/ontario_schools.json` retains a saved Ontario list. Its metadata
-identifies the Ministry of Health workbook
-`PHIX Reference Lists v5.2 - 2025Jun30.xlsm`. Review it before use. To select it:
+`references/ontario_schools.json` retains a saved Ontario list. Review it before
+use. To select it:
 
 ```yaml
 school_validation:
