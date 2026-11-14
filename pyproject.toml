@@ -17,7 +17,7 @@ dev = [
 test = ["pytest", "pypdf==6.21.4"]
 
 [tool.uv]
-# Install maintainer tools only; Core is a separately installed executable.
+# Install maintainer tools only; ImmuKnow is a separately installed executable.
 package = false
 
 [tool.pytest.ini_options]
@@ -35,7 +35,7 @@ select = ["E4", "E7", "E9", "F"]
 only-include = [
     "src/immuknow_template",
     "input/sample/sample_students.csv",
-    "input/sample/sample_assignments.json",
+    "sample.json",
     "templates",
     "config",
     "references",
@@ -48,7 +48,7 @@ only-include = [
     "CONTRIBUTING.md",
     "pyproject.toml",
     "uv.lock",
-    "core-revision.txt",
+    "immuknow-revision.txt",
 ]
 exclude = ["/templates/lib", "**/__pycache__", "*.py[cod]"]
 
@@ -62,9 +62,9 @@ only-include = ["src/immuknow_template", "templates", "config", "references"]
 "references" = "immuknow_template/data/references"
 
 [tool.hatch.build.targets.wheel.force-include]
-"input/sample/sample_students.csv" = "immuknow_template/examples/clients.csv"
-"input/sample/sample_assignments.json" = "immuknow_template/examples/assignments.json"
+"sample.json" = "immuknow_template/data/sample.json"
+"input/sample/sample_students.csv" = "immuknow_template/data/input/sample/sample_students.csv"
 ".gitignore" = "immuknow_template/data/.gitignore"
 "LICENSE" = "immuknow_template/data/LICENSE"
 "README.md" = "immuknow_template/data/README.md"
-"core-revision.txt" = "immuknow_template/data/core-revision.txt"
+"immuknow-revision.txt" = "immuknow_template/data/immuknow-revision.txt"

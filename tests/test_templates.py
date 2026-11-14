@@ -54,19 +54,7 @@ def test_sample_selects_expected_starter_content(sample_run):
         and e["assignment"]["version_id"] in {"overdue_agents", "overdue_diseases"}
         and child(e)
     )
-    affirmative = next(
-        e
-        for e in entries
-        if e["assignment"]["language"] == "en"
-        and e["assignment"]["version_id"] == "affirmative_schedule"
-        and child(e)
-    )
-    french = next(
-        e for e in entries if e["assignment"]["language"] == "fr" and child(e)
-    )
     assert "your child has" in first_page(overdue)
-    assert "your child is" in first_page(affirmative)
-    assert "votre enfant" in first_page(french)
 
 
 def test_suspension_starter_has_its_own_title_and_one_page(tmp_path):
@@ -279,13 +267,12 @@ def test_bilingual_variants_keep_long_history_and_qr_evidence(tmp_path):
     import datetime
     import json
 
-    from support import native, SAMPLE_ASSIGNMENTS, SAMPLE_INPUT
+    from support import native, SAMPLE_INPUT
 
     with SAMPLE_INPUT.open(encoding="utf-8-sig", newline="") as source:
         reader = csv.DictReader(source)
         fields = reader.fieldnames
         sample = {row["client_id"]: row for row in reader}
-    assignments = json.loads(SAMPLE_ASSIGNMENTS.read_text())
     agents = ["MMR", "DTaP-IPV", "Hib", "Men-C-C", "Pneu-C-13"]
     history = " ".join(
         f"{(datetime.date(2015, 1, 1) + datetime.timedelta(days=i * 50)).isoformat()} - {agents[i % len(agents)]} - Valid;"
@@ -295,12 +282,7 @@ def test_bilingual_variants_keep_long_history_and_qr_evidence(tmp_path):
     selected = []
     for language in ("en", "fr"):
         for variant in ("overdue_agents", "overdue_diseases"):
-            original = next(
-                item
-                for item in assignments
-                if item["template"] == f"{variant}.{language}.typ"
-            )
-            row = sample[original["client_id"]].copy()
+            row = sample["5753452879"].copy()
             row["client_id"] = f"{2000000001 + len(rows):010}"
             row["first_name"] = (
                 "Éléonore-Camille" if language == "fr" else "Alexandrine-Marie"
@@ -315,7 +297,7 @@ def test_bilingual_variants_keep_long_history_and_qr_evidence(tmp_path):
             row["immunizations_given"] = history
             rows.append(row)
             selected.append(
-                {"client_id": row["client_id"], "template": original["template"]}
+                {"client_id": row["client_id"], "template": f"{variant}.{language}.typ"}
             )
     source = tmp_path / "long-fictional.csv"
     with source.open("w", encoding="utf-8", newline="") as destination:

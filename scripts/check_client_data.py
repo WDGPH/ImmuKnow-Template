@@ -1,6 +1,6 @@
 """Refuse files that may contain client information.
 
-Only the fictional sample and its assignments in input/sample/ may be committed. The pre-commit hook
+Only the fictional sample CSV in input/sample/ may be committed. The pre-commit hook
 passes the files being committed; with no arguments, every tracked file is checked.
 
     uv run python scripts/check_client_data.py [paths...]
@@ -19,7 +19,7 @@ CLIENT_DATA = re.compile(
     r"\.(csv|xlsx?|xlsm|parquet|pdf|zip|log)$|(^|/)(run\.json|report\.html)$|^input/|(^|/)(runs|output)/",
     re.IGNORECASE,
 )
-SAMPLE = {"input/sample/sample_students.csv", "input/sample/sample_assignments.json"}
+SAMPLE = {"input/sample/sample_students.csv"}
 
 
 def client_data(paths: list[str]) -> list[str]:

@@ -25,7 +25,7 @@
 I, *#order-signatory-name*, Medical Officer of Health for *Cedar Ridge Health Unit*, order the suspension of the above named student for a period of twenty school days.
 
 // The project supplies the start; school calendars determine the end of the
-// authored twenty-school-day period. Core does not infer school days.
+// authored twenty-school-day period. ImmuKnow does not infer school days.
 #if immuknow.date_of_suspension != "" [*Suspension begins:* #immuknow.date_of_suspension]
 
 #v(10pt) // Space after the suspension dates

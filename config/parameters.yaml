@@ -6,7 +6,7 @@ bundling:
   # Optional: source (default) or last_name_dob.
   # sort_by: last_name_dob
 # Filename stems use supported {field} placeholders, like password templates.
-# Core appends .pdf. Originals and protected copies use the individual stem.
+# ImmuKnow appends .pdf. Originals and protected copies use the individual stem.
 filenames:
   individual:
     template: '{client_id}_{notice_variant}_{language_code}'
@@ -22,7 +22,7 @@ filenames:
 # Every repeated row is retained with a warning and shares its client's assignment.
 allowed_duplicate_client_ids: []
 school_validation:
-  enabled: false
+  enabled: true
   # null uses school_reference.json in this config directory. Replace the
   # fictional list with your own, or set a path relative to this directory.
   reference_file: null

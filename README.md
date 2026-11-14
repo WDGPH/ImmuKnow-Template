@@ -1,10 +1,10 @@
-# ImmuKnow Project Template
+# ImmuKnow Template
 
 A starting project for creating personalized immunization notices with
-[ImmuKnow Core](https://docs.phiz.ca/immuknow/latest/). Adapt the notices,
+[ImmuKnow](https://docs.phiz.ca/immuknow/latest/). Adapt the notices,
 settings, translations and example branding for your organization before
 sending notices. The source system assesses immunization status; you choose
-the notices, and Core creates PDFs and reports their checks.
+the notices, and ImmuKnow creates PDFs and reports their checks.
 
 ## What belongs here
 
@@ -13,12 +13,12 @@ the notices, and Core creates PDFs and reports their checks.
 | `config/` | Run dates, grouping, password settings and vaccine/disease reference lists. |
 | `templates/` | Authored notices, Settings, display translations and example images. |
 | `references/` | Optional reference lists, including the saved Ontario school list. |
-| `input/sample/` | Shared fictional clients and their notice choices. Keep real input files elsewhere in `input/`. |
+| `input/sample/` | Shared fictional clients. Keep real input files elsewhere in `input/`. |
 | `runs/` | Generated notices and reports; never committed. |
 
-Core owns the native engine, schemas and shared Typst APIs. Its complete shared
+ImmuKnow owns the native engine, schemas and shared Typst APIs. Its complete shared
 library is installed in `templates/lib/immuknow/` during setup and stays intact.
-[Studio](https://docs.phiz.ca/immuknow-studio/latest/) owns browser editing,
+[ImmuKnow Studio](https://docs.phiz.ca/immuknow-studio/latest/) owns browser editing,
 previews and project downloads. It consumes this project's resource package
 and fictional clients. See [contributing](https://github.com/WDGPH/ImmuKnow-Template/blob/main/CONTRIBUTING.md)
 for maintaining Template and its package.
@@ -28,12 +28,12 @@ for maintaining Template and its package.
 Run these commands from the project folder, which contains `config/` and
 `templates/`.
 
-1. Obtain an `immuknow` executable matching `core-revision.txt` and put it on
-   your terminal's PATH. Use a matching [Core release archive](https://github.com/WDGPH/ImmuKnow/releases)
+1. Obtain an `immuknow` executable matching `immuknow-revision.txt` and put it on
+   your terminal's PATH. Use a matching [ImmuKnow release archive](https://github.com/WDGPH/ImmuKnow/releases)
    when available, or ask your maintainer for a prepared executable.
-   Core's [release guide](https://docs.phiz.ca/immuknow/latest/developer_guide/releases/)
+   ImmuKnow's [release guide](https://docs.phiz.ca/immuknow/latest/developer_guide/releases/)
    explains platform choices and checksums; Template contributors can
-   [build the recorded revision](https://github.com/WDGPH/ImmuKnow-Template/blob/main/CONTRIBUTING.md#build-the-reviewed-core).
+   [build the recorded revision](https://github.com/WDGPH/ImmuKnow-Template/blob/main/CONTRIBUTING.md#build-the-reviewed-immuknow).
 2. Install the fonts named in `templates/settings.typ`. The starters use
    FreeSans and FreeSerif from [GNU FreeFont](https://www.gnu.org/software/freefont/).
 3. Install and check the executable's shared library:
@@ -45,7 +45,7 @@ Run these commands from the project folder, which contains `config/` and
 
 The executable includes Typst. Operator setup, sample checks and notice
 generation require neither Python, uv nor a separate Typst installation.
-Core's [project commands](https://docs.phiz.ca/immuknow/latest/developer_guide/cli/#native-project-setup-and-samples)
+ImmuKnow's [project commands](https://docs.phiz.ca/immuknow/latest/developer_guide/cli/#native-project-setup-and-samples)
 describe checks, replacement and recovery. Keep your changes outside
 `templates/lib/immuknow/`.
 
@@ -62,39 +62,35 @@ immuknow run --sample
 
 The check renders the sample temporarily; the run retains its output under
 `runs/`. Open the printed `records.csv` and `findings.csv` files and review the
-PDFs before delivery. Core's [review guide](https://docs.phiz.ca/immuknow/latest/user_guide/pdf_validation/)
+PDFs before delivery. ImmuKnow's [review guide](https://docs.phiz.ca/immuknow/latest/user_guide/pdf_validation/)
 explains findings, delivery routes, holds and rebundling.
 
-The ten shared fictional clients cover English and French notices, supplied
-overdue and up-to-date records, optional Ontario Immunization IDs and an
+The ten shared fictional clients include overdue and up-to-date records, optional Ontario Immunization IDs and an
 explicit guardian choice. Eight have recorded histories; two have no recorded
 immunizations. Example run dates are in November 2026, after the supplied
 vaccination dates. These records are for notice development, not clinical
-assessment or advice.
+assessment or advice. The default notice targets overdue clients, so the full
+collection also produces eligibility failures and review routing for clients who
+are up to date. Choose a suitable notice for each real client.
 
 ## Use your own client list
 
-Save your CSV and notice choices in `input/`, then run:
-
-```sh
-immuknow run input/clients.csv --notice-assignments input/assignments.json \
-  --templates templates --config config --output runs
-```
-
-To use one notice for everyone:
+Save your CSV in `input/` and choose one notice for everyone:
 
 ```sh
 immuknow run input/clients.csv --project . --template overdue_diseases.en.typ
 ```
 
-See Core's [CSV guide](https://docs.phiz.ca/immuknow/latest/user_guide/input_schema/)
+See ImmuKnow's [CSV guide](https://docs.phiz.ca/immuknow/latest/user_guide/input_schema/)
 for columns and history formatting, and its
 [notice selection guide](https://docs.phiz.ca/immuknow/latest/user_guide/configuration/)
-for the assignments file. Keep output separate from authored files and input.
+for advanced per-client assignments and A/B selection. Keep output separate
+from authored files and input.
 
 The conventional fictional sample is in `input/sample/`. A project's
-`sample.json` can select another project-relative CSV and assignments file;
-Studio downloads supply the selected example this way. Core's
+`sample.json` selects a project-relative CSV and template path;
+use `--sample --template <filename>` to choose a different template.
+Studio downloads supply the selected example this way. ImmuKnow's
 [project commands](https://docs.phiz.ca/immuknow/latest/developer_guide/cli/#native-project-setup-and-samples)
 own the sample-selection contract.
 
@@ -112,13 +108,13 @@ own the sample-selection contract.
 
 Keep each notice's opening Settings marker, `#import "settings.typ" as immuknow`
 and `#show: immuknow.letter`. Settings connects the current client's facts to
-Core's helpers and supplies project defaults. Starter names and assignment
+ImmuKnow's helpers and supplies project defaults. Starter names and assignment
 values use the same notice filenames, such as `overdue_agents.en.typ`.
 
 The notices print `date_of_delivery` as the letter date and `date_as_of` as the
 assessment date. Optional `date_due` and `date_of_suspension` supply the update
 deadline and suspension start. Edit these in `config/parameters.yaml` for your
-reviewed requirements and school calendar; Core's
+reviewed requirements and school calendar; ImmuKnow's
 [configuration guide](https://docs.phiz.ca/immuknow/latest/user_guide/configuration/)
 explains date rules and other run settings.
 
@@ -137,7 +133,7 @@ history table's `ignore-agents` and leaves supplied facts unchanged. Use
 `#immuknow.overdue-agents(ignore-agents: ())` to show every source agent in one
 call. Put intentional replacement wording in
 `#immuknow.agent-alternative[Your wording]` and keep each notice's requirements
-beside its wording. Core's
+beside its wording. ImmuKnow's
 [authoring guide](https://docs.phiz.ca/immuknow/latest/developer_guide/templates/)
 owns the helper APIs, requirements, display checks and QR options.
 
@@ -149,14 +145,14 @@ into an immunization assessment.
 
 ## Check school names
 
-School checking is off by default. `config/school_reference.json` contains
-fictional sample schools. To use your own list, put it in `config/`, enable
-`school_validation` in `config/parameters.yaml` and select its exact health unit
-name. Review the list independently when updating Core.
+School checking is enabled by default. `config/school_reference.json` contains
+the fictional sample schools. To use your own list, put it in `config/`, set
+`school_validation.reference_file` in `config/parameters.yaml` and select its
+exact health unit name with `target_phu`. Review the list independently when
+updating ImmuKnow.
 
-`references/ontario_schools.json` retains a saved Ontario list. Its metadata
-identifies the Ministry of Health workbook
-`PHIX Reference Lists v5.2 - 2025Jun30.xlsm`. Review it before use. To select it:
+`references/ontario_schools.json` retains a saved Ontario list. Review it before
+use. To select it:
 
 ```yaml
 school_validation:
@@ -182,13 +178,13 @@ filenames:
 The individual default is `{client_id}_{notice_variant}_{language_code}`;
 the bundle default is `{route}_{bundle_number}` and the review default is
 `review_{bundle_number}`. These name PDFs. The selected run-wide
-`records.csv` and `findings.csv` exports are separate. Core's
+`records.csv` and `findings.csv` exports are separate. ImmuKnow's
 [configuration guide](https://docs.phiz.ca/immuknow/latest/user_guide/configuration/#filename-templates)
 owns supported fields, grouping, fallback behavior and naming rules.
 
-## Update Core
+## Update ImmuKnow
 
-Obtain the reviewed executable recorded in `core-revision.txt`, then run:
+Obtain the reviewed executable recorded in `immuknow-revision.txt`, then run:
 
 ```sh
 immuknow project sync --replace
