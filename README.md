@@ -28,9 +28,9 @@ for maintaining Template and its package.
 Run these commands from the project folder, which contains `config/` and
 `templates/`.
 
-1. Obtain an `immuknow` executable matching `immuknow-revision.txt` and put it on
-   your terminal's PATH. Use a matching [ImmuKnow release archive](https://github.com/WDGPH/ImmuKnow/releases)
-   when available, or ask your maintainer for a prepared executable.
+1. Download [ImmuKnow v2.0.0](https://github.com/WDGPH/ImmuKnow/releases/tag/v2.0.0),
+   which matches `immuknow-revision.txt`, and put the extracted `immuknow`
+   executable on your terminal's PATH.
    ImmuKnow's [release guide](https://docs.phiz.ca/immuknow/latest/developer_guide/releases/)
    explains platform choices and checksums; Template contributors can
    [build the recorded revision](https://github.com/WDGPH/ImmuKnow-Template/blob/main/CONTRIBUTING.md#build-the-reviewed-immuknow).
