@@ -28,7 +28,7 @@ for maintaining Template and its package.
 Run these commands from the project folder, which contains `config/` and
 `templates/`.
 
-1. Download [ImmuKnow v2.0.0](https://github.com/WDGPH/ImmuKnow/releases/tag/v2.0.0),
+1. Download [ImmuKnow v2.0.1](https://github.com/WDGPH/ImmuKnow/releases/tag/v2.0.1),
    which matches `immuknow-revision.txt`, and put the extracted `immuknow`
    executable on your terminal's PATH.
    ImmuKnow's [release guide](https://docs.phiz.ca/immuknow/latest/developer_guide/releases/)
